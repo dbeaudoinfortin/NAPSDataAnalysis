@@ -9,10 +9,11 @@ All usage is for non-comercial research purposes. I am not affiliated with the G
 
 Will download all of the hourly, continuous data for the provided years into the provided directory.
 
-Command line usage:
-
+**Command line usage:**
+```
  -o, --overwriteFiles       Replace existing files.
  -p, --downloadPath <arg>   Local path for downloaded files.
  -t, --threadCount <arg>    Maximum number of parallel threads.
  -ye, --yearEnd <arg>       End year (inclusive).
  -ys, --yearStart <arg>     Start year (inclusive).
+```
