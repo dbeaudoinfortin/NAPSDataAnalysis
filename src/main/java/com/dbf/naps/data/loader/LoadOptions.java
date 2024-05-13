@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +13,6 @@ import com.dbf.naps.data.BaseOptions;
 public class LoadOptions extends BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(LoadOptions.class);
-	
-	private final Options options = new Options();
 
 	private Path dataPath;
 	private String dbHost = "localhost";
@@ -23,23 +20,25 @@ public class LoadOptions extends BaseOptions {
 	private String dbName = "naps";
 	private String dbUser = "postgres";
 	private String dbPass = "password";
+	
+	static {
+		getOptions().addRequiredOption("p","dataPath", true, "Local path for raw data files previously downloaded.");
+		getOptions().addOption("dbh","dbHost", true, "Hostname for the PostgreSQL database. Default: localhost");
+		getOptions().addOption("dbt","dbPort", true, "Port for the PostgreSQL database. Default: 5432");
+		getOptions().addOption("dbn","dbName", true, "Database name for the PostgreSQL database. Default: naps");
+		getOptions().addOption("dbu","dbUser", true, "Database user name for the PostgreSQL database. Default: postgres");
+		getOptions().addOption("dbp","dbPass", true, "Database password for the PostgreSQL database. Default: password");
+	}
 
 	public LoadOptions(String[] args) throws IllegalArgumentException {
 		super(args);
-		
-		options.addRequiredOption("p","dataPath", true, "Local path for raw data files previously downloaded.");
-		options.addRequiredOption("dbh","dbHost", true, "Hostname for the PostgreSQL database. Default: localhost");
-		options.addRequiredOption("dbt","dbPort", true, "Port for the PostgreSQL database. Default: 5432");
-		options.addRequiredOption("dbn","dbName", true, "Database name for the PostgreSQL database. Default: naps");
-		options.addRequiredOption("dbu","dbUser", true, "Database user name for the PostgreSQL database. Default: postgres");
-		options.addRequiredOption("dbp","dbPass", true, "Database password for the PostgreSQL database. Default: password");
 		loadFromArgs(args);
 	}
 	
 	private void loadFromArgs(String[] args) throws IllegalArgumentException {
 		CommandLine cmd = null;
 		try {
-			cmd = (new DefaultParser()).parse(options, args);
+			cmd = (new DefaultParser()).parse(getOptions(), args);
 		}
 		catch(ParseException e) {
 			throw new IllegalArgumentException(e);
@@ -135,10 +134,5 @@ public class LoadOptions extends BaseOptions {
 
 	public String getDbPass() {
 		return dbPass;
-	}
-
-	@Override
-	protected Options getOptions() {
-		return options;
 	}
 }

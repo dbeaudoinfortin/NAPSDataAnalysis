@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS naps.sites
    id SERIAL NOT NULL,
    NAPS_id int not null,
    city_name VARCHAR(255) NOT NULL,
-   prov_ter VARCHAR(50) NOT NULL,
-   latitude NUMERIC(9,6) NOT NULL,
-   longitude NUMERIC(9,6) NOT NULL,
+   prov_terr VARCHAR(50) NOT NULL,
+   latitude NUMERIC(14,10) NOT NULL,
+   longitude NUMERIC(14,10) NOT NULL,
    PRIMARY KEY (id)
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS naps.continuous_data
    month smallint not null,
    day smallint not null,
    hour smallint not null,
-   day_of_week varchar(10) not null,
+   day_of_week smallint not null,
    data NUMERIC(6,2) NOT NULL,
    PRIMARY KEY (site_id, pollutant_id, date_time),
    CONSTRAINT fk_continuous_data_site_id

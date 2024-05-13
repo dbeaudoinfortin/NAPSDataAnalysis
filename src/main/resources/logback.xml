@@ -1,0 +1,13 @@
+<configuration scan="false" scanPeriod="10 seconds" debug="false">
+ <property name="stdoutLog" value="stdout.log" />
+ 
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+	    <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{0} :%M %L - %msg%n</pattern>
+	  </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
