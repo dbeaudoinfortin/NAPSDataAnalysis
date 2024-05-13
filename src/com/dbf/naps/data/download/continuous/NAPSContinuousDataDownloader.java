@@ -1,28 +1,21 @@
-package com.dbf.naps.data.download;
+package com.dbf.naps.data.download.continuous;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.Compound;
 import com.dbf.naps.data.Constants;
+import com.dbf.naps.data.NAPSActionBase;
+import com.dbf.naps.data.download.DownloadOptions;
 
-public class NAPSDownloader {
+public class NAPSContinuousDataDownloader extends NAPSActionBase {
 
-	private static final Logger log = LoggerFactory.getLogger(NAPSDownloader.class);
-	
-	private static ThreadPoolExecutor  THREAD_POOL = null; 
-	private static final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
-	
+	private static final Logger log = LoggerFactory.getLogger(NAPSContinuousDataDownloader.class);
+
 	private static DownloadOptions CONFIG = null;
 	
 	public static void main(String[] args) {
@@ -31,7 +24,7 @@ public class NAPSDownloader {
 		try
 		{
 			initConfig(args);
-			initThreadPool();
+			initThreadPool(CONFIG.getThreadCount());
 			downloadContinousFiles();
 			
 		} catch (Throwable t) {
@@ -46,14 +39,9 @@ public class NAPSDownloader {
 			CONFIG = new DownloadOptions(args);
 		} catch (IllegalArgumentException e) {
 			log.error("Error reading command line options: ", e);
-			log.info("Command line usage:\n" + DownloadOptions.printOptions());
+			log.info("Command line usage:\n" + CONFIG.printOptions());
 			System.exit(0);
 		}
-	}
-	
-	private static void initThreadPool() { 
-		log.info("Initializing thread pool with a size of " + CONFIG.getThreadCount());
-		THREAD_POOL = new ThreadPoolExecutor(CONFIG.getThreadCount(),CONFIG.getThreadCount(),100l,TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 	}
 	
 	private static void downloadContinousFiles() {
@@ -71,15 +59,4 @@ public class NAPSDownloader {
 
 		waitForTaskCompletion(futures);
 	}
-	
-	private static void waitForTaskCompletion(List<Future<?>> futures) {
-		futures.forEach(f->{
-			try {
-				f.get();
-			} catch (ExecutionException | InterruptedException e) {
-				throw new RuntimeException("Failed to wait for completion of tasks.", e); 
-			}
-		});
-	}
-
 }
