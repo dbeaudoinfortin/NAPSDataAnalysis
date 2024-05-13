@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.time.Year;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,27 +15,27 @@ public class DownloadOptions extends BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DownloadOptions.class);
 	
-	private final Options options = new Options();
-	
 	private Path downloadPath;
 	private boolean overwriteFiles = false;
 	private int yearStart = 1974;
 	private int yearEnd   = Year.now().getValue();
 	
+	static {
+		getOptions().addRequiredOption("p","downloadPath", true, "Local path for downloaded files.");
+		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
+		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");	
+		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
+	}
+	
 	public DownloadOptions(String[] args) throws IllegalArgumentException {
 		super(args);
-		
-		options.addRequiredOption("p","downloadPath", true, "Local path for downloaded files.");
-		options.addOption("ys","yearStart", true, "Start year (inclusive).");
-		options.addOption("ye","yearEnd", true, "End year (inclusive).");	
-		options.addOption("o","overwriteFiles", false, "Replace existing files.");	
 		loadFromArgs(args);
 	}
 	
 	private void loadFromArgs(String[] args) throws IllegalArgumentException {
 		CommandLine cmd = null;
 		try {
-			cmd = (new DefaultParser()).parse(options, args);
+			cmd = (new DefaultParser()).parse(getOptions(), args);
 		}
 		catch(ParseException e) {
 			throw new IllegalArgumentException(e);
@@ -103,10 +102,5 @@ public class DownloadOptions extends BaseOptions {
 
 	public boolean isOverwriteFiles() {
 		return overwriteFiles;
-	}
-
-	@Override
-	protected Options getOptions() {
-		return options;
 	}
 }

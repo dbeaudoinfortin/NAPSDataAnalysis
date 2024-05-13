@@ -24,6 +24,7 @@ public class NAPSContinuousDataDownloader extends NAPSActionBase {
 		try
 		{
 			initConfig(args);
+			NAPSActionBase.init(CONFIG);
 			initThreadPool(CONFIG.getThreadCount());
 			downloadContinousFiles();
 			
@@ -39,7 +40,7 @@ public class NAPSContinuousDataDownloader extends NAPSActionBase {
 			CONFIG = new DownloadOptions(args);
 		} catch (IllegalArgumentException e) {
 			log.error("Error reading command line options: ", e);
-			log.info("Command line usage:\n" + CONFIG.printOptions());
+			log.info("Command line usage:\n" + DownloadOptions.printOptions());
 			System.exit(0);
 		}
 	}
@@ -53,7 +54,7 @@ public class NAPSContinuousDataDownloader extends NAPSActionBase {
 		
 		for (int year = CONFIG.getYearStart(); year <= CONFIG.getYearEnd(); year++) {
 			for (Compound compound : Compound.values()) {
-				futures.add(THREAD_POOL.submit(new ContinuousFileDownload(year, compound, THREAD_ID_COUNTER.getAndIncrement(), CONFIG, rawPath)));
+				futures.add(submitTask(new ContinuousFileDownload(year, compound, getThreadID(), CONFIG, rawPath)));
 			}
 		}
 

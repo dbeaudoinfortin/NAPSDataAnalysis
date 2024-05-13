@@ -15,9 +15,13 @@ public class NAPSActionBase {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSActionBase.class);
 	
-	protected static ThreadPoolExecutor  THREAD_POOL = null; 
-	protected static final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
+	private static ThreadPoolExecutor  THREAD_POOL = null; 
+	private static final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
 		
+	protected static void init(BaseOptions config) {
+		initThreadPool(config.getThreadCount());
+	}
+	
 	protected static void initThreadPool(int threadCount) { 
 		log.info("Initializing thread pool with a size of " + threadCount);
 		THREAD_POOL = new ThreadPoolExecutor(threadCount, threadCount, 100l, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
@@ -32,5 +36,14 @@ public class NAPSActionBase {
 			}
 		});
 	}
+	
+	public static int getThreadID() {
+		return THREAD_ID_COUNTER.getAndIncrement();
+	}
+	
+	public static Future<?> submitTask(Runnable task) {
+		return THREAD_POOL.submit(task);
+	}
+	
 
 }

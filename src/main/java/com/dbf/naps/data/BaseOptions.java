@@ -14,10 +14,15 @@ public abstract class BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(BaseOptions.class);
 	
+	private static final Options options = new Options();
+	
 	private int threadCount = 1;
+	
+	static {
+		getOptions().addOption("t","threadCount", true, "Maximum number of parallel threads.");	
+	}
 
 	public BaseOptions(String[] args) throws IllegalArgumentException {
-		getOptions().addOption("t","threadCount", true, "Maximum number of parallel threads.");	
 		loadFromArgs(args);
 	}
 	
@@ -46,7 +51,7 @@ public abstract class BaseOptions {
 		}
 	}
 
-	public String printOptions()
+	public static String printOptions()
 	{
 		StringWriter sw = new StringWriter();
 		PrintWriter  writer = new PrintWriter(sw);
@@ -57,11 +62,11 @@ public abstract class BaseOptions {
 		return sw.toString();
 	}
 
-	protected abstract Options getOptions();
-
 	public int getThreadCount() {
 		return threadCount;
 	}
 
-
+	public static Options getOptions() {
+		return options;
+	}
 }
