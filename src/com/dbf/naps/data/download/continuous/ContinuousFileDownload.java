@@ -1,4 +1,4 @@
-package com.dbf.naps.data.download;
+package com.dbf.naps.data.download.continuous;
 
 import java.io.File;
 import java.net.URI;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.Compound;
 import com.dbf.naps.data.Constants;
+import com.dbf.naps.data.download.DownloadOptions;
 
 public class ContinuousFileDownload implements Runnable {
 	

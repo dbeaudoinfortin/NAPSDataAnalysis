@@ -1,41 +1,35 @@
 package com.dbf.naps.data.download;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Year;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DownloadOptions {
+import com.dbf.naps.data.BaseOptions;
+
+public class DownloadOptions extends BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DownloadOptions.class);
 	
-	private static final Options options = new Options();
-	
-	static {
-		options.addRequiredOption("p","downloadPath", true, "Local path for downloaded files.");
-		options.addOption("t","threadCount", true, "Maximum number of parallel threads.");
-		options.addOption("ys","yearStart", true, "Start year (inclusive).");
-		options.addOption("ye","yearEnd", true, "End year (inclusive).");	
-		options.addOption("o","overwriteFiles", false, "Replace existing files.");	
-	}
+	private final Options options = new Options();
 	
 	private Path downloadPath;
-	private int threadCount = 1;
 	private boolean overwriteFiles = false;
-	
 	private int yearStart = 1974;
 	private int yearEnd   = Year.now().getValue();
 	
-
 	public DownloadOptions(String[] args) throws IllegalArgumentException {
+		super(args);
+		
+		options.addRequiredOption("p","downloadPath", true, "Local path for downloaded files.");
+		options.addOption("ys","yearStart", true, "Start year (inclusive).");
+		options.addOption("ye","yearEnd", true, "End year (inclusive).");	
+		options.addOption("o","overwriteFiles", false, "Replace existing files.");	
 		loadFromArgs(args);
 	}
 	
@@ -49,11 +43,9 @@ public class DownloadOptions {
 		}
 		
 		loadDownloadPath(cmd);
-		loadThreadCount(cmd);
 		loadYearStart(cmd); //Check me first!
 		loadYearEnd(cmd);
 		loadOverwriteFiles(cmd);
-		
 	}
 	
 	private void loadOverwriteFiles(CommandLine cmd) {
@@ -84,19 +76,6 @@ public class DownloadOptions {
 			log.info("Using default start year: " + yearStart);
 		}
 	}
-
-	private void loadThreadCount(CommandLine cmd) {
-		if(cmd.hasOption("threadCount"))
-		{
-			threadCount = Integer.parseInt(cmd.getOptionValue("threadCount"));
-			if (threadCount < 1) {
-				throw new IllegalArgumentException("Invalid thread count: " + threadCount);
-			}
-			log.info("Using thread count: " + threadCount);
-		} else {
-			log.info("Using default thread count: " + threadCount);
-		}
-	}
 	
 	private void loadDownloadPath(CommandLine cmd) {
 		if(cmd.hasOption("downloadPath")) {
@@ -109,24 +88,9 @@ public class DownloadOptions {
 			throw new IllegalArgumentException("Download path is required.");
 		}
 	}
-	
-	public static String printOptions()
-	{
-		StringWriter sw = new StringWriter();
-		PrintWriter  writer = new PrintWriter(sw);
-		
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(writer, 120, " ", null, options, formatter.getLeftPadding(), formatter.getDescPadding(), null, false);
-		writer.flush();
-		return sw.toString();
-	}
 
 	public Path getDownloadPath() {
 		return downloadPath;
-	}
-
-	public int getThreadCount() {
-		return threadCount;
 	}
 
 	public int getYearStart() {
@@ -139,5 +103,10 @@ public class DownloadOptions {
 
 	public boolean isOverwriteFiles() {
 		return overwriteFiles;
+	}
+
+	@Override
+	protected Options getOptions() {
+		return options;
 	}
 }
