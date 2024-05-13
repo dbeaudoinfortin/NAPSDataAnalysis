@@ -5,9 +5,9 @@ This project will eventually contain a collection of tools to assist in the anal
 
 All usage is for non-comercial research purposes. I am not affiliated with the Government of Canada.
 
-# NAPSDownloader
+# NAPSContinuousDataDownloader
 
-Will download all of the hourly, continuous data for the provided years into the provided directory.
+Will download all of the hourly continuous data for the provided years into the provided directory.
 
 **Command line usage:**
 ```
@@ -16,4 +16,19 @@ Will download all of the hourly, continuous data for the provided years into the
  -t, --threadCount <arg>    Maximum number of parallel threads.
  -ye, --yearEnd <arg>       End year (inclusive).
  -ys, --yearStart <arg>     Start year (inclusive).
+```
+
+# NAPSContinuousDataLoader
+
+Loads all of the raw data from the provided directory into a PostgreSQL database, as specified.
+
+**Command line usage:**
+```
+ -p, --dataPath <arg>       Local path for raw data files previously downloaded.
+ -dbh, --db_host <arg>      Hostname for the PostgreSQL database. Default: localhost
+ -dbt, --db_port <arg>      Hostname for the PostgreSQL database. Default: 5432
+ -dbn, --db_name <arg>      Database name for the PostgreSQL database. Default: naps
+ -dbu, --db_user <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -dbp, --db_pass <arg>      Database password for the PostgreSQL database. Default: password
+ -t, --threadCount <arg>    Maximum number of parallel threads.
 ```
