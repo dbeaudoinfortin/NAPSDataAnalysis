@@ -32,3 +32,7 @@ Loads all of the raw data from the provided directory into a PostgreSQL database
  -dbp, --db_pass <arg>      Database password for the PostgreSQL database. Default: password
  -t, --threadCount <arg>    Maximum number of parallel threads.
 ```
+
+# Notes
+
+- Requires Java 17
