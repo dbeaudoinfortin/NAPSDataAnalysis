@@ -11,11 +11,11 @@ Will download all of the hourly continuous data for the provided years into the 
 
 **Command line usage:**
 ```
- -o, --overwriteFiles       Replace existing files.
- -p, --downloadPath <arg>   Local path for downloaded files.
- -t, --threadCount <arg>    Maximum number of parallel threads.
- -ye, --yearEnd <arg>       End year (inclusive).
- -ys, --yearStart <arg>     Start year (inclusive).
+ -o,  --overwriteFiles       Replace existing files.
+ -p,  --downloadPath <arg>   Local path for downloaded files.
+ -t,  --threadCount <arg>    Maximum number of parallel threads.
+ -ye, --yearEnd <arg>        End year (inclusive).
+ -ys, --yearStart <arg>      Start year (inclusive).
 ```
 
 # NAPSContinuousDataLoader
@@ -24,13 +24,13 @@ Loads all of the raw data from the provided directory into a PostgreSQL database
 
 **Command line usage:**
 ```
- -p, --dataPath <arg>       Local path for raw data files previously downloaded.
- -dbh, --db_host <arg>      Hostname for the PostgreSQL database. Default: localhost
- -dbt, --db_port <arg>      Hostname for the PostgreSQL database. Default: 5432
- -dbn, --db_name <arg>      Database name for the PostgreSQL database. Default: naps
- -dbu, --db_user <arg>      Database user name for the PostgreSQL database. Default: postgres
- -dbp, --db_pass <arg>      Database password for the PostgreSQL database. Default: password
- -t, --threadCount <arg>    Maximum number of parallel threads.
+ -p,   --dataPath <arg>       Local path for raw data files previously downloaded.
+ -dbh, --db_host <arg>        Hostname for the PostgreSQL database. Default: localhost
+ -dbt, --db_port <arg>        Hostname for the PostgreSQL database. Default: 5432
+ -dbn, --db_name <arg>        Database name for the PostgreSQL database. Default: naps
+ -dbu, --db_user <arg>        Database user name for the PostgreSQL database. Default: postgres
+ -dbp, --db_pass <arg>        Database password for the PostgreSQL database. Default: password
+ -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
 
 # Notes
