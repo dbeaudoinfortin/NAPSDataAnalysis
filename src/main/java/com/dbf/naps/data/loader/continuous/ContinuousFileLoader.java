@@ -75,21 +75,28 @@ public class ContinuousFileLoader implements Runnable {
 			try (Reader reader = new FileReader(rawFile, StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
 				for(CSVRecord line : parser) {
 					if(line.size() < 31) continue; //Header line
-					if(line.size() > 31) {
-						throw new IllegalArgumentException("Too many colums (" + line.size() + ") on row " + line.getRecordNumber());
-					}
+					
 					if(line.get(0).toLowerCase().startsWith("poll")) continue; //This is the real header row
 					
 					//More sanity checks, the line need to start with a known pollutant
-					if(!Compound.contains(line.get(0))) continue;
+					String compoudString = line.get(0).replace(".", ""); //PM2.5 -> PM25
+					if(!Compound.contains(compoudString)) continue;
+					
+					boolean isPM25 = compoudString.equalsIgnoreCase(Compound.PM25.name());
+					if(!((isPM25 && line.size() == 32) || (!isPM25 &&  line.size() == 31))) {
+						throw new IllegalArgumentException("Wrong number of columns (" + line.size() + ") on row " + line.getRecordNumber() + ". Expected " + (isPM25? "32.":"31."));
+					}
+					
+					int columnOffset = isPM25 ? 1:0;
+					if(isPM25) compoudString += "_" + line.get(1); //Append the method to the compound
 					
 					//We create 24 records per CSV line, 1 per hour
 					for(int hour = 0; hour < 24; hour++) {
 						ContinuousDataRecord record = new ContinuousDataRecord();
-						record.setPollutantId(getPollutantID(line.get(0), line.getRecordNumber()));
-						record.setSiteId(getSiteID(line));
+						record.setPollutantId(getPollutantID(compoudString, line.getRecordNumber()));
+						record.setSiteId(getSiteID(line, columnOffset));
 						
-						String date = line.get(6);
+						String date = line.get(6 + columnOffset);
 						//Date might be in more than 1 format
 						try {
 							record.setDatetime(EARLY_DATE_FORMAT.parse(date));
@@ -113,7 +120,7 @@ public class ContinuousFileLoader implements Runnable {
 						//Add the hour component
 						record.getDatetime().setTime(record.getDatetime().getTime() + (hour * ONE_HOUR_MS));
 						
-						String data = line.get(7+hour);
+						String data = line.get(7 + hour + columnOffset);
 						try {
 							record.setData(new BigDecimal(data));
 						} catch (NumberFormatException e){
@@ -149,9 +156,9 @@ public class ContinuousFileLoader implements Runnable {
 		}
 	}
 	
-	private Integer getSiteID(CSVRecord line) {
+	private Integer getSiteID(CSVRecord line, int columnOffset) {
 		try {
-			final Integer NAPSID = Integer.parseInt(line.get(1));
+			final Integer NAPSID = Integer.parseInt(line.get(1 + columnOffset));
 			//If one thread stamps overrides the data of another it's no big deal
 			return siteIDLookup.computeIfAbsent(NAPSID, key -> {
 				Integer siteID = null;
@@ -160,19 +167,19 @@ public class ContinuousFileLoader implements Runnable {
 				try(SqlSession session = sqlSessionFactory.openSession(true)) {
 					BigDecimal latitude, longitude;
 					try {
-						latitude = new BigDecimal(line.get(4));
+						latitude = new BigDecimal(line.get(4 + columnOffset));
 					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid latitude (" + line.get(4) + ") on row " + line.getRecordNumber(), e);
+						throw new IllegalArgumentException("Invalid latitude (" + line.get(4 + columnOffset) + ") on row " + line.getRecordNumber(), e);
 					}
 					try {
-						longitude = new BigDecimal(line.get(5));
+						longitude = new BigDecimal(line.get(5 + columnOffset));
 					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid longitude (" + line.get(5) + ") on row " + line.getRecordNumber(), e);
+						throw new IllegalArgumentException("Invalid longitude (" + line.get(5 + columnOffset) + ") on row " + line.getRecordNumber(), e);
 					}
 					
 					if (longitude.longValue() < -188L) {
 						//Some of the data is bad
-						String s = line.get(5).substring(1);
+						String s = line.get(5 + columnOffset).substring(1);
 						if(s.startsWith("1")) {
 							//Is over 100
 							s = "-" + s.substring(0,3) + "." + s.substring(3);
@@ -182,20 +189,22 @@ public class ContinuousFileLoader implements Runnable {
 						try {
 							longitude = new BigDecimal(s);
 						} catch (NumberFormatException e) {
-							throw new IllegalArgumentException("Invalid longitude (" + line.get(5) + ") on row " + line.getRecordNumber(), e);
+							throw new IllegalArgumentException("Invalid longitude (" + line.get(5 + columnOffset) + ") on row " + line.getRecordNumber(), e);
 						}
 					}
 					
 					ContinuousDataMapper mapper = session.getMapper(ContinuousDataMapper.class);
-					session.getMapper(ContinuousDataMapper.class).insertSite(NAPSID, line.get(2), line.get(3).toUpperCase(), latitude, longitude);
+					session.getMapper(ContinuousDataMapper.class).insertSite(NAPSID, line.get(2 + columnOffset), line.get(3 + columnOffset).toUpperCase(), latitude, longitude);
 					siteID = mapper.getSiteID(NAPSID);
 				}
 				
-				if( null == siteID) throw new IllegalArgumentException("Could not find matching Site ID for NAPS ID (" + line.get(1) + ") on row " + line.getRecordNumber());
+				if( null == siteID) {
+					throw new IllegalArgumentException("Could not find matching Site ID for NAPS ID (" + line.get(1 + columnOffset) + ") on row " + line.getRecordNumber());
+				}
 				return siteID;
 			});
 		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("Invalid NAPS ID (" + line.get(1) + ") on row " + line.getRecordNumber(), e);
+			throw new IllegalArgumentException("Invalid NAPS ID (" + line.get(1 + columnOffset) + ") on row " + line.getRecordNumber(), e);
 		}
 	}
 	
