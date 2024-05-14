@@ -20,7 +20,7 @@ A Java tool that will download all of the hourly continuous data for the provide
 
 # NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs.  
+A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. There should be about 150 million rows of data (as of May 2024) once all the data is loaded.
 
 **Command line usage:**
 ```

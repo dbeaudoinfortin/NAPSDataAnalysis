@@ -112,10 +112,7 @@ public class ContinuousFileLoader implements Runnable {
 						record.setDayOfWeek(record.getDatetime().getDay());
 						record.setHour(hour + 1);
 						record.setMonth(record.getDatetime().getMonth());
-						
-						int year = record.getDatetime().getYear();
-						year += year < 50 ? 1900 : 2000; //This is really lazy, oh well
-						record.setYear(year);
+						record.setYear(record.getDatetime().getYear() + 1900); //This is really lazy, oh well
 	
 						//Add the hour component
 						record.getDatetime().setTime(record.getDatetime().getTime() + (hour * ONE_HOUR_MS));
