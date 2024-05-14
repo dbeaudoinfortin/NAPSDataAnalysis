@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS naps.sites
    NAPS_id int not null,
    city_name VARCHAR(255) NOT NULL,
    prov_terr VARCHAR(50) NOT NULL,
-   latitude NUMERIC(14,10) NOT NULL,
-   longitude NUMERIC(14,10) NOT NULL,
+   latitude NUMERIC(16,12) NOT NULL,
+   longitude NUMERIC(16,12) NOT NULL,
    PRIMARY KEY (id)
 );
 
