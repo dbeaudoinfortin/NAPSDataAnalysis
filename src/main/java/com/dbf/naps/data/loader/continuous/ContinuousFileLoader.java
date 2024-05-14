@@ -170,6 +170,22 @@ public class ContinuousFileLoader implements Runnable {
 						throw new IllegalArgumentException("Invalid longitude (" + line.get(5) + ") on row " + line.getRecordNumber(), e);
 					}
 					
+					if (longitude.longValue() < -188L) {
+						//Some of the data is bad
+						String s = line.get(5).substring(1);
+						if(s.startsWith("1")) {
+							//Is over 100
+							s = "-" + s.substring(0,3) + "." + s.substring(3);
+						} else {
+							s = "-" + s.substring(0,2) + "." + s.substring(2);
+						}
+						try {
+							longitude = new BigDecimal(s);
+						} catch (NumberFormatException e) {
+							throw new IllegalArgumentException("Invalid longitude (" + line.get(5) + ") on row " + line.getRecordNumber(), e);
+						}
+					}
+					
 					ContinuousDataMapper mapper = session.getMapper(ContinuousDataMapper.class);
 					session.getMapper(ContinuousDataMapper.class).insertSite(NAPSID, line.get(2), line.get(3).toUpperCase(), latitude, longitude);
 					siteID = mapper.getSiteID(NAPSID);
