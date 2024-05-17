@@ -20,14 +20,16 @@ public class LoadOptions extends BaseOptions {
 	private String dbName = "naps";
 	private String dbUser = "postgres";
 	private String dbPass = "password";
+	private boolean includeNulls = false;
 	
 	static {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path for raw data files previously downloaded.");
 		getOptions().addOption("dbh","dbHost", true, "Hostname for the PostgreSQL database. Default: localhost");
-		getOptions().addOption("dbt","dbPort", true, "Port for the PostgreSQL database. Default: 5432");
-		getOptions().addOption("dbn","dbName", true, "Database name for the PostgreSQL database. Default: naps");
-		getOptions().addOption("dbu","dbUser", true, "Database user name for the PostgreSQL database. Default: postgres");
-		getOptions().addOption("dbp","dbPass", true, "Database password for the PostgreSQL database. Default: password");
+		getOptions().addOption("dbt","dbPort", true,  "Port for the PostgreSQL database. Default: 5432");
+		getOptions().addOption("dbn","dbName", true,  "Database name for the PostgreSQL database. Default: naps");
+		getOptions().addOption("dbu","dbUser", true,  "Database user name for the PostgreSQL database. Default: postgres");
+		getOptions().addOption("dbp","dbPass", true,  "Database password for the PostgreSQL database. Default: password");
+		getOptions().addOption("n"  ,"nulls" , false, "Include null values.");
 	}
 
 	public LoadOptions(String[] args) throws IllegalArgumentException {
@@ -50,6 +52,16 @@ public class LoadOptions extends BaseOptions {
 		loadDBName(cmd);
 		loadDBUser(cmd);
 		loadDBPass(cmd);
+		loadIncludeNulls(cmd);
+	}
+	
+	private void loadIncludeNulls(CommandLine cmd) {
+		if(cmd.hasOption("nulls")) {
+			includeNulls = true;
+			log.info("Will include null values.");
+		} else {
+			log.info("Will exclude null values.");
+		}
 	}
 	
 	private void loadDBPort(CommandLine cmd) {
@@ -134,5 +146,9 @@ public class LoadOptions extends BaseOptions {
 
 	public String getDbPass() {
 		return dbPass;
+	}
+
+	public boolean isIncludeNulls() {
+		return includeNulls;
 	}
 }

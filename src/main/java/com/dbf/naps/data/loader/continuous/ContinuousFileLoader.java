@@ -97,33 +97,38 @@ public class ContinuousFileLoader implements Runnable {
 						record.setSiteId(getSiteID(line, columnOffset));
 						
 						String date = line.get(6 + columnOffset);
-						//Date might be in more than 1 format
-						try {
-							record.setDatetime(EARLY_DATE_FORMAT.parse(date));
-				        } catch (ParseException | NumberFormatException e) {
+						if (date.contains("-")) { //Date might be in more than 1 format
 				        	try {
 								record.setDatetime(LATE_DATE_FORMAT.parse(date));
-					        } catch (Exception e2) {
-					        	throw new IllegalArgumentException("Could not parse date (" + date + ") on row " + line.getRecordNumber(), e2);
+					        } catch (ParseException | NumberFormatException e) {
+					        	throw new IllegalArgumentException("Could not parse date (" + date + ") on row " + line.getRecordNumber() + ". Expecting format " + LATE_DATE_FORMAT, e);
 					        }
-				        }
-				        
+						} else {
+							try {
+								record.setDatetime(EARLY_DATE_FORMAT.parse(date));
+					        } catch (ParseException | NumberFormatException e) {
+						        throw new IllegalArgumentException("Could not parse date (" + date + ") on row " + line.getRecordNumber() + ". Expecting format " + EARLY_DATE_FORMAT, e);
+					        }
+						}
+						
 				        record.setDay(record.getDatetime().getDate());
 						record.setDayOfWeek(record.getDatetime().getDay());
 						record.setHour(hour + 1);
-						record.setMonth(record.getDatetime().getMonth());
+						record.setMonth(record.getDatetime().getMonth()+1);
 						record.setYear(record.getDatetime().getYear() + 1900); //This is really lazy, oh well
 	
 						//Add the hour component
 						record.getDatetime().setTime(record.getDatetime().getTime() + (hour * ONE_HOUR_MS));
 						
 						String data = line.get(7 + hour + columnOffset);
+						//There are a couple odd ball values in the data set, such -9999 and -99
+						if(!config.isIncludeNulls() && data.startsWith("-99")) continue;
 						try {
 							record.setData(new BigDecimal(data));
 						} catch (NumberFormatException e){
 							throw new IllegalArgumentException("Invalid raw data (" + data + ") for hour " + (hour+1) + " on row " + line.getRecordNumber(), e);
 						}
-						
+	
 						records.add(record);
 						
 						//Save everything to the database
@@ -144,12 +149,13 @@ public class ContinuousFileLoader implements Runnable {
 	}
 	
 	private void loadRecords(List<ContinuousDataRecord> records) {
-		if(records.size() >0) {
+		if(records.size() > 0) {
 			log.info(threadId + ":: Loading " + records.size() + " records into the database for file " + rawFile + ".");
 			try(SqlSession session = sqlSessionFactory.openSession(true)) {
 				session.getMapper(ContinuousDataMapper.class).insertContinuousDataBulk(records);
+			} finally {
+				records.clear();
 			}
-			records.clear();
 		}
 	}
 	
@@ -215,7 +221,9 @@ public class ContinuousFileLoader implements Runnable {
 				mapper.insertPollutant(compound);
 				pollutantID = mapper.getPollutantID(compound);
 			}
-			if(null == pollutantID) throw new IllegalArgumentException("Could not find matching Pollutant ID for compound (" + compound + ") on row " + recordNumber);
+			if(null == pollutantID) {
+				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound (" + compound + ") on row " + recordNumber);
+			}
 			return pollutantID;
 		});
 	}
