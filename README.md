@@ -49,7 +49,7 @@ A Java tool that will download all of the integrated data for the provided years
 # How To Run
 
 In the /target directory you will find the pre-compiled jar file NAPSData.jar. This is a shaded jar file which means that it contains all of the 3rd party dependancies inside of it. Assuming you hava Java 17 installed and 
-part of you system path you can simply invoke the class by running the following:
+part of your system path you can simply invoke the class by running the following:
 ```
  java -cp NAPSData.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
 ```
