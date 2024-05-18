@@ -7,27 +7,28 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NAPSActionBase {
+public abstract class NAPSActionBase {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSActionBase.class);
 	
-	private static ThreadPoolExecutor  THREAD_POOL = null; 
-	private static final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
+	private ThreadPoolExecutor  THREAD_POOL = null; 
+	private final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
 		
-	protected static void init(BaseOptions config) {
+	protected void initBase(BaseOptions config) {
 		initThreadPool(config.getThreadCount());
 	}
 	
-	protected static void initThreadPool(int threadCount) { 
+	private void initThreadPool(int threadCount) { 
 		log.info("Initializing thread pool with a size of " + threadCount);
 		THREAD_POOL = new ThreadPoolExecutor(threadCount, threadCount, 100l, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 	}
 	
-	protected static void waitForTaskCompletion(List<Future<?>> futures) {
+	protected void waitForTaskCompletion(List<Future<?>> futures) {
 		futures.forEach(f->{
 			try {
 				f.get();
@@ -37,13 +38,17 @@ public class NAPSActionBase {
 		});
 	}
 	
-	public static int getThreadID() {
+	protected int getThreadID() {
 		return THREAD_ID_COUNTER.getAndIncrement();
 	}
 	
-	public static Future<?> submitTask(Runnable task) {
+	protected Future<?> submitTask(Runnable task) {
 		return THREAD_POOL.submit(task);
 	}
 	
-
+	protected List<Future<?>> submitTasks(List<Runnable> tasks) {
+		return tasks.stream().map(this::submitTask).collect(Collectors.toList());
+	}
+	
+	protected abstract void run(String[] args);
 }

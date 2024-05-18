@@ -20,7 +20,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.Compound;
+import com.dbf.naps.data.globals.Compound;
 import com.dbf.naps.data.loader.LoadOptions;
 
 public class ContinuousFileLoader implements Runnable {

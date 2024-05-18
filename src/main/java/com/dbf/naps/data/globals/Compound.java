@@ -1,4 +1,4 @@
-package com.dbf.naps.data;
+package com.dbf.naps.data.globals;
 
 import java.util.HashMap;
 import java.util.Map;
