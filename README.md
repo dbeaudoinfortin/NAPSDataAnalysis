@@ -7,7 +7,9 @@ All usage is for non-comercial research purposes. I am not affiliated with the G
 
 # NAPSContinuousDataDownloader
 
-A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
+A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api.
+
+You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
 
 **Command line usage:**
 ```
@@ -20,7 +22,9 @@ A Java tool that will download all of the hourly continuous data for the provide
 
 # NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. There should be about 275 million rows of data (as of May 2024) once all the data is loaded. You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
+A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
+
+You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
 
 **Command line usage:**
 ```
@@ -35,7 +39,9 @@ A Java tool that loads all of the raw data (downloaded by the NAPSContinuousData
 
 # NAPSIntegratedDataDownloader
 
-A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. You can invoke this tool by running the class com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader.
+A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. 
+
+You can invoke this tool by running the class com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader.
 
 **Command line usage:**
 ```
