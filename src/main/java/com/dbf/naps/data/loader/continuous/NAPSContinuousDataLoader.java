@@ -27,21 +27,24 @@ public class NAPSContinuousDataLoader extends NAPSActionBase {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSContinuousDataLoader.class);
 	
-	private static LoadOptions CONFIG = null;
-	private static HikariDataSource dbDataSource;
-	private static SqlSessionFactory sqlSessionFactory;
+	private LoadOptions CONFIG = null;
+	private HikariDataSource dbDataSource;
+	private SqlSessionFactory sqlSessionFactory;
 	
 	public static void main(String[] args) {
+		NAPSContinuousDataLoader dataLoader = new NAPSContinuousDataLoader();
+		dataLoader.run(args);
+	}
+	
+	protected void run(String[] args) {
 		log.info("Welcome! 🙂");
 		
 		try
 		{
 			initConfig(args);
-			NAPSActionBase.init(CONFIG);
+			initBase(CONFIG);
 			initDB();
-			initThreadPool(CONFIG.getThreadCount());
 			loadContinousFiles();
-			
 		} catch (Throwable t) {
 			log.error("Unexpected failure.", t);
 		}
@@ -49,7 +52,7 @@ public class NAPSContinuousDataLoader extends NAPSActionBase {
 		log.info("Goodbye! 🙂");
 	}
 	
-	private static void initConfig(String[] args) {
+	private void initConfig(String[] args) {
 		try {
 			CONFIG = new LoadOptions(args);
 		} catch (IllegalArgumentException e) {
@@ -59,7 +62,7 @@ public class NAPSContinuousDataLoader extends NAPSActionBase {
 		}
 	}
 	
-	private static void initDB() throws IOException, SQLException {
+	private void initDB() throws IOException, SQLException {
 		dbDataSource = new HikariDataSource();
 		dbDataSource.setUsername(CONFIG.getDbUser());
 		dbDataSource.setPassword(CONFIG.getDbPass());
@@ -82,7 +85,7 @@ public class NAPSContinuousDataLoader extends NAPSActionBase {
 		}
 	}
 	
-	private static void loadContinousFiles() throws IOException {
+	private void loadContinousFiles() throws IOException {
 
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		final Path rawPath = CONFIG.getDataPath();
@@ -101,5 +104,4 @@ public class NAPSContinuousDataLoader extends NAPSActionBase {
 		
 		waitForTaskCompletion(futures);
 	}
-
 }
