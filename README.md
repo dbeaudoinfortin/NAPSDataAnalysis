@@ -7,7 +7,7 @@ All usage is for non-comercial research purposes. I am not affiliated with the G
 
 # NAPSContinuousDataDownloader
 
-A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
+A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
 
 **Command line usage:**
 ```
@@ -20,7 +20,7 @@ A Java tool that will download all of the hourly continuous data for the provide
 
 # NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. There should be about 275 million rows of data (as of May 2024) once all the data is loaded.
+A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. There should be about 275 million rows of data (as of May 2024) once all the data is loaded. You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
 
 **Command line usage:**
 ```
@@ -33,7 +33,31 @@ A Java tool that loads all of the raw data (downloaded by the NAPSContinuousData
  -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
 
+# NAPSIntegratedDataDownloader
+
+A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. You can invoke this tool by running the class com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader.
+
+**Command line usage:**
+```
+ -o,  --overwriteFiles       Replace existing files.
+ -p,  --downloadPath <arg>   Local path for downloaded files.
+ -t,  --threadCount <arg>    Maximum number of parallel threads.
+ -ye, --yearEnd <arg>        End year (inclusive).
+ -ys, --yearStart <arg>      Start year (inclusive).
+```
+
+# How To Run
+
+In the /target directory you will find the pre-compiled jar file NAPSData.jar. This is a shaded jar file which means that it contains all of the 3rd party dependancies inside of it. Assuming you hava Java 17 installed and 
+part of you system path you can simply invoke the class by running the following:
+```
+ java -cp NAPSData.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
+```
+
+In this example, the data will be loaded from the C:\temp\NAPSData\RawFiles directory into the database using a thread pool size of 24, and all default database connection options (see above for details).
+
 # Notes
 
 - Requires Java 17
-- Tested with PostgreSQL 16.3. The database should be created with the UTF-8 characterset in order to support accented characters. 
+- Tested with PostgreSQL 16.3. The database should be created with the UTF-8 characterset in order to support accented characters.
+- If you want to build the jar from the source code you will need Apache Maven: https://maven.apache.org/
