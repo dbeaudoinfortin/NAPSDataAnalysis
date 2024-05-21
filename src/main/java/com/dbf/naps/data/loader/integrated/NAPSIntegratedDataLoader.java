@@ -22,10 +22,7 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
 	@Override
 	protected Runnable processFile(File dataFile) {
-		return null;
+		if(!dataFile.getName().toLowerCase().endsWith(".csv")) return null;
+		return new IntegratedFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
 	}
-
-
-
-
 }
