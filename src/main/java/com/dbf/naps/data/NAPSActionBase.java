@@ -1,5 +1,6 @@
 package com.dbf.naps.data;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -12,22 +13,36 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class NAPSActionBase {
+import com.dbf.naps.data.download.DownloaderOptions;
+
+public abstract class NAPSActionBase<O extends BaseOptions> {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSActionBase.class);
 	
-	private ThreadPoolExecutor  THREAD_POOL = null; 
+	private final ThreadPoolExecutor threadPool; 
 	private final AtomicInteger THREAD_ID_COUNTER = new AtomicInteger(0);
+	
+	protected final O options;
+	
+	public NAPSActionBase(String[] args) {
+		options = loadOptions(args);
 		
-	protected void initBase(BaseOptions config) {
-		initThreadPool(config.getThreadCount());
+		log.info("Initializing thread pool with a size of " + options.getThreadCount());
+		threadPool = new ThreadPoolExecutor(options.getThreadCount(), options.getThreadCount(), 100l, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 	}
 	
-	private void initThreadPool(int threadCount) { 
-		log.info("Initializing thread pool with a size of " + threadCount);
-		THREAD_POOL = new ThreadPoolExecutor(threadCount, threadCount, 100l, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
+	private O loadOptions(String[] args) {
+		try {
+			//This sure isn't elegant
+			return getOptionsClass().getConstructor(String[].class).newInstance((Object)args);
+		} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			log.error("Error reading command line options: ", e);
+			log.info("Command line usage:\n" + DownloaderOptions.printOptions());
+			System.exit(0);
+			return null;
+		}
 	}
-	
+
 	protected void waitForTaskCompletion(List<Future<?>> futures) {
 		futures.forEach(f->{
 			try {
@@ -38,17 +53,23 @@ public abstract class NAPSActionBase {
 		});
 	}
 	
+	public O getOptions() {
+		return options;
+	}
+	
+	public abstract Class<O> getOptionsClass();
+	
 	protected int getThreadID() {
 		return THREAD_ID_COUNTER.getAndIncrement();
 	}
 	
 	protected Future<?> submitTask(Runnable task) {
-		return THREAD_POOL.submit(task);
+		return threadPool.submit(task);
 	}
 	
 	protected List<Future<?>> submitTasks(List<Runnable> tasks) {
 		return tasks.stream().map(this::submitTask).collect(Collectors.toList());
 	}
 	
-	protected abstract void run(String[] args);
+	protected abstract void run();
 }

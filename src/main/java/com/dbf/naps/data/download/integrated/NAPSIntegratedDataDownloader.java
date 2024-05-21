@@ -24,14 +24,18 @@ public class NAPSIntegratedDataDownloader extends NAPSDataDownloader {
 
 	private static final Gson gson = new Gson();
 	
+	public NAPSIntegratedDataDownloader(String[] args) {
+		super(args);
+	}
+	
 	public static void main(String[] args) {
-		NAPSIntegratedDataDownloader dataDownloader = new NAPSIntegratedDataDownloader();
-		dataDownloader.run(args);
+		NAPSIntegratedDataDownloader dataDownloader = new NAPSIntegratedDataDownloader(args);
+		dataDownloader.run();
 	}
 		
 	@Override
 	protected Path getDownloadPath() {
-		return CONFIG.getDownloadPath().resolve(Constants.FILE_PATH_INTEGRATED);
+		return getOptions().getDownloadPath().resolve(Constants.FILE_PATH_INTEGRATED);
 	}
 
 	@Override
@@ -75,7 +79,7 @@ public class NAPSIntegratedDataDownloader extends NAPSDataDownloader {
 			log.info("Found " + catalogue.getPathContents().size() + " file(s) for year " + year + ".");
 			for(PathContent content: catalogue.getPathContents()) {
 				if (content.isDirectory()) continue; //TODO: Support recursive directories??
-				tasks.add(new IntegratedFileDownloadRunner(year, content.getPath(), content.getName(), getThreadID(), CONFIG, yearPath));
+				tasks.add(new IntegratedFileDownloadRunner(year, content.getPath(), content.getName(), getThreadID(), getOptions(), yearPath));
 			}
 			
 		} catch (Exception e) {
