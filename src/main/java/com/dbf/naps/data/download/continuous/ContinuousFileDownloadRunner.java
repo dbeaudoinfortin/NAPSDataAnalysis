@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloadOptions;
+import com.dbf.naps.data.download.DownloaderOptions;
 import com.dbf.naps.data.download.FileDownloadRunner;
 import com.dbf.naps.data.globals.Compound;
 import com.dbf.naps.data.globals.Constants;
@@ -17,7 +17,7 @@ public class ContinuousFileDownloadRunner extends FileDownloadRunner {
 	
 	private final Compound compound;
 	
-	public ContinuousFileDownloadRunner(int year, Compound compound, int threadId, DownloadOptions config, Path rawPath) {
+	public ContinuousFileDownloadRunner(int year, Compound compound, int threadId, DownloaderOptions config, Path rawPath) {
 		super(year, threadId, config, rawPath);
 		this.compound = compound;
 	}

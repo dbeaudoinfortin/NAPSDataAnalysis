@@ -10,35 +10,25 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.NAPSActionBase;
 
-public abstract class NAPSDataDownloader extends NAPSActionBase {
+public abstract class NAPSDataDownloader extends NAPSActionBase<DownloaderOptions> {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSDataDownloader.class);
 
-	protected DownloadOptions CONFIG = null;
+	public NAPSDataDownloader(String[] args) {
+		super(args);
+	}
 	
-	protected void run(String[] args) {
+	protected void run() {
 		log.info("Welcome! 🙂");
 		
 		try
 		{
-			initConfig(args);
-			initBase(CONFIG);
 			downloadFiles();
 		} catch (Throwable t) {
 			log.error("Unexpected failure.", t);
 		}
 		
 		log.info("Goodbye! 🙂");
-	}
-	
-	private void initConfig(String[] args) {
-		try {
-			CONFIG = new DownloadOptions(args);
-		} catch (IllegalArgumentException e) {
-			log.error("Error reading command line options: ", e);
-			log.info("Command line usage:\n" + DownloadOptions.printOptions());
-			System.exit(0);
-		}
 	}
 
 	private void downloadFiles() {
@@ -47,11 +37,15 @@ public abstract class NAPSDataDownloader extends NAPSActionBase {
 		final Path rawPath = getDownloadPath();
 		rawPath.toFile().mkdir();
 		
-		for (int year = CONFIG.getYearStart(); year <= CONFIG.getYearEnd(); year++) {
+		for (int year = getOptions().getYearStart(); year <= getOptions().getYearEnd(); year++) {
 			futures.addAll(submitTasks(processYear(year, rawPath)));
 		}
 
 		waitForTaskCompletion(futures);
+	}
+	
+	public Class<DownloaderOptions> getOptionsClass(){
+		return DownloaderOptions.class;
 	}
 	
 	protected abstract Path getDownloadPath();

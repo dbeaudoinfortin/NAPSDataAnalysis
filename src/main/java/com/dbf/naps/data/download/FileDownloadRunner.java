@@ -19,10 +19,10 @@ public abstract class FileDownloadRunner implements Runnable {
 	
 	private final int year;
 	private final int threadId;
-	private final DownloadOptions config;
+	private final DownloaderOptions config;
 	private final Path downloadPath;
 	
-	public FileDownloadRunner(int year, int threadId, DownloadOptions config, Path downloadPath) {
+	public FileDownloadRunner(int year, int threadId, DownloaderOptions config, Path downloadPath) {
 		this.year = year;
 		this.threadId = threadId;
 		this.config = config;
@@ -77,7 +77,7 @@ public abstract class FileDownloadRunner implements Runnable {
 		return year;
 	}
 
-	public DownloadOptions getConfig() {
+	public DownloaderOptions getConfig() {
 		return config;
 	}
 

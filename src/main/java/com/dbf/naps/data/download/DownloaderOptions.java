@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.BaseOptions;
 
-public class DownloadOptions extends BaseOptions {
+public class DownloaderOptions extends BaseOptions {
 
-	private static final Logger log = LoggerFactory.getLogger(DownloadOptions.class);
+	private static final Logger log = LoggerFactory.getLogger(DownloaderOptions.class);
 	
 	private Path downloadPath;
 	private boolean overwriteFiles = false;
@@ -27,7 +27,7 @@ public class DownloadOptions extends BaseOptions {
 		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
 	}
 	
-	public DownloadOptions(String[] args) throws IllegalArgumentException {
+	public DownloaderOptions(String[] args) throws IllegalArgumentException {
 		super(args);
 		loadFromArgs(args);
 	}

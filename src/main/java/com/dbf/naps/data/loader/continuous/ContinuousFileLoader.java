@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.globals.Compound;
-import com.dbf.naps.data.loader.LoadOptions;
+import com.dbf.naps.data.loader.LoaderOptions;
 
 public class ContinuousFileLoader implements Runnable {
 	
@@ -50,11 +50,11 @@ public class ContinuousFileLoader implements Runnable {
 	private final SimpleDateFormat LATE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 		
 	private final int threadId;
-	private final LoadOptions config;
+	private final LoaderOptions config;
 	private final File rawFile;
 	private final SqlSessionFactory sqlSessionFactory;
 	
-	public ContinuousFileLoader(int threadId, LoadOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public ContinuousFileLoader(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		this.threadId = threadId;
 		this.config = config;
 		this.rawFile = rawFile;

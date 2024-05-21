@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloadOptions;
+import com.dbf.naps.data.download.DownloaderOptions;
 import com.dbf.naps.data.download.FileDownloadRunner;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.utilities.ZipUtil;
@@ -19,7 +19,7 @@ public class IntegratedFileDownloadRunner extends FileDownloadRunner {
 	private final String urlPath;
 	private final String fileName;
 
-	public IntegratedFileDownloadRunner(int year, String urlPath, String fileName, int threadId, DownloadOptions config, Path downloadPath) {
+	public IntegratedFileDownloadRunner(int year, String urlPath, String fileName, int threadId, DownloaderOptions config, Path downloadPath) {
 		super(year, threadId, config, downloadPath);
 		this.urlPath = urlPath;
 		this.fileName = fileName;

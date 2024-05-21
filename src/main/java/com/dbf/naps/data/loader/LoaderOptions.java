@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.BaseOptions;
 
-public class LoadOptions extends BaseOptions {
+public class LoaderOptions extends BaseOptions {
 
-	private static final Logger log = LoggerFactory.getLogger(LoadOptions.class);
+	private static final Logger log = LoggerFactory.getLogger(LoaderOptions.class);
 
 	private Path dataPath;
 	private String dbHost = "localhost";
@@ -32,7 +32,7 @@ public class LoadOptions extends BaseOptions {
 		getOptions().addOption("n"  ,"nulls" , false, "Include null values.");
 	}
 
-	public LoadOptions(String[] args) throws IllegalArgumentException {
+	public LoaderOptions(String[] args) throws IllegalArgumentException {
 		super(args);
 		loadFromArgs(args);
 	}
