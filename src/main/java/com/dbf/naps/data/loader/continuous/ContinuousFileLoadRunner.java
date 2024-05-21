@@ -9,9 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -21,20 +18,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.globals.Compound;
+import com.dbf.naps.data.loader.FileLoadRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 
-public class ContinuousFileLoader implements Runnable {
+public class ContinuousFileLoadRunner extends FileLoadRunner {
 	
-	private static final Logger log = LoggerFactory.getLogger(ContinuousFileLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(ContinuousFileLoadRunner.class);
 	
 	private static final CSVFormat csvFormat;
 	
-	//Holds a mapping of NAPSID to SiteID, shared across threads
-	private static final Map<Integer, Integer> siteIDLookup = new ConcurrentHashMap<Integer, Integer>(300);
-	
-	//Holds a mapping of Compound to PollutantID, shared across threads
-	private static final Map<String, Integer> pollutantIDLookup = new ConcurrentHashMap<String, Integer>(20);
-	
+
 	private static final Long ONE_HOUR_MS = 60*60*1000L;
 	
 	static {
@@ -49,30 +42,22 @@ public class ContinuousFileLoader implements Runnable {
 	private final SimpleDateFormat EARLY_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	private final SimpleDateFormat LATE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 		
-	private final int threadId;
-	private final LoaderOptions config;
-	private final File rawFile;
-	private final SqlSessionFactory sqlSessionFactory;
-	
-	public ContinuousFileLoader(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
-		this.threadId = threadId;
-		this.config = config;
-		this.rawFile = rawFile;
-		this.sqlSessionFactory = sqlSessionFactory;
+	public ContinuousFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 	
 	//Deprecated Date functions since Java 1.1, probably safe to ignore :)
 	@SuppressWarnings("deprecation") 
 	@Override
 	public void run() {
-		log.info(threadId + ":: Starting to load file " + rawFile + " into the database.");
+		log.info(getThreadId() + ":: Starting to load file " + getRawFile() + " into the database.");
 		
 		try {
-			log.info(threadId + ":: Starting CSV parsing for file " + rawFile + ".");
+			log.info(getThreadId() + ":: Starting CSV parsing for file " + getRawFile() + ".");
 			List<ContinuousDataRecord> records = new ArrayList<ContinuousDataRecord>(100);
 			
 			//Load all the rows into memory. Let's assume we don't run out of memory. :) 
-			try (Reader reader = new FileReader(rawFile, StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
+			try (Reader reader = new FileReader(getRawFile(), StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
 				for(CSVRecord line : parser) {
 					if(line.size() < 31) continue; //Header line
 					
@@ -94,7 +79,13 @@ public class ContinuousFileLoader implements Runnable {
 					for(int hour = 0; hour < 24; hour++) {
 						ContinuousDataRecord record = new ContinuousDataRecord();
 						record.setPollutantId(getPollutantID(compoudString, line.getRecordNumber()));
-						record.setSiteId(getSiteID(line, columnOffset));
+						record.setSiteId(getSiteID(
+								line.get(1 + columnOffset),
+								line.get(2 + columnOffset),
+								line.get(3 + columnOffset),
+								line.get(4 + columnOffset),
+								line.get(5 + columnOffset),
+								line.getRecordNumber()));
 						
 						String date = line.get(6 + columnOffset);
 						if (date.contains("-")) { //Date might be in more than 1 format
@@ -122,7 +113,7 @@ public class ContinuousFileLoader implements Runnable {
 						
 						String data = line.get(7 + hour + columnOffset);
 						//There are a couple odd ball values in the data set, such -9999 and -99
-						if(!config.isIncludeNulls() && data.startsWith("-99")) continue;
+						if(!getConfig().isIncludeNulls() && data.startsWith("-99")) continue;
 						try {
 							record.setData(new BigDecimal(data));
 						} catch (NumberFormatException e){
@@ -142,16 +133,16 @@ public class ContinuousFileLoader implements Runnable {
 			loadRecords(records);
 
 		 } catch (Throwable t) {
-			 log.error(threadId + ":: ERROR loading file " + rawFile + " into the database.", t);
+			 log.error(getThreadId() + ":: ERROR loading file " + getRawFile() + " into the database.", t);
 			return; //Don't throw a runtime exception, let the other threads run
 		 }
-		log.info(threadId + ":: Done loading file " + rawFile + " into the database.");
+		log.info(getThreadId() + ":: Done loading file " + getRawFile() + " into the database.");
 	}
 	
 	private void loadRecords(List<ContinuousDataRecord> records) {
 		if(records.size() > 0) {
-			log.info(threadId + ":: Loading " + records.size() + " records into the database for file " + rawFile + ".");
-			try(SqlSession session = sqlSessionFactory.openSession(true)) {
+			log.info(getThreadId() + ":: Loading " + records.size() + " records into the database for file " + getRawFile() + ".");
+			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				session.getMapper(ContinuousDataMapper.class).insertContinuousDataBulk(records);
 			} finally {
 				records.clear();
@@ -159,72 +150,4 @@ public class ContinuousFileLoader implements Runnable {
 		}
 	}
 	
-	private Integer getSiteID(CSVRecord line, int columnOffset) {
-		try {
-			final Integer NAPSID = Integer.parseInt(line.get(1 + columnOffset));
-			//If one thread stamps overrides the data of another it's no big deal
-			return siteIDLookup.computeIfAbsent(NAPSID, key -> {
-				Integer siteID = null;
-				
-				//May or may not insert, let the DB manage contention
-				try(SqlSession session = sqlSessionFactory.openSession(true)) {
-					BigDecimal latitude, longitude;
-					try {
-						latitude = new BigDecimal(line.get(4 + columnOffset));
-					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid latitude (" + line.get(4 + columnOffset) + ") on row " + line.getRecordNumber(), e);
-					}
-					try {
-						longitude = new BigDecimal(line.get(5 + columnOffset));
-					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid longitude (" + line.get(5 + columnOffset) + ") on row " + line.getRecordNumber(), e);
-					}
-					
-					if (longitude.longValue() < -188L) {
-						//Some of the data is bad
-						String s = line.get(5 + columnOffset).substring(1);
-						if(s.startsWith("1")) {
-							//Is over 100
-							s = "-" + s.substring(0,3) + "." + s.substring(3);
-						} else {
-							s = "-" + s.substring(0,2) + "." + s.substring(2);
-						}
-						try {
-							longitude = new BigDecimal(s);
-						} catch (NumberFormatException e) {
-							throw new IllegalArgumentException("Invalid longitude (" + line.get(5 + columnOffset) + ") on row " + line.getRecordNumber(), e);
-						}
-					}
-					
-					ContinuousDataMapper mapper = session.getMapper(ContinuousDataMapper.class);
-					session.getMapper(ContinuousDataMapper.class).insertSite(NAPSID, line.get(2 + columnOffset), line.get(3 + columnOffset).toUpperCase(), latitude, longitude);
-					siteID = mapper.getSiteID(NAPSID);
-				}
-				
-				if( null == siteID) {
-					throw new IllegalArgumentException("Could not find matching Site ID for NAPS ID (" + line.get(1 + columnOffset) + ") on row " + line.getRecordNumber());
-				}
-				return siteID;
-			});
-		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("Invalid NAPS ID (" + line.get(1 + columnOffset) + ") on row " + line.getRecordNumber(), e);
-		}
-	}
-	
-	private Integer getPollutantID(String compound, long recordNumber) {
-		//If one thread stamps overrides the data of another it's no big deal
-		return pollutantIDLookup.computeIfAbsent(compound, key -> {
-			Integer pollutantID = null;
-			//May or may not insert, let the DB manage contention
-			try(SqlSession session = sqlSessionFactory.openSession(true)) {
-				ContinuousDataMapper mapper = session.getMapper(ContinuousDataMapper.class);
-				mapper.insertPollutant(compound);
-				pollutantID = mapper.getPollutantID(compound);
-			}
-			if(null == pollutantID) {
-				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound (" + compound + ") on row " + recordNumber);
-			}
-			return pollutantID;
-		});
-	}
 }

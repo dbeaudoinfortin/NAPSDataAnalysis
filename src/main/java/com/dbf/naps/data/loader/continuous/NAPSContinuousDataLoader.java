@@ -23,6 +23,6 @@ public class NAPSContinuousDataLoader extends NAPSDataLoader {
 	@Override
 	protected Runnable processFile(File dataFile) {
 		if(!dataFile.getName().toLowerCase().endsWith(".csv")) return null;
-		return new ContinuousFileLoader(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		return new ContinuousFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
 	}
 }

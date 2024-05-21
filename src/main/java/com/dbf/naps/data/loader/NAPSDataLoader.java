@@ -62,6 +62,8 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 		Environment environment = new Environment("local", transactionFactory, dbDataSource);
 		
 		Configuration configuration = new Configuration(environment);
+		configuration.addMapper(DataMapper.class);
+		
 		for(Class<?> clazz :  getDBMappers()) {
 			configuration.addMapper(clazz);
 		}
