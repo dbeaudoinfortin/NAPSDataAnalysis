@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.download.DownloaderOptions;
 import com.dbf.naps.data.download.FileDownloadRunner;
-import com.dbf.naps.data.globals.Compound;
 import com.dbf.naps.data.globals.Constants;
+import com.dbf.naps.data.globals.continuous.Compound;
 
 public class ContinuousFileDownloadRunner extends FileDownloadRunner {
 	

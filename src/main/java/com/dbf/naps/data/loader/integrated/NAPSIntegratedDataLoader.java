@@ -3,6 +3,7 @@ package com.dbf.naps.data.loader.integrated;
 import java.io.File;
 import java.util.List;
 import com.dbf.naps.data.loader.NAPSDataLoader;
+import com.dbf.naps.data.loader.integrated.runner.DICHFileLoadRunner;
 
 public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
@@ -22,7 +23,9 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
 	@Override
 	protected Runnable processFile(File dataFile) {
-		if(!dataFile.getName().toLowerCase().endsWith(".csv")) return null;
-		return new IntegratedFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		if(dataFile.getName().toUpperCase().endsWith("DICH.XLS")) {
+			return new DICHFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		}
+		throw new IllegalArgumentException("Unsupported data file: " + dataFile);
 	}
 }

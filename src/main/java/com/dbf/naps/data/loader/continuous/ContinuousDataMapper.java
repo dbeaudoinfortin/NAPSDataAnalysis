@@ -16,10 +16,10 @@ public interface ContinuousDataMapper {
 	@Insert({"<script>", 
         "INSERT into naps.continuous_data (site_id, pollutant_id, date_time, year, month, day, hour, day_of_week, data) "
         + "values ",
-        "<foreach collection='continuousDataRecords' item='record' index='index' open='(' separator = '),(' close=')' >"
+        "<foreach collection='dataRecords' item='record' index='index' open='(' separator = '),(' close=')' >"
         + "#{record.siteId}, #{record.pollutantId}, #{record.datetime}, #{record.year}, #{record.month}, #{record.day}, #{record.hour}, #{record.dayOfWeek}, #{record.data}"
         + "</foreach>"
         + " ON CONFLICT DO NOTHING;",
         "</script>"})
-	public int insertContinuousDataBulk(List<ContinuousDataRecord> continuousDataRecords);
+	public int insertContinuousDataBulk(List<ContinuousDataRecord> dataRecords);
 }
