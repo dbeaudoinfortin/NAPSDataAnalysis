@@ -7,8 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class FileLoadRunner implements Runnable {
+	
+	private static final Logger log = LoggerFactory.getLogger(FileLoadRunner.class);
 	
 	//Holds a mapping of NAPSID to SiteID, shared across threads
 	private static final Map<Integer, Integer> siteIDLookup = new ConcurrentHashMap<Integer, Integer>(300);
@@ -27,6 +31,21 @@ public abstract class FileLoadRunner implements Runnable {
 		this.rawFile = rawFile;
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
+	
+	@Override
+	public void run() {
+		log.info(getThreadId() + ":: Starting to load file " + getRawFile() + " into the database.");
+		
+		try {
+			processFile();
+		 } catch (Throwable t) {
+			 log.error(getThreadId() + ":: ERROR loading file " + getRawFile() + " into the database.", t);
+			return; //Don't throw a runtime exception, let the other threads run
+		 }
+		log.info(getThreadId() + ":: Done loading file " + getRawFile() + " into the database.");
+	}
+	
+	protected abstract void processFile() throws Exception;
 	
 	protected Integer getSiteID(String napsID, String cityName, String provTerr, String latitudeRaw, String longitudeRaw, long recordNumber) {
 		try {
@@ -71,6 +90,34 @@ public abstract class FileLoadRunner implements Runnable {
 				}
 				
 				if( null == siteID) {
+					throw new IllegalArgumentException("Could not find matching Site ID for NAPS ID (" + napsID + ") on row " + recordNumber);
+				}
+				return siteID;
+			});
+		} catch (NumberFormatException e){
+			throw new IllegalArgumentException("Invalid NAPS ID (" + napsID + ") on row " + recordNumber, e);
+		}
+	}
+	
+	protected Integer getSiteID(String napsID, long recordNumber) {
+		try {
+			Integer NAPSID;
+			if(napsID.contains(".")) {
+				//Try as a double
+				NAPSID = (int) Double.parseDouble(napsID);
+			} else {
+				NAPSID = Integer.parseInt(napsID);
+			}
+
+			//If one thread stamps overrides the data of another it's no big deal
+			return siteIDLookup.computeIfAbsent(NAPSID, key -> {
+				Integer siteID = null;
+				
+				try(SqlSession session = sqlSessionFactory.openSession(true)) {
+					siteID = session.getMapper(DataMapper.class).getSiteID(NAPSID);
+				}
+				
+				if(null == siteID) {
 					throw new IllegalArgumentException("Could not find matching Site ID for NAPS ID (" + napsID + ") on row " + recordNumber);
 				}
 				return siteID;

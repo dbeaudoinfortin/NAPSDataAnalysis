@@ -4,8 +4,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import com.dbf.naps.data.download.NAPSDataDownloader;
-import com.dbf.naps.data.globals.Compound;
 import com.dbf.naps.data.globals.Constants;
+import com.dbf.naps.data.globals.continuous.Compound;
 
 public class NAPSContinuousDataDownloader extends NAPSDataDownloader {
 

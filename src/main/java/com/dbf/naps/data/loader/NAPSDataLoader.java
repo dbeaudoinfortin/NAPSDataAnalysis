@@ -102,12 +102,17 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 				try {
 					recurseDir(path, futures);
 				} catch (IOException e) {
-					log.error("The read directory: " + path, e);
-					return;
+					log.error("Failed to read directory: " + path, e);
+					return;	//Don't prevent other files from processing
 				}
 			} else if (dataFile.isFile()) {
-				Runnable task = processFile(dataFile);
-				if(null != task) futures.add(submitTask(task));
+				try {
+					Runnable task = processFile(dataFile);
+					if(null != task) futures.add(submitTask(task));
+				} catch (Exception e) {
+					log.error("Failed to queue up task for file: " + dataFile, e);
+					return; //Don't prevent other files from processing
+				}
 			}//ignore symbolic links
 		});
 	}
