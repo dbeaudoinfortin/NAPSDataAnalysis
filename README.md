@@ -22,7 +22,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.continu
 
 # NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
+A Java tool that loads all of the raw continuous data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
 
@@ -51,6 +51,24 @@ You can invoke this tool by running the class com.dbf.naps.data.download.integra
  -ye, --yearEnd <arg>        End year (inclusive).
  -ys, --yearStart <arg>      Start year (inclusive).
 ```
+
+# NAPSIntegratedDataLoader
+
+A Java tool that loads all of the raw integrated data (downloaded by the NAPSIntegratedDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about ____ million rows of data (as of May 2024) in your database.
+
+You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
+
+**Command line usage:**
+```
+ -p,   --dataPath <arg>       Local path for raw data files previously downloaded.
+ -dbh, --dbHost <arg>         Hostname for the PostgreSQL database. Default: localhost
+ -dbt, --dbPort <arg>         Port for the PostgreSQL database. Default: 5432
+ -dbn, --dbName <arg>         Database name for the PostgreSQL database. Default: naps
+ -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
+ -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
+ -t,   --threadCount <arg>    Maximum number of parallel threads.
+```
+
 
 # How To Run
 
