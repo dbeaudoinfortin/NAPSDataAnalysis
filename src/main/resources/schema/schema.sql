@@ -14,16 +14,33 @@ INSERT into naps.pollutants (name) values ('CO'), ('NO'), ('NO2'), ('NOX'), ('O3
 
 CREATE TABLE IF NOT EXISTS naps.sites
 (
-   id SERIAL NOT NULL,
-   NAPS_id int not null,
-   city_name VARCHAR(255) NOT NULL,
-   prov_terr VARCHAR(50) NOT NULL,
-   latitude NUMERIC(16,12) NOT NULL,
-   longitude NUMERIC(16,12) NOT NULL,
+   id            SERIAL NOT NULL,
+   NAPS_id       int not null,
+   station_name  VARCHAR(255) null,
+   city_name     VARCHAR(255) NOT NULL,
+   prov_terr     VARCHAR(50) NOT NULL,
+   latitude      NUMERIC(16,12) NOT NULL,
+   longitude     NUMERIC(16,12) NOT NULL,
+   site_type     VARCHAR(2) null,
+   urbanization  VARCHAR(2) null,
+   neighbourhood VARCHAR(2) null,
+   land_use      VARCHAR(1) null,
+   scale         VARCHAR(2) null,
+   elevation     int null,
    PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_site_NAPS_id ON naps.sites (NAPS_id ASC);
+
+CREATE INDEX IF NOT EXISTS idx_sites_prov_terr ON naps.sites (prov_terr ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_latitude ON naps.sites (latitude ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_longitude ON naps.sites (longitude ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_site_type ON naps.sites (site_type ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_urbanization ON naps.sites (urbanization ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_neighbourhood ON naps.sites (neighbourhood ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_land_use ON naps.sites (land_use ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_scale ON naps.sites (scale ASC);
+CREATE INDEX IF NOT EXISTS idx_sites_elevation ON naps.sites (elevation ASC);
 
 CREATE TABLE IF NOT EXISTS naps.continuous_data
 (

@@ -55,10 +55,12 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 		//Load all the rows into memory. Let's assume we don't run out of memory. :) 
 		try (Reader reader = new FileReader(getRawFile(), StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
 			for(CSVRecord line : parser) {
-				if(line.size() < 31) continue; //Header line
-				
-				if(line.get(0).toLowerCase().startsWith("poll")) continue; //This is the real header row
-				
+				if(line.size() < 31 || line.get(0).toLowerCase().startsWith("poll")) {
+					//These are header lines
+					log.info(getThreadId() + ":: Skipping non-data row " + line.getRecordNumber() + " in file " + getRawFile() + ".");
+					continue;
+				}
+			
 				//More sanity checks, the line need to start with a known pollutant
 				String compoudString = line.get(0).replace(".", ""); //PM2.5 -> PM25
 				if(!Compound.contains(compoudString)) continue;

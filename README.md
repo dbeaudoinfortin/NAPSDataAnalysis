@@ -28,13 +28,13 @@ You can invoke this tool by running the class com.dbf.naps.data.download.sites.N
 
 ## NAPSSitesLoader
 
-A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 791 rows of data (as of May 2024) in the sites table of your database. 
+A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. This tool looks for a single file named "sites.csv" in the provided directory. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 785 rows of data (as of May 2024) in the sites table of your database. 
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.sites.NAPSSitesLoader. Note that the threadCount argument is meaningless since there is only one file to process.
 
 **Command line usage:**
 ```
- -p,   --dataPath <arg>       Local path for the raw data file previously downloaded.
+ -p,   --dataPath <arg>       Local path for the raw data file previously downloaded (sites.csv).
  -dbh, --dbHost <arg>         Hostname for the PostgreSQL database. Default: localhost
  -dbt, --dbPort <arg>         Port for the PostgreSQL database. Default: 5432
  -dbn, --dbName <arg>         Database name for the PostgreSQL database. Default: naps

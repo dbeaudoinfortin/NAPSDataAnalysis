@@ -1,7 +1,6 @@
 package com.dbf.naps.data.loader;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,6 +8,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.dbf.naps.data.utilities.DataCleaner;
 
 public abstract class FileLoadRunner implements Runnable {
 	
@@ -55,37 +56,9 @@ public abstract class FileLoadRunner implements Runnable {
 				Integer siteID = null;
 				
 				//May or may not insert, let the DB manage contention
-				try(SqlSession session = sqlSessionFactory.openSession(true)) {
-					BigDecimal latitude, longitude;
-					try {
-						latitude = new BigDecimal(latitudeRaw);
-					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid latitude (" + latitudeRaw + ") on row " + recordNumber, e);
-					}
-					try {
-						longitude = new BigDecimal(longitudeRaw);
-					} catch (NumberFormatException e){
-						throw new IllegalArgumentException("Invalid longitude (" + longitudeRaw + ") on row " + recordNumber, e);
-					}
-					
-					if (longitude.longValue() < -188L) {
-						//Some of the longitude data is bad
-						String longitudeCorrected = longitudeRaw.substring(1);
-						if(longitudeCorrected.startsWith("1")) {
-							//Is it over 100?
-							longitudeCorrected = "-" + longitudeCorrected.substring(0,3) + "." + longitudeCorrected.substring(3);
-						} else {
-							longitudeCorrected = "-" + longitudeCorrected.substring(0,2) + "." + longitudeCorrected.substring(2);
-						}
-						try {
-							longitude = new BigDecimal(longitudeCorrected);
-						} catch (NumberFormatException e) {
-							throw new IllegalArgumentException("Invalid longitude (" + longitudeRaw + ") on row " + recordNumber, e);
-						}
-					}
-					
+				try(SqlSession session = sqlSessionFactory.openSession(true)) {					
 					DataMapper mapper = session.getMapper(DataMapper.class);
-					mapper.insertSite(NAPSID, cityName, provTerr.toUpperCase(), latitude, longitude);
+					mapper.insertSitePartial(NAPSID, cityName, provTerr.toUpperCase(), DataCleaner.parseLatitude(latitudeRaw), DataCleaner.parseLongitude(longitudeRaw));
 					siteID = mapper.getSiteID(NAPSID);
 				}
 				
