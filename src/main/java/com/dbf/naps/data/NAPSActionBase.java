@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloaderOptions;
-
 public abstract class NAPSActionBase<O extends BaseOptions> {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSActionBase.class);
@@ -37,7 +35,7 @@ public abstract class NAPSActionBase<O extends BaseOptions> {
 			return getOptionsClass().getConstructor(String[].class).newInstance((Object)args);
 		} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			log.error("Error reading command line options: ", e);
-			log.info("Command line usage:\n" + DownloaderOptions.printOptions());
+			log.info("Command line usage:\n" + O.printOptions());
 			System.exit(0);
 			return null;
 		}

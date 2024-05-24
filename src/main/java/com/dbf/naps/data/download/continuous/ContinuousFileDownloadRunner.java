@@ -6,18 +6,18 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloaderOptions;
-import com.dbf.naps.data.download.FileDownloadRunner;
+import com.dbf.naps.data.download.YearlyFileDownloadRunner;
+import com.dbf.naps.data.download.YearlyDownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.globals.continuous.Compound;
 
-public class ContinuousFileDownloadRunner extends FileDownloadRunner {
+public class ContinuousFileDownloadRunner extends YearlyFileDownloadRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContinuousFileDownloadRunner.class);
 	
 	private final Compound compound;
 	
-	public ContinuousFileDownloadRunner(int year, Compound compound, int threadId, DownloaderOptions config, Path rawPath) {
+	public ContinuousFileDownloadRunner(int year, Compound compound, int threadId, YearlyDownloaderOptions config, Path rawPath) {
 		super(year, threadId, config, rawPath);
 		this.compound = compound;
 	}

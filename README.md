@@ -3,11 +3,45 @@ Canada National Air Pollution Surveillance Program data downloader, extractor an
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data here: https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/
 
-All usage is for non-comercial research purposes. I am not affiliated with the Government of Canada.
+All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
 
-# NAPSContinuousDataDownloader
+# Sites
 
-A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api.
+## NAPSSitesDownloader
+
+A Java tool that downloads a single file containing all of the sites (sampling stations) for the NAPS program. This is the simplest tool in the toolbox and is only included for sake of completeness. The file is downloaded from https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FProgramInformation-InformationProgramme%2FStationsNAPS-StationsSNPA.csv to the specified directory.
+
+You can invoke this tool by running the class com.dbf.naps.data.download.sites.NAPSSitesDownloader. Note that the threadCount argument is meaningless since there is only one file to download.
+
+**Command line usage:**
+```
+ -o,  --overwriteFiles       Replace the existing file.
+ -p,  --downloadPath <arg>   Local path for downloaded files.
+ -t,  --threadCount <arg>    Maximum number of parallel threads.
+```
+
+## NAPSSitesLoader
+
+A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 791 rows of data (as of May 2024) in the sites table of your database. 
+
+You can invoke this tool by running the class com.dbf.naps.data.loader.sites.NAPSSitesLoader. Note that the threadCount argument is meaningless since there is only one file to process.
+
+**Command line usage:**
+```
+ -p,   --dataPath <arg>       Local path for the raw data file previously downloaded.
+ -dbh, --dbHost <arg>         Hostname for the PostgreSQL database. Default: localhost
+ -dbt, --dbPort <arg>         Port for the PostgreSQL database. Default: 5432
+ -dbn, --dbName <arg>         Database name for the PostgreSQL database. Default: naps
+ -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
+ -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
+ -t,   --threadCount <arg>    Maximum number of parallel threads.
+```
+
+# Continuous Data
+
+## NAPSContinuousDataDownloader
+
+A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/Data-Donnees/.
 
 You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
 
@@ -20,9 +54,9 @@ You can invoke this tool by running the class com.dbf.naps.data.download.continu
  -ys, --yearStart <arg>      Start year (inclusive).
 ```
 
-# NAPSContinuousDataLoader
+## NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw continuous data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
+A Java tool that loads all of the raw continuous data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in the continuous_data table of your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
 
@@ -37,9 +71,11 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.continuou
  -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
 
-# NAPSIntegratedDataDownloader
+# Integrated Data
 
-A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/api. 
+## NAPSIntegratedDataDownloader
+
+A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/Data-Donnees/. 
 
 You can invoke this tool by running the class com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader.
 
@@ -52,9 +88,9 @@ You can invoke this tool by running the class com.dbf.naps.data.download.integra
  -ys, --yearStart <arg>      Start year (inclusive).
 ```
 
-# NAPSIntegratedDataLoader
+## NAPSIntegratedDataLoader
 
-A Java tool that loads all of the raw integrated data (downloaded by the NAPSIntegratedDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about ____ million rows of data (as of May 2024) in your database.
+A Java tool that loads all of the raw integrated data (downloaded by the NAPSIntegratedDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about ____ million rows of data (as of May 2024) in the integrated_data table of your database.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
 

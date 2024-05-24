@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.NAPSActionBase;
 
-public abstract class NAPSDataDownloader extends NAPSActionBase<DownloaderOptions> {
+public abstract class NAPSDataDownloader extends NAPSActionBase<YearlyDownloaderOptions> {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSDataDownloader.class);
 
@@ -44,8 +44,8 @@ public abstract class NAPSDataDownloader extends NAPSActionBase<DownloaderOption
 		waitForTaskCompletion(futures);
 	}
 	
-	public Class<DownloaderOptions> getOptionsClass(){
-		return DownloaderOptions.class;
+	public Class<YearlyDownloaderOptions> getOptionsClass(){
+		return YearlyDownloaderOptions.class;
 	}
 	
 	protected abstract Path getDownloadPath();
