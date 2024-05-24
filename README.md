@@ -1,3 +1,9 @@
+# NAPS Data Analysis Toolbox
+
+<p align="center">
+<img src="https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/bc1f2673-05fd-4713-8be7-57119d038358"/>
+</p>
+
 # Overview
 Canada National Air Pollution Surveillance Program data downloader, extractor and schema importer. 
 
