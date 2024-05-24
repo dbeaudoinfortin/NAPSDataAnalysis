@@ -7,19 +7,19 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloaderOptions;
-import com.dbf.naps.data.download.FileDownloadRunner;
+import com.dbf.naps.data.download.YearlyFileDownloadRunner;
+import com.dbf.naps.data.download.YearlyDownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.utilities.ZipUtil;
 
-public class IntegratedFileDownloadRunner extends FileDownloadRunner {
+public class IntegratedFileDownloadRunner extends YearlyFileDownloadRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(IntegratedFileDownloadRunner.class);
 	
 	private final String urlPath;
 	private final String fileName;
 
-	public IntegratedFileDownloadRunner(int year, String urlPath, String fileName, int threadId, DownloaderOptions config, Path downloadPath) {
+	public IntegratedFileDownloadRunner(int year, String urlPath, String fileName, int threadId, YearlyDownloaderOptions config, Path downloadPath) {
 		super(year, threadId, config, downloadPath);
 		this.urlPath = urlPath;
 		this.fileName = fileName;

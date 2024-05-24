@@ -2,7 +2,6 @@ package com.dbf.naps.data.download;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Year;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
@@ -17,13 +16,9 @@ public class DownloaderOptions extends BaseOptions {
 	
 	private Path downloadPath;
 	private boolean overwriteFiles = false;
-	private int yearStart = 1974;
-	private int yearEnd   = Year.now().getValue();
 	
 	static {
 		getOptions().addRequiredOption("p","downloadPath", true, "Local path for downloaded files.");
-		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
-		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");	
 		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
 	}
 	
@@ -42,8 +37,6 @@ public class DownloaderOptions extends BaseOptions {
 		}
 		
 		loadDownloadPath(cmd);
-		loadYearStart(cmd); //Check me first!
-		loadYearEnd(cmd);
 		loadOverwriteFiles(cmd);
 	}
 	
@@ -52,30 +45,6 @@ public class DownloaderOptions extends BaseOptions {
 		log.info("Overwrite existing files flag set to: " + overwriteFiles);
 	}
 
-	private void loadYearEnd(CommandLine cmd) {
-		if(cmd.hasOption("yearEnd")) {
-			yearEnd = Integer.parseInt(cmd.getOptionValue("yearEnd"));
-			if (yearEnd < yearStart || yearEnd > Year.now().getValue() ) {
-				throw new IllegalArgumentException("Invalid end year: " + yearEnd);
-			}
-			log.info("Using end year: " + yearEnd);
-		} else {
-			log.info("Using default end year: " + yearEnd);
-		}
-	}
-	
-	private void loadYearStart(CommandLine cmd) {
-		if(cmd.hasOption("yearStart")) {
-			yearStart = Integer.parseInt(cmd.getOptionValue("yearStart"));
-			if (yearStart < 1969 || yearStart > Year.now().getValue()) {
-				throw new IllegalArgumentException("Invalid start year: " + yearStart);
-			}
-			log.info("Using start year: " + yearStart);
-		} else {
-			log.info("Using default start year: " + yearStart);
-		}
-	}
-	
 	private void loadDownloadPath(CommandLine cmd) {
 		if(cmd.hasOption("downloadPath")) {
 			downloadPath = Paths.get(cmd.getOptionValue("downloadPath"));
@@ -90,14 +59,6 @@ public class DownloaderOptions extends BaseOptions {
 
 	public Path getDownloadPath() {
 		return downloadPath;
-	}
-
-	public int getYearStart() {
-		return yearStart;
-	}
-
-	public int getYearEnd() {
-		return yearEnd;
 	}
 
 	public boolean isOverwriteFiles() {

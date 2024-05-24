@@ -13,17 +13,15 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class FileDownloadRunner implements Runnable {
+public abstract class FileDownloadRunner<O extends DownloaderOptions> implements Runnable {
 	
 	private static final Logger log = LoggerFactory.getLogger(FileDownloadRunner.class);
 	
-	private final int year;
 	private final int threadId;
-	private final DownloaderOptions config;
+	private final O config;
 	private final Path downloadPath;
 	
-	public FileDownloadRunner(int year, int threadId, DownloaderOptions config, Path downloadPath) {
-		this.year = year;
+	public FileDownloadRunner(int threadId, O config, Path downloadPath) {
 		this.threadId = threadId;
 		this.config = config;
 		this.downloadPath = downloadPath;
@@ -66,22 +64,18 @@ public abstract class FileDownloadRunner implements Runnable {
 		if (response.statusCode() >= 300 || response.statusCode() < 200) {
 			Files.delete(filePath);
 		}
-		log.info(getThreadId() + ":: File download for year " + getYear() + " and URL " + url + " resulted in status code " + response.statusCode());
+		log.info(getThreadId() + ":: File download for URL " + url + " resulted in status code " + response.statusCode());
 	}
 	
 	public int getThreadId() {
 		return threadId;
 	}
 
-	public int getYear() {
-		return year;
-	}
-
-	public DownloaderOptions getConfig() {
-		return config;
-	}
-
 	public Path getDownloadPath() {
 		return downloadPath;
+	}
+	
+	public O getOptions() {
+		return config;
 	}
 }
