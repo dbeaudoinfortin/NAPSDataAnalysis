@@ -15,6 +15,11 @@ public class ExcelSheetFactory {
 	private static final Logger log = LoggerFactory.getLogger(ExcelSheetFactory.class);
 	
 	public static ExcelSheet createSheet(File excelFile) throws IOException {
+		//NOTE: the XLS version of the files is inconsistent with most seemingly BIFF4 and some BIFF8.
+		//I suspect they were all initially generated in BIFF4 format and some were later corrected and re-uploaded in BIFF8.
+		//This is surprising since data up until 2009 is in BIFF4, which is a format from 1992.
+		//For example, in year 2002, all the BIFF4 have a 2010 last modified date but the BIFF8 formated S60211_DICH.XLS
+		//has a 2016 date.
 		log.info("Trying to load BIFF8 Excel workbook " + excelFile + " into memory.");
 	
 		Workbook workbook = null;
@@ -30,10 +35,6 @@ public class ExcelSheetFactory {
 		} catch(BiffException e) {
 			log.info("BIFF Exception encountered. Trying to load pre-BIFF8 Excel workbook " + excelFile + " into memory.");
 			return new OldBIFFExcelSheet(excelFile);
-		} finally {
-			
-			if(null != workbook) workbook.close();
 		}
 	}
-
 }

@@ -1,8 +1,12 @@
 package com.dbf.excel;
 
+import java.util.Date;
+
+import jxl.Cell;
+import jxl.DateCell;
 import jxl.Sheet;
 
-public class BIFF8ExcelSheet implements ExcelSheet {
+public class BIFF8ExcelSheet extends BaseExcelSheet {
 	
 	private Sheet sheet;
 	
@@ -24,5 +28,16 @@ public class BIFF8ExcelSheet implements ExcelSheet {
 	public String getCellContents(int column, int row) {
 		//Returns empty string in case of null
 		return sheet.getCell(column, row).getContents();
+	}
+
+	@Override
+	public Date getCellDate(int column, int row) {
+		Cell cell = sheet.getCell(column, row);
+		if(cell instanceof DateCell) {
+			return ((DateCell) cell).getDate();
+		}
+		String rawDate = cell.getContents();
+		if ("".equals(rawDate)) return null;
+		return extractRawDate(rawDate);
 	}
 }

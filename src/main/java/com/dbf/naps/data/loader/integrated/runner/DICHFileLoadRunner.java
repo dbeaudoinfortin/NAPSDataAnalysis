@@ -2,14 +2,11 @@ package com.dbf.naps.data.loader.integrated.runner;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,54 +23,64 @@ public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
 	public DICHFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
-	
-	//Note: SimpleDateFormat is not thread safe, must not be static
-	private final SimpleDateFormat EARLY_DATE_FORMAT = new SimpleDateFormat("MM-dd-YY");
-	
+
 	@Override
 	protected void processFile() throws Exception {
 		
 		log.info(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
 		ExcelSheet sheet = ExcelSheetFactory.createSheet(getRawFile());
-		
-		//Sanity check. Confirm the last column is the NAPS ID
-		String NAPSIDHeader = sheet.getCellContents(sheet.columnCount()-1, 1);
-		if(!"NAPS ID".equals(NAPSIDHeader.toUpperCase())) {
-			throw new IllegalArgumentException("Could not parse NAPS ID using column " + (sheet.columnCount()-1) + " named " + NAPSIDHeader + ". Expected \"NAPS ID\"");
-		}
-		
+
 		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
+		
+		//Track the site id to read it only once
+		Integer siteID = null;
+		
+		//Flag to track if we have passed all the headers
+		boolean dataRowReached = false;
 		
 		//The first row is skipped. It has information in the form of
 		//Dichotomous Sampler Concentrations (ug/m3) at ST. JOHN'S - DUCKWORTH/ORDINANCE NAPS No. 10101
-		//The second row contains the column headers 
-		for (int row = 2; row < sheet.rowCount(); row++) {
+		for (int row = 0; row < sheet.rowCount(); row++) {
+			
+			//We need to find the actual column header row, which may be the second or third (or more) row
+			if(!dataRowReached) {
+				String firstCell = sheet.getCellContents(0, row);
+				if(!firstCell.toUpperCase().equals("DATE")) continue;
+				dataRowReached = true; //We can now start processing data on the next row
+				
+				//Sanity check. Confirm the last column is the NAPS ID
+				String NAPSIDHeader = sheet.getCellContents(sheet.columnCount()-1, row);
+				if(!"NAPS ID".equals(NAPSIDHeader.toUpperCase())) {
+					throw new IllegalArgumentException("Could not parse NAPS ID using column " + (sheet.columnCount()-1) + " named " + NAPSIDHeader + ". Expected \"NAPS ID\"");
+				}
+				continue;
+			}
 			
 			IntegratedDataRecord record = new IntegratedDataRecord();
 			
-			//First column contains the date in the form of 11-20-84
-			String rawDate = sheet.getCellContents(0, row);
-			if("".equals(rawDate)) break; //We have reached padding at the end of the file
-			
 			try {
-				if(!rawDate.contains("-")) {
-					//This is a date likely in Excel's special 1900 format
-					//TODO: The date could also be in 1904 format. We need to read the DATEMODE record to certain.
-					//This isn't an issue because all XLS NAPS files in BIFF4 file format use the 1900 date format
-					record.setDatetime(DateUtil.getJavaDate(Double.parseDouble(rawDate)));
-				} else {
-					record.setDatetime(EARLY_DATE_FORMAT.parse(rawDate));
-				}
-	        } catch (ParseException | NumberFormatException e) {
-	        	throw new IllegalArgumentException("Could not parse date (" + rawDate + ") on row " + row + ". Expecting format " + EARLY_DATE_FORMAT, e);
-	        }
+				//First column contains the date in the form of 11-20-84
+				Date date = sheet.getCellDate(0, row);
+				if(null == date) continue; //We have reached padding at the end of the file
+				record.setDatetime(date);
+			} catch(NumberFormatException e) {
+				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row), e);
+				continue; //This could be bad data or it could simply be a footer
+			}	
 			
 			//Second column contains the coarse/fine flag
 			record.setFine("F".equals(sheet.getCellContents(1, row).toUpperCase()));
 			
 			//Third column is MASS and is ignored (at least for now)
+			
+			//Some sheets are broken and are missing data at the end
+			//Only read the site id on the first row since it will not change
+			if(siteID == null) {
+				siteID = getSiteID(sheet.getCellContents(sheet.columnCount()-1, row), row);
+			}
+			
 			//Last column is the NAPS ID
-			record.setSiteId(getSiteID(sheet.getCellContents(sheet.columnCount()-1, row), row));
+			record.setSiteId(siteID);
 			
             for (int col = 3; col < sheet.columnCount() -1; col++) {
             	String columnHeader = sheet.getCellContents(col, 1);
