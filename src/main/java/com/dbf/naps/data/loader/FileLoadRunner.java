@@ -100,7 +100,7 @@ public abstract class FileLoadRunner implements Runnable {
 		}
 	}
 	
-	protected Integer getPollutantID(String compound, long recordNumber) {
+	protected Integer getPollutantID(String compound) {
 		//If one thread stamps overrides the data of another it's no big deal
 		return pollutantIDLookup.computeIfAbsent(compound, key -> {
 			Integer pollutantID = null;
@@ -111,7 +111,7 @@ public abstract class FileLoadRunner implements Runnable {
 				pollutantID = mapper.getPollutantID(compound);
 			}
 			if(null == pollutantID) {
-				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound (" + compound + ") on row " + recordNumber);
+				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + compound);
 			}
 			return pollutantID;
 		});

@@ -39,7 +39,6 @@ public class SitesFileLoadRunner extends FileLoadRunner {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 	
-	
 	@Override
 	public void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting CSV parsing for file " + getRawFile() + ".");

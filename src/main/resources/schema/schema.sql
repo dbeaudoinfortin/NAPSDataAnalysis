@@ -80,9 +80,9 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    month smallint not null,
    day smallint not null,
    day_of_week smallint not null,
-   fine boolean not null,
+   fine boolean null,
+   mass NUMERIC(12,4) NULL,
    data NUMERIC(6,2) NOT NULL,
-   PRIMARY KEY (site_id, pollutant_id, date_time, fine),
    CONSTRAINT fk_integrated_data_site_id
 			    FOREIGN KEY (site_id)
 			    REFERENCES naps.sites (id)
@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
 			    ON DELETE CASCADE
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, date_time, fine);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_pollutant_id ON naps.integrated_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_date_time ON naps.integrated_data (date_time ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_year ON naps.integrated_data (year ASC);

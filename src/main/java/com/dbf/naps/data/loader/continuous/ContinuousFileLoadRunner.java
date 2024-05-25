@@ -76,7 +76,7 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 				//We create 24 records per CSV line, 1 per hour
 				for(int hour = 0; hour < 24; hour++) {
 					ContinuousDataRecord record = new ContinuousDataRecord();
-					record.setPollutantId(getPollutantID(compoudString, line.getRecordNumber()));
+					record.setPollutantId(getPollutantID(compoudString));
 					record.setSiteId(getSiteID(
 							line.get(1 + columnOffset),
 							line.get(2 + columnOffset),
@@ -116,7 +116,7 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 					records.add(record);
 					
 					//Save everything to the database
-					//For faster performance partition the list of records into
+					//For faster performance, do it in bulk
 					if(records.size() == 100) loadRecords(records);
 				}
 			}
