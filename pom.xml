@@ -107,4 +107,11 @@
 	    <version>2.10.1</version>
 	</dependency>
   </dependencies>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/dbeaudoinfortin/NAPSDataAnalysis</url>
+    </repository>
+  </distributionManagement>
 </project>
