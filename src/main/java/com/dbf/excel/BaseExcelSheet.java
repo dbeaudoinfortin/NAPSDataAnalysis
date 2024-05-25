@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.DateUtil;
 
-public abstract class BaseExcelSheet  implements ExcelSheet {
+public abstract class BaseExcelSheet implements ExcelSheet {
 	
 	//Note: SimpleDateFormat is not thread safe, must not be static
 	private final SimpleDateFormat TYPICAL_DATE_FORMAT = new SimpleDateFormat("MM-dd-yy");
