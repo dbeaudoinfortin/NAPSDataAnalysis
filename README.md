@@ -122,6 +122,10 @@ part of your system path you can simply invoke the class by running the followin
 
 In this example, the data will be loaded from the C:\temp\NAPSData\RawFiles directory into the database using a thread pool size of 24, and all default database connection options (see above for details).
 
+# Known Issues
+
+This repository makes use of GitHub's built-in issue tracker. You can view all open issues [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues). 
+
 # Notes
 
 - Requires Java 17
