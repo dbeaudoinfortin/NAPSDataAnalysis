@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.util.Date;
 import org.apache.poi.hssf.record.BOFRecord;
 import org.apache.poi.hssf.record.CodepageRecord;
 import org.apache.poi.hssf.record.FormatRecord;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.excel.Records.OldDimensionsRecord;
 
-public class OldBIFFExcelSheet implements ExcelSheet {
+public class OldBIFFExcelSheet extends BaseExcelSheet {
 	
 	private static final Logger log = LoggerFactory.getLogger(ExcelSheetFactory.class);
 	
@@ -136,5 +136,13 @@ public class OldBIFFExcelSheet implements ExcelSheet {
 	public String getCellContents(int column, int row) {
 		String s = rawData[column][row];
 		return (null == s) ? "" : s;
+	}
+
+	@Override
+	public Date getCellDate(int column, int row) {
+		String rawDate = rawData[column][row];
+		if(null == rawDate || "".equals(rawDate)) return null;
+		
+		return extractRawDate(rawDate);
 	}
 }
