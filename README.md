@@ -114,10 +114,10 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
 
 # How To Run
 
-In the /target directory you will find the pre-compiled jar file NAPSData.jar. This is a shaded jar file which means that it contains all of the 3rd party dependancies inside of it. Assuming you hava Java 17 installed and 
+In the /target directory you will find the pre-compiled jar file naps_data.jar. This is a shaded jar file which means that it contains all of the 3rd party dependencies inside of it. Assuming you have Java 17 installed and 
 part of your system path you can simply invoke the class by running the following:
 ```
- java -cp NAPSData.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
+ java -cp naps_data.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
 ```
 
 In this example, the data will be loaded from the C:\temp\NAPSData\RawFiles directory into the database using a thread pool size of 24, and all default database connection options (see above for details).
