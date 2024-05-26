@@ -8,17 +8,17 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
 
-public class PAHFileLoadRunner extends IntegratedFileLoadRunner {
+public class VOCFileLoadRunner extends IntegratedFileLoadRunner {
 
-	public PAHFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public VOCFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 
 	@Override
 	protected List<IntegratedDataRecord> processRow(int row, Date date) {
-		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(40);
+		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
 		
-		//PAH data starts on column 2
+		//VOC data starts on column 2
 		//Last 6 columns are metadata and are ignored
         for (int col = 1; col < getLastColumn()-5; col++) {
         	IntegratedDataRecord record = processSingleRecord(getSheet().getCellContents(col, getHeaderRowNumber()), getSheet().getCellContents(col, row), date);
@@ -29,6 +29,6 @@ public class PAHFileLoadRunner extends IntegratedFileLoadRunner {
 
 	@Override
 	protected String headerFirstColumn() {
-		return "COMPOUND"; //This is sometimes COMPOUND and sometimes COMPOUNDS
+		return "COMPOUND";  //This is0 sometimes COMPOUND and sometimes COMPOUNDS
 	}
 }

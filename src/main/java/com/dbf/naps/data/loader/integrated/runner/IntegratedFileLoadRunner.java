@@ -45,7 +45,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			//We need to find the actual column header row, which may be the second or third (or more) row
 			if(null == headerRowNumber) {
 				String firstCell = sheet.getCellContents(0, row);
-				if(!firstCell.toUpperCase().equals(headerFirstColumn())) continue;
+				if(!firstCell.toUpperCase().startsWith(headerFirstColumn())) continue;
 				headerRowNumber = row; //We can now start processing data on the next row
 				
 				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
@@ -85,6 +85,12 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			if(records.size() >= 100) loadRecords(records);
          }
 		
+		if(null == headerRowNumber) {
+			//Oh no! We never found the header. Either the sheet is format is seriously broken or there is a bug in the header detection logic.
+			log.error(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
+			throw new IllegalArgumentException("Could not locate the NAPS ID column.");
+		}
+		
 		//Might have some records left over
 		loadRecords(records);
 	}
@@ -98,8 +104,10 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		//Ignore empty headers. These are blank columns used as separators.
     	if("".equals(columnHeader)) return null;
     	
+    	cellValue = cellValue.trim();
+    	
     	//Ignore empty cells, but not zeros
-    	if("".equals(cellValue)) return null;
+    	if("".equals(cellValue) || "N.M.".equals(cellValue)) return null;
     	
     	//Looks like someone may have copied and pasted a bad formula from another spreadsheet ☺
     	if(cellValue.startsWith("ERROR")) {
@@ -120,7 +128,8 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
         		Double d = Double.parseDouble(cellValue);
     			record.setData(new BigDecimal(d));
     		} catch (NumberFormatException e){
-    			throw new IllegalArgumentException("Invalid raw data (" + cellValue + ") for column " + columnHeader + ".", e);
+    			log.error(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e);
+    			return null; //We still want to try processing subsequent records. Don't throw an exception.
     		}
     	}
     	

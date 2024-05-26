@@ -22,6 +22,8 @@ public class IntegratedFileDownloadRunner extends YearlyFileDownloadRunner {
 	static {
 		EXCLUDED_FILES.add("S52603_DICH.XLS"); //Unknown site, every sheet has invalid data
 		EXCLUDED_FILES.add("S106600_DICH.XLS"); //Unknown site but sheet has valid data
+		EXCLUDED_FILES.add("S100139_VOC.XLS"); //Unknown site but sheet has valid data
+		EXCLUDED_FILES.add("S40303_VOC.XLS"); //Unknown site but sheet has valid data
 	}
 	
 	private final String urlPath;
