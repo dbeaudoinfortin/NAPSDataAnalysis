@@ -5,6 +5,7 @@ import java.util.List;
 import com.dbf.naps.data.loader.NAPSDataLoader;
 import com.dbf.naps.data.loader.integrated.runner.DICHFileLoadRunner;
 import com.dbf.naps.data.loader.integrated.runner.PAHFileLoadRunner;
+import com.dbf.naps.data.loader.integrated.runner.PCDDFileLoadRunner;
 
 public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
@@ -24,10 +25,14 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
 	@Override
 	protected Runnable processFile(File dataFile) {
-		if(dataFile.getName().toUpperCase().endsWith("_DICH.XLS")) {
+		
+		String fileName = dataFile.getName().toUpperCase();
+		if(fileName.endsWith("_DICH.XLS")) {
 			return new DICHFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
-		} else if(dataFile.getName().toUpperCase().endsWith("_PAH.XLS")) {
+		} else if(fileName.endsWith("_PAH.XLS")) {
 			return new PAHFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		} else if(fileName.endsWith("_PCDD.XLS")) {
+			return new PCDDFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
 		}
 		throw new IllegalArgumentException("Unsupported data file: " + dataFile);
 	}

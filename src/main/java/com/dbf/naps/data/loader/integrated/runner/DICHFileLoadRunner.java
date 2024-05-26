@@ -38,7 +38,7 @@ public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
 		
 		//DICHOT data starts only on column 4
 		//Last column is NAPS ID and is also ignored
-        for (int col = 3; col < getSheet().columnCount()-1; col++) {
+        for (int col = 3; col < getLastColumn(); col++) {
         	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber());
         	
         	//Ignore detection limit (at least for now)
@@ -52,5 +52,10 @@ public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
         	}
         }
         return records;
+	}
+
+	@Override
+	protected String headerFirstColumn() {
+		return "DATE";
 	}
 }
