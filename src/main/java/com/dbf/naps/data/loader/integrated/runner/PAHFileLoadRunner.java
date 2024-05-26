@@ -20,10 +20,15 @@ public class PAHFileLoadRunner extends IntegratedFileLoadRunner {
 		
 		//PAH data starts on column 2
 		//Last 6 columns are metadata and are ignored
-        for (int col = 1; col < getSheet().columnCount()-6; col++) {
+        for (int col = 1; col < getLastColumn()-5; col++) {
         	IntegratedDataRecord record = processSingleRecord(getSheet().getCellContents(col, getHeaderRowNumber()), getSheet().getCellContents(col, row), date);
         	if(null != record) records.add(record);
          }
         return records;
+	}
+
+	@Override
+	protected String headerFirstColumn() {
+		return "COMPOUND";
 	}
 }

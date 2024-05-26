@@ -29,6 +29,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 	private ExcelSheet sheet;
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
+	private Integer lastColumn; //Track when we have reached the NAPS ID which represents the last column
 	
 	@Override
 	protected void processFile() throws Exception {
@@ -44,14 +45,19 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			//We need to find the actual column header row, which may be the second or third (or more) row
 			if(null == headerRowNumber) {
 				String firstCell = sheet.getCellContents(0, row);
-				if(!firstCell.toUpperCase().equals("DATE") && !firstCell.toUpperCase().equals("COMPOUND")) continue;
+				if(!firstCell.toUpperCase().equals(headerFirstColumn())) continue;
 				headerRowNumber = row; //We can now start processing data on the next row
 				
-				//Sanity check. Confirm the last column is the NAPS ID
-				String NAPSIDHeader = sheet.getCellContents(sheet.columnCount()-1, headerRowNumber);
-				if(!"NAPS ID".equals(NAPSIDHeader.toUpperCase())) {
-					throw new IllegalArgumentException("Could not parse NAPS ID using column " + (sheet.columnCount()-1) + " named " + NAPSIDHeader + ". Expected \"NAPS ID\"");
+				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
+				for(int col = sheet.columnCount()-1; col > 2; col--) {
+					if (sheet.getCellContents(col, headerRowNumber).equals("NAPS ID")) {
+						lastColumn = col;
+						break;
+					}
 				}
+				if(null == lastColumn) throw new IllegalArgumentException("Could not locate the NAPS ID column.");
+				
+				//Done with header validation, ready to process the first row of data
 				continue;
 			}
 			
@@ -61,7 +67,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 				date = sheet.getCellDate(0, row);
 				if(null == date) continue; //We have reached padding at the end of the file
 			} catch(IllegalArgumentException e) {
-				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row), e);
+				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
 				continue; //This could be bad data or it could simply be a footer
 			}	
 			
@@ -69,7 +75,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			//Only read the site id on the first row since it will not change
 			//Last column is the NAPS ID
 			if(siteID == null) {
-				siteID = getSiteID(sheet.getCellContents(sheet.columnCount()-1, row), row);
+				siteID = getSiteID(sheet.getCellContents(lastColumn, row), row);
 			}
 			
 			records.addAll(processRow(row, date));
@@ -83,20 +89,31 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		loadRecords(records);
 	}
 	
+	protected abstract String headerFirstColumn();
+	
 	protected abstract List<IntegratedDataRecord> processRow(int row, Date date);
 
 	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
-        	
+        
+		//Ignore empty headers. These are blank columns used as separators.
+    	if("".equals(columnHeader)) return null;
+    	
     	//Ignore empty cells, but not zeros
     	if("".equals(cellValue)) return null;
     	
+    	//Looks like someone may have copied and pasted a bad formula from another spreadsheet ☺
+    	if(cellValue.startsWith("ERROR")) {
+    		log.warn(getThreadId() + ":: Bad data for column " + columnHeader + " (" + cellValue + ") in file " + getRawFile() + ".");
+    		return null;
+    	}
+    
     	IntegratedDataRecord record = new IntegratedDataRecord();
 		record.setDatetime(date);
 		record.setSiteId(siteID);
     	record.setPollutantId(getPollutantID(columnHeader));
 
     	//Treat less-than as zeros (below detection limit)
-    	if (cellValue.startsWith("<")) {
+    	if (cellValue.startsWith("<") || "N.D.".equals(cellValue)) {
     		record.setData(new BigDecimal(0));
     	} else {
     		try {
@@ -131,5 +148,9 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 
 	protected Integer getHeaderRowNumber() {
 		return headerRowNumber;
+	}
+
+	protected Integer getLastColumn() {
+		return lastColumn;
 	}
 }
