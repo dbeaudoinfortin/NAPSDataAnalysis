@@ -63,18 +63,46 @@ public class DataCleaner {
 		}
 	}
 	
-	public static Integer extractIntegerData(String rawValue) {
+	public static Double extractDoubleData(String rawValue, boolean ignoreError) {
 		//Data points are allowed to be null
 		if (rawValue == null || rawValue.equals("")) return null;
 		
+		//We annoyingly have time data in the form of "3hr 50min"
+		//Convert to the form of 5:34:30, which will then be parsed
+		rawValue = rawValue.toUpperCase();
+		rawValue = rawValue.replace("HR ", ":");
+		rawValue = rawValue.replace("MIN", ":");
+		if(rawValue.endsWith(":")) rawValue += "00";
+		
 		try {
-			if(rawValue.contains(".")) {
-				return (int) Double.parseDouble(rawValue); //Try as a double
-			} else {
-				return Integer.parseInt(rawValue);
+			if(rawValue.contains(":")) {
+				//Parse the value as a duration string in the form of hours:minutes:seconds
+				return convertDurationToHours(rawValue);
 			}
+			return Double.parseDouble(rawValue); //Try as a double
 		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("Invalid integer data point: " + rawValue, e);
+			if(!ignoreError) throw new IllegalArgumentException("Invalid integer data point: " + rawValue, e);
+			log.warn("Invalid integer data point: " + rawValue);
+			return null;
 		}
 	}
+	
+	private static double convertDurationToHours(String duration) {
+        // Split the duration string into hours, minutes, and seconds
+        String[] parts = duration.split(":");
+        
+        if (parts.length != 3) throw new NumberFormatException("Unparsable duration string: " + duration);
+        
+        // Parse the parts into integers
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        int seconds = Integer.parseInt(parts[2]);
+
+        // Convert minutes and seconds to hours
+        double minutesToHours = minutes / 60.0;
+        double secondsToHours = seconds / 3600.0;
+
+        // Sum up hours, minutes in hours, and seconds in hours
+        return hours + minutesToHours + secondsToHours;
+    }
 }

@@ -19,14 +19,21 @@ import com.dbf.naps.data.loader.integrated.IntegratedDataMapper;
 import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
+/**
+ * Base class for the processing of integrated dataset files.
+ * This class is not thread-safe.
+ * A new instance of a this class should be used for each dataset file.
+ */
+public class IntegratedFileLoadRunner extends FileLoadRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(IntegratedFileLoadRunner.class);
 	
+	//This are all of the known headers that are derived or represent metadata rather than raw data.
 	private static final List<String> DEFAULT_IGNORED_HEADERS = new ArrayList<String>();
 	
 	static {
 		DEFAULT_IGNORED_HEADERS.add("%"); //% Recovery
+		DEFAULT_IGNORED_HEADERS.add("RECOVERY"); //Recovery %
 		DEFAULT_IGNORED_HEADERS.add("SAMPLE"); //Sample Volume, Sample Type, Sample Date & Sample ID
 		DEFAULT_IGNORED_HEADERS.add("TSP"); //Total suspended particles
 		DEFAULT_IGNORED_HEADERS.add("T.S.P"); //Total suspended particles
@@ -50,6 +57,9 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer lastColumn; //Track when we have reached the NAPS ID which represents the last column
 	
+	/**
+	 * Main entry-point method for processing the sheet.
+	 */
 	@Override
 	protected void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
@@ -75,6 +85,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 				}
 				if(null == lastColumn) throw new IllegalArgumentException("Could not locate the NAPS ID column.");
 				
+				preProcessRow();
 				//Done with header validation, ready to process the first row of data
 				continue;
 			}
@@ -100,7 +111,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			
 			//Save everything to the database
 			//For faster performance, do it in bulk
-			if(records.size() >= 100) loadRecords(records);
+			if(records.size() >= 100) loadRecordsIntoDB(records);
          }
 		
 		if(null == headerRowNumber) {
@@ -110,18 +121,24 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		}
 		
 		//Might have some records left over
-		loadRecords(records);
+		loadRecordsIntoDB(records);
 	}
 	
-	/*
+	/**
 	 * All possible column headers for the first column of data.
-	 * This is used to determine when we have passed all of the introductory headers and are ready to process data
-	 * Must be in upper case will be compared with a startsWith()
+	 * This is used to determine when we have passed all of the introductory headers and are ready to process data.
+	 * Must be in upper case will be compared with a startsWith().
 	 */
 	protected String[] getFirstColumnHeaders() {
-		return new String[] {"COMPOUND","DATE"}; //This is sometimes COMPOUND and sometimes COMPOUNDS
+		return new String[] {"COMPOUND","DATE","CONGENER","SAMPLING"}; //This is sometimes COMPOUND and sometimes COMPOUNDS
 	}
 	
+	/**
+	 * Checks if a given cell value (the raw string value) matches any of the possible first column headers.
+	 * This is used to determine when we have passed all of the introductory headers and are ready to process data.
+	 * Comparisons are done in upper case and using startsWith().
+	 * 
+	 */
 	private boolean matchesFirstColumnHeaders(String cellValue) {
 		cellValue = cellValue.toUpperCase();
 		for(String firstColumnHeader : getFirstColumnHeaders()) {
@@ -130,8 +147,23 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		return false;	
 	}
 	
-	protected List<IntegratedDataRecord> processRow(int row, Date date){
-		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(50);
+	/**
+	 * Allows sub-classes to insert their own logic to process things that are sheet-wide.
+	 * Called only once after the header row is processed and before any data rows are processed.
+	 * Nothing is done by default.
+	 */
+	protected void preProcessRow(){}
+	
+	//Holds the data records used in processRow()
+	//This is defined as a class variable to avoid reallocating it every time
+	private final List<IntegratedDataRecord> singleRowRecords = new ArrayList<IntegratedDataRecord>(50);
+	
+	/**
+	 * Called once per row to process the data on the provided row.
+	 */
+	protected List<IntegratedDataRecord> processRow(int row, Date date) {
+		//Reset the records list 
+		singleRowRecords.clear();
 		
 		//Data is expected to start on column 2
 		//Last column is NAPS ID and is ignored
@@ -140,11 +172,16 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
         	if(isColumnIgnored(columnHeader)) continue;
         	
         	IntegratedDataRecord record = processSingleRecord(getSheet().getCellContents(col, getHeaderRowNumber()), getSheet().getCellContents(col, row), date);
-        	if(null != record) records.add(record);
+        	if(null != record) singleRowRecords.add(record);
          }
-        return records;
+        return singleRowRecords;
 	}
 	
+	/**
+	 * Checks if a column should be ignored by checking the column header with the list of ignored headers.
+	 * See DEFAULT_IGNORED_HEADERS
+	 * 
+	 */
 	private boolean isColumnIgnored(String columnHeader) {
 		columnHeader = columnHeader.toUpperCase();
 		for(String ignoredHeader : getIgnoredColumnList()) {
@@ -153,16 +190,21 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Returns a List of Strings that contain all of the column headers for columns that should be ignored.
-	 * All entries must be in upper case
-	 * All entries will be compared with a startsWith()
+	 * All entries must be in upper case.
+	 * All entries will be compared with a startsWith().
 	 * Blank columns headers are automatically ignored and should not be included. 
+	 * For the default list of ignored headers see DEFAULT_IGNORED_HEADERS
 	 */
 	protected List<String> getIgnoredColumnList() {
 		return DEFAULT_IGNORED_HEADERS;
 	}
 
+	/**
+	 * Called once per cell to process the raw data and produce an IntegratedDataRecord.
+	 * 
+	 */
 	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
         
 		//Ignore empty headers. These are blank columns used as separators.
@@ -191,7 +233,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
     		try {
     			record.setData(DataCleaner.extractDecimalData(cellValue, false)); //Set ignore error to false so we get the full exception details
     		} catch (IllegalArgumentException e){
-    			log.error(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e);
+    			log.warn(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e.getMessage());
     			return null; //We still want to try processing subsequent records. Don't throw an exception.
     		}
     	}
@@ -199,7 +241,10 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
         return record;
 	}
 	
-	protected void loadRecords(List<IntegratedDataRecord> records) {
+	/**
+	 * Inserts or updates the provided IntegratedDataRecord records into the database.
+	 */
+	protected void loadRecordsIntoDB(List<IntegratedDataRecord> records) {
 		if(records.size() > 0) {
 			log.info(getThreadId() + ":: Loading " + records.size() + " records into the database for file " + getRawFile() + ".");
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
@@ -210,17 +255,22 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		}
 	}
 	
+	/**
+	 * Determine a data column's index based on the provided column header.
+	 * This uses a startsWith() approach to comparisons because some columns have variations, like "TSP" and "TSP (µg/m³)"
+	 * Returns null if the column cannot is not found.
+	 */
 	protected Integer getColumnIndex(String... columnHeaders) {
 		for(String columnHeader : columnHeaders) {
 			columnHeader = columnHeader.toUpperCase();
 			for(int col = 0; col < sheet.columnCount(); col++) {
-				//Do a startsWith() check because some columns have variations, like "TSP" and "TSP (µg/m³)"
 				if(sheet.getCellContents(col, getHeaderRowNumber()).toUpperCase().startsWith(columnHeader)) {
 					return col;
 				}
 			}
 		}
-		throw new IllegalArgumentException("Could not locate a data column with the names \"" + columnHeaders + "\".");
+		log.debug("Could not locate a data column with the names \"" + columnHeaders + "\".");
+		return null;
 	}
 
 	protected ExcelSheet getSheet() {
