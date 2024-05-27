@@ -46,6 +46,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("CANISTER"); //Canister ID#
 		DEFAULT_IGNORED_HEADERS.add("START"); //Start Time
 		DEFAULT_IGNORED_HEADERS.add("DURATION"); //Duration
+		DEFAULT_IGNORED_HEADERS.add("SUM"); //Sum PCB TEQ*
+		DEFAULT_IGNORED_HEADERS.add("FIELD"); //Field ID
 	}
 	
 	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
@@ -185,7 +187,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	private boolean isColumnIgnored(String columnHeader) {
 		columnHeader = columnHeader.toUpperCase();
 		for(String ignoredHeader : getIgnoredColumnList()) {
-			if (columnHeader.startsWith(ignoredHeader)) return true;
+			if (columnHeader.startsWith(ignoredHeader) || columnHeader.endsWith(ignoredHeader)) return true;
 		}
 		return false;
 	}
@@ -193,7 +195,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	/**
 	 * Returns a List of Strings that contain all of the column headers for columns that should be ignored.
 	 * All entries must be in upper case.
-	 * All entries will be compared with a startsWith().
+	 * All entries will be compared with a startsWith() and endsWith().
 	 * Blank columns headers are automatically ignored and should not be included. 
 	 * For the default list of ignored headers see DEFAULT_IGNORED_HEADERS
 	 */

@@ -45,6 +45,7 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 		}
 		
 		log.info("Goodbye! 🙂");
+		System.exit(0);
 	}
 	
 	private void initDB() throws IOException, SQLException {
