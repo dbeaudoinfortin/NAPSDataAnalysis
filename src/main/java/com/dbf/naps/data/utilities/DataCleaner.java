@@ -1,8 +1,14 @@
 package com.dbf.naps.data.utilities;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataCleaner {
+	
+	private static final Logger log = LoggerFactory.getLogger(DataCleaner.class);
 	
 	public static BigDecimal parseLatitude(String latitudeRaw) {
 		try {
@@ -41,16 +47,34 @@ public class DataCleaner {
 		return longitude;
 	}
 	
-	public static BigDecimal extractDataPoint(String rawValue) {
+	public static BigDecimal extractDecimalData(String rawValue, boolean ignoreError) {
 		//Data points are allowed to be null
 		if (rawValue == null || rawValue.equals("")) return null;
 		
-		//We need to convert via a double
 		try {
-    		return new BigDecimal(rawValue);
+			BigDecimal decimalVal = new BigDecimal(rawValue);
+			 //Make sure the scale is less than the error of a double
+			decimalVal = decimalVal.setScale(10, RoundingMode.HALF_UP);
+    		return decimalVal;
 		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("Invalid data point: " + rawValue, e);
+			if(!ignoreError) throw new IllegalArgumentException("Invalid decimal data point: " + rawValue, e);
+			log.warn("Invalid decimal data point: " + rawValue);
+			return null;
 		}
+	}
+	
+	public static Integer extractIntegerData(String rawValue) {
+		//Data points are allowed to be null
+		if (rawValue == null || rawValue.equals("")) return null;
 		
+		try {
+			if(rawValue.contains(".")) {
+				return (int) Double.parseDouble(rawValue); //Try as a double
+			} else {
+				return Integer.parseInt(rawValue);
+			}
+		} catch (NumberFormatException e){
+			throw new IllegalArgumentException("Invalid integer data point: " + rawValue, e);
+		}
 	}
 }

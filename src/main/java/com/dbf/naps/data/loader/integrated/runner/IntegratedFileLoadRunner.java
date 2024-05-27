@@ -27,14 +27,18 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 	
 	static {
 		DEFAULT_IGNORED_HEADERS.add("%"); //% Recovery
-		DEFAULT_IGNORED_HEADERS.add("SAMPLE"); //Sample Volume, Sample Type & Sample ID
+		DEFAULT_IGNORED_HEADERS.add("SAMPLE"); //Sample Volume, Sample Type, Sample Date & Sample ID
 		DEFAULT_IGNORED_HEADERS.add("TSP"); //Total suspended particles
+		DEFAULT_IGNORED_HEADERS.add("T.S.P"); //Total suspended particles
 		DEFAULT_IGNORED_HEADERS.add("D.L."); //Detection limit
 		DEFAULT_IGNORED_HEADERS.add("TOTAL"); //TOTAL PAH
 		DEFAULT_IGNORED_HEADERS.add("C/F"); //Coarse/Fine
 		DEFAULT_IGNORED_HEADERS.add("MASS"); //Sample Mass
 		DEFAULT_IGNORED_HEADERS.add("SURROGATE"); //Surrogate Recovery
 		DEFAULT_IGNORED_HEADERS.add("48 H"); //Not sure why this is a column
+		DEFAULT_IGNORED_HEADERS.add("CANISTER"); //Canister ID#
+		DEFAULT_IGNORED_HEADERS.add("START"); //Start Time
+		DEFAULT_IGNORED_HEADERS.add("DURATION"); //Duration
 	}
 	
 	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
@@ -59,8 +63,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			
 			//We need to find the actual column header row, which may be the second or third (or more) row
 			if(null == headerRowNumber) {
-				String firstCell = sheet.getCellContents(0, row);
-				if(!firstCell.toUpperCase().startsWith(getFirstColumnHeader())) continue;
+				if(!matchesFirstColumnHeaders(sheet.getCellContents(0, row))) continue;
 				headerRowNumber = row; //We can now start processing data on the next row
 				
 				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
@@ -111,12 +114,20 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 	}
 	
 	/*
-	 * The column header for the first column of data.
-	 * This is used to determine when we passed all of the introductory headers and are ready to process data
+	 * All possible column headers for the first column of data.
+	 * This is used to determine when we have passed all of the introductory headers and are ready to process data
 	 * Must be in upper case will be compared with a startsWith()
 	 */
-	protected String getFirstColumnHeader() {
-		return "COMPOUND"; //This is sometimes COMPOUND and sometimes COMPOUNDS
+	protected String[] getFirstColumnHeaders() {
+		return new String[] {"COMPOUND","DATE"}; //This is sometimes COMPOUND and sometimes COMPOUNDS
+	}
+	
+	private boolean matchesFirstColumnHeaders(String cellValue) {
+		cellValue = cellValue.toUpperCase();
+		for(String firstColumnHeader : getFirstColumnHeaders()) {
+			if(cellValue.startsWith(firstColumnHeader)) return true;
+		}
+		return false;	
 	}
 	
 	protected List<IntegratedDataRecord> processRow(int row, Date date){
@@ -160,7 +171,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
     	cellValue = cellValue.trim();
     	
     	//Ignore empty cells, but not zeros
-    	if("".equals(cellValue) || "N.M.".equals(cellValue)) return null;
+    	if("".equals(cellValue) || "N.M.".equals(cellValue)|| "-".equals(cellValue)) return null;
     	
     	//Looks like someone may have copied and pasted a bad formula from another spreadsheet ☺
     	if(cellValue.startsWith("ERROR")) {
@@ -178,7 +189,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
     		record.setData(new BigDecimal(0));
     	} else {
     		try {
-    			record.setData(DataCleaner.extractDataPoint(cellValue));
+    			record.setData(DataCleaner.extractDecimalData(cellValue, false)); //Set ignore error to false so we get the full exception details
     		} catch (IllegalArgumentException e){
     			log.error(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e);
     			return null; //We still want to try processing subsequent records. Don't throw an exception.
@@ -199,15 +210,17 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		}
 	}
 	
-	protected Integer getColumnIndex(String columnHeader) {
-		columnHeader = columnHeader.toUpperCase();
-		for(int col = 0; col < sheet.columnCount(); col++) {
-			//Do a startsWith() check because some columns have variations, like "TSP" and "TSP (µg/m³)"
-			if(sheet.getCellContents(col, getHeaderRowNumber()).toUpperCase().startsWith(columnHeader)) {
-				return col;
+	protected Integer getColumnIndex(String... columnHeaders) {
+		for(String columnHeader : columnHeaders) {
+			columnHeader = columnHeader.toUpperCase();
+			for(int col = 0; col < sheet.columnCount(); col++) {
+				//Do a startsWith() check because some columns have variations, like "TSP" and "TSP (µg/m³)"
+				if(sheet.getCellContents(col, getHeaderRowNumber()).toUpperCase().startsWith(columnHeader)) {
+					return col;
+				}
 			}
 		}
-		throw new IllegalArgumentException("Could not locate a data column with the name \"" + columnHeader + "\".");
+		throw new IllegalArgumentException("Could not locate a data column with the names \"" + columnHeaders + "\".");
 	}
 
 	protected ExcelSheet getSheet() {
