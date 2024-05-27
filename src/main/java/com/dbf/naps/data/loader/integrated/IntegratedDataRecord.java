@@ -8,14 +8,10 @@ public class IntegratedDataRecord extends DataRecord {
 
 	private Boolean fine;
 	private BigDecimal mass;
+	private BigDecimal volume;
+	private BigDecimal tsp;
 
 	public IntegratedDataRecord() {	}
-
-	public IntegratedDataRecord(IntegratedDataRecord other) {
-		super(other);
-		this.fine = other.fine;
-		this.mass = other.mass;
-	}
 
 	public Boolean getFine() {
 		return fine;
@@ -31,7 +27,21 @@ public class IntegratedDataRecord extends DataRecord {
 
 	public void setMass(BigDecimal mass) {
 		this.mass = mass;
+	}
+
+	public BigDecimal getVolume() {
+		return volume;
+	}
+
+	public void setVolume(BigDecimal volume) {
+		this.volume = volume;
+	}
+
+	public BigDecimal getTSP() {
+		return tsp;
+	}
+
+	public void setTSP(BigDecimal tsp) {
+		this.tsp = tsp;
 	}	
-	
-	
 }

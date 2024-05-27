@@ -28,7 +28,7 @@ public class VOCFileLoadRunner extends IntegratedFileLoadRunner {
 	}
 
 	@Override
-	protected String headerFirstColumn() {
-		return "COMPOUND";  //This is0 sometimes COMPOUND and sometimes COMPOUNDS
+	protected String getFirstColumnHeader() {
+		return "COMPOUND";  //This is sometimes COMPOUND and sometimes COMPOUNDS
 	}
 }
