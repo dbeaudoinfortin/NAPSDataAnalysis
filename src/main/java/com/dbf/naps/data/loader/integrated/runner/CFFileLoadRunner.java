@@ -10,11 +10,11 @@ import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 /**
- * Extends the base IntegratedFileLoadRunner class to add support for DICHOT specific metadata.
+ * Extends the base IntegratedFileLoadRunner class to add support for DICHOT & PART25 specific metadata.
  */
-public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
+public class CFFileLoadRunner extends IntegratedFileLoadRunner {
 
-	public DICHFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public CFFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 
