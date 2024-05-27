@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS naps.continuous_data
    day smallint not null,
    hour smallint not null,
    day_of_week smallint not null,
-   data NUMERIC(6,2) NOT NULL,
+   data NUMERIC(8,3) NOT NULL,
    PRIMARY KEY (site_id, pollutant_id, date_time),
    CONSTRAINT fk_continuous_data_site_id
 			    FOREIGN KEY (site_id)
@@ -81,8 +81,10 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    day smallint not null,
    day_of_week smallint not null,
    fine boolean null,
-   mass NUMERIC(12,4) NULL,
-   data NUMERIC(6,2) NOT NULL,
+   sample_mass NUMERIC(12,6) NULL,
+   sample_vol NUMERIC(12,6) NULL,
+   tsp NUMERIC(12,6) NULL,
+   data NUMERIC(8,3) NOT NULL,
    CONSTRAINT fk_integrated_data_site_id
 			    FOREIGN KEY (site_id)
 			    REFERENCES naps.sites (id)

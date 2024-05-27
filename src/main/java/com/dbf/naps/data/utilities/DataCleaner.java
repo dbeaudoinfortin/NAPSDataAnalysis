@@ -41,4 +41,16 @@ public class DataCleaner {
 		return longitude;
 	}
 	
+	public static BigDecimal extractDataPoint(String rawValue) {
+		//Data points are allowed to be null
+		if (rawValue == null || rawValue.equals("")) return null;
+		
+		//We need to convert via a double
+		try {
+    		return new BigDecimal(rawValue);
+		} catch (NumberFormatException e){
+			throw new IllegalArgumentException("Invalid data point: " + rawValue, e);
+		}
+		
+	}
 }

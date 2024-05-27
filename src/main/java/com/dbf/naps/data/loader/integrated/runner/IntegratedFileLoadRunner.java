@@ -17,10 +17,25 @@ import com.dbf.naps.data.loader.FileLoadRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.IntegratedDataMapper;
 import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
+import com.dbf.naps.data.utilities.DataCleaner;
 
 public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(IntegratedFileLoadRunner.class);
+	
+	private static final List<String> DEFAULT_IGNORED_HEADERS = new ArrayList<String>();
+	
+	static {
+		DEFAULT_IGNORED_HEADERS.add("%"); //% Recovery
+		DEFAULT_IGNORED_HEADERS.add("SAMPLE"); //Sample Volume, Sample Type & Sample ID
+		DEFAULT_IGNORED_HEADERS.add("TSP"); //Total suspended particles
+		DEFAULT_IGNORED_HEADERS.add("D.L."); //Detection limit
+		DEFAULT_IGNORED_HEADERS.add("TOTAL"); //TOTAL PAH
+		DEFAULT_IGNORED_HEADERS.add("C/F"); //Coarse/Fine
+		DEFAULT_IGNORED_HEADERS.add("MASS"); //Sample Mass
+		DEFAULT_IGNORED_HEADERS.add("SURROGATE"); //Surrogate Recovery
+		DEFAULT_IGNORED_HEADERS.add("48 H"); //Not sure why this is a column
+	}
 	
 	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
@@ -45,7 +60,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 			//We need to find the actual column header row, which may be the second or third (or more) row
 			if(null == headerRowNumber) {
 				String firstCell = sheet.getCellContents(0, row);
-				if(!firstCell.toUpperCase().startsWith(headerFirstColumn())) continue;
+				if(!firstCell.toUpperCase().startsWith(getFirstColumnHeader())) continue;
 				headerRowNumber = row; //We can now start processing data on the next row
 				
 				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
@@ -86,7 +101,7 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
          }
 		
 		if(null == headerRowNumber) {
-			//Oh no! We never found the header. Either the sheet is format is seriously broken or there is a bug in the header detection logic.
+			//Oh no! We never found the header. Either the sheet format is seriously broken or there is a bug in the header detection logic.
 			log.error(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
 			throw new IllegalArgumentException("Could not locate the NAPS ID column.");
 		}
@@ -95,9 +110,47 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 		loadRecords(records);
 	}
 	
-	protected abstract String headerFirstColumn();
+	/*
+	 * The column header for the first column of data.
+	 * This is used to determine when we passed all of the introductory headers and are ready to process data
+	 * Must be in upper case will be compared with a startsWith()
+	 */
+	protected String getFirstColumnHeader() {
+		return "COMPOUND"; //This is sometimes COMPOUND and sometimes COMPOUNDS
+	}
 	
-	protected abstract List<IntegratedDataRecord> processRow(int row, Date date);
+	protected List<IntegratedDataRecord> processRow(int row, Date date){
+		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(50);
+		
+		//Data is expected to start on column 2
+		//Last column is NAPS ID and is ignored
+        for (int col = 1; col < getLastColumn(); col++) {
+        	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber());
+        	if(isColumnIgnored(columnHeader)) continue;
+        	
+        	IntegratedDataRecord record = processSingleRecord(getSheet().getCellContents(col, getHeaderRowNumber()), getSheet().getCellContents(col, row), date);
+        	if(null != record) records.add(record);
+         }
+        return records;
+	}
+	
+	private boolean isColumnIgnored(String columnHeader) {
+		columnHeader = columnHeader.toUpperCase();
+		for(String ignoredHeader : getIgnoredColumnList()) {
+			if (columnHeader.startsWith(ignoredHeader)) return true;
+		}
+		return false;
+	}
+	
+	/*
+	 * Returns a List of Strings that contain all of the column headers for columns that should be ignored.
+	 * All entries must be in upper case
+	 * All entries will be compared with a startsWith()
+	 * Blank columns headers are automatically ignored and should not be included. 
+	 */
+	protected List<String> getIgnoredColumnList() {
+		return DEFAULT_IGNORED_HEADERS;
+	}
 
 	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
         
@@ -125,9 +178,8 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
     		record.setData(new BigDecimal(0));
     	} else {
     		try {
-        		Double d = Double.parseDouble(cellValue);
-    			record.setData(new BigDecimal(d));
-    		} catch (NumberFormatException e){
+    			record.setData(DataCleaner.extractDataPoint(cellValue));
+    		} catch (IllegalArgumentException e){
     			log.error(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e);
     			return null; //We still want to try processing subsequent records. Don't throw an exception.
     		}
@@ -145,6 +197,17 @@ public abstract class IntegratedFileLoadRunner extends FileLoadRunner {
 				records.clear();
 			}
 		}
+	}
+	
+	protected Integer getColumnIndex(String columnHeader) {
+		columnHeader = columnHeader.toUpperCase();
+		for(int col = 0; col < sheet.columnCount(); col++) {
+			//Do a startsWith() check because some columns have variations, like "TSP" and "TSP (µg/m³)"
+			if(sheet.getCellContents(col, getHeaderRowNumber()).toUpperCase().startsWith(columnHeader)) {
+				return col;
+			}
+		}
+		throw new IllegalArgumentException("Could not locate a data column with the name \"" + columnHeader + "\".");
 	}
 
 	protected ExcelSheet getSheet() {
