@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    fine boolean null,
    sample_mass NUMERIC(12,6) NULL,
    sample_vol NUMERIC(12,6) NULL,
-   sample_duration int NULL,
+   sample_duration double precision NULL,
    tsp NUMERIC(12,6) NULL,
    data NUMERIC(8,3) NOT NULL,
    CONSTRAINT fk_integrated_data_site_id

@@ -4,10 +4,7 @@ import java.io.File;
 import java.util.List;
 import com.dbf.naps.data.loader.NAPSDataLoader;
 import com.dbf.naps.data.loader.integrated.runner.DICHFileLoadRunner;
-import com.dbf.naps.data.loader.integrated.runner.HCBFileLoadRunner;
-import com.dbf.naps.data.loader.integrated.runner.PAHFileLoadRunner;
-import com.dbf.naps.data.loader.integrated.runner.PCDDFileLoadRunner;
-import com.dbf.naps.data.loader.integrated.runner.VOCFileLoadRunner;
+import com.dbf.naps.data.loader.integrated.runner.SampleMetaDataFileLoadRunner;
 
 public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
@@ -31,14 +28,8 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		String fileName = dataFile.getName().toUpperCase();
 		if(fileName.endsWith("_DICH.XLS")) {
 			return new DICHFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
-		} else if(fileName.endsWith("_PAH.XLS")) {
-			return new PAHFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
-		} else if(fileName.endsWith("_PCDD.XLS")) {
-			return new PCDDFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
-		} else if(fileName.endsWith("_VOC.XLS")) {
-			return new VOCFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
-		} else if(fileName.endsWith("_HCB.XLS")) {
-			return new HCBFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		} else if(fileName.endsWith("_PAH.XLS") || fileName.endsWith("_HCB.XLS") || fileName.endsWith("_VOC.XLS") || fileName.endsWith("_PCDD.XLS")) {
+			return new SampleMetaDataFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
 		}
 		throw new IllegalArgumentException("Unsupported data file: " + dataFile);
 	}
