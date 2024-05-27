@@ -23,7 +23,7 @@ public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
 		
 		//Third column is always mass
 		//Mass is missing in a few cases and is allowed to be null
-		BigDecimal mass = DataCleaner.extractDataPoint(getSheet().getCellContents(2, row));
+		BigDecimal mass = DataCleaner.extractDecimalData(getSheet().getCellContents(2, row), true);
 		
 		List<IntegratedDataRecord> records = super.processRow(row, date);
 		for(IntegratedDataRecord record : records) {
@@ -32,10 +32,5 @@ public class DICHFileLoadRunner extends IntegratedFileLoadRunner {
         	record.setMass(mass);
 		}
         return records;
-	}
-
-	@Override
-	protected String getFirstColumnHeader() {
-		return "DATE";
 	}
 }

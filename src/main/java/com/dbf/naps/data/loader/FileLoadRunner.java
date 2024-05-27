@@ -36,7 +36,6 @@ public abstract class FileLoadRunner implements Runnable {
 	@Override
 	public void run() {
 		log.info(getThreadId() + ":: Starting to load file " + getRawFile() + " into the database.");
-		
 		try {
 			processFile();
 		 } catch (Throwable t) {

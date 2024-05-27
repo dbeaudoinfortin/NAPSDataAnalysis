@@ -27,10 +27,10 @@ public class PAHFileLoadRunner extends IntegratedFileLoadRunner {
 		//Look them up only once and store the result.
 		//getColumnIndex() will throw an exception if the column doesn't exist
 		if (null == sampleVolumeCol) sampleVolumeCol = getColumnIndex("Sample Volume");
-		if (null == tspCol) tspCol = getColumnIndex("TSP");
+		if (null == tspCol) tspCol = getColumnIndex("TSP", "T.S.P"); //Alternate name on some sheets
 
-		BigDecimal sampleVol = DataCleaner.extractDataPoint(getSheet().getCellContents(sampleVolumeCol, row));
-		BigDecimal tsp = DataCleaner.extractDataPoint(getSheet().getCellContents(tspCol, row));
+		BigDecimal sampleVol = DataCleaner.extractDecimalData(getSheet().getCellContents(sampleVolumeCol, row), true);
+		BigDecimal tsp = DataCleaner.extractDecimalData(getSheet().getCellContents(tspCol, row), true);
 		
 		List<IntegratedDataRecord> records = super.processRow(row, date);
 		for(IntegratedDataRecord record : records) {

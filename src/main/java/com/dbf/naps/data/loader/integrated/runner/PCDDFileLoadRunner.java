@@ -12,7 +12,7 @@ public class PCDDFileLoadRunner extends PAHFileLoadRunner {
 	}
 
 	@Override
-	protected String getFirstColumnHeader() {
-		return "CONGENER";
+	protected String[] getFirstColumnHeaders() {
+		return new String[] {"CONGENER"};
 	}
 }

@@ -10,6 +10,7 @@ public class IntegratedDataRecord extends DataRecord {
 	private BigDecimal mass;
 	private BigDecimal volume;
 	private BigDecimal tsp;
+	private Integer duration;
 
 	public IntegratedDataRecord() {	}
 
@@ -43,5 +44,13 @@ public class IntegratedDataRecord extends DataRecord {
 
 	public void setTSP(BigDecimal tsp) {
 		this.tsp = tsp;
+	}
+
+	public Integer getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Integer duration) {
+		this.duration = duration;
 	}	
 }
