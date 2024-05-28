@@ -116,7 +116,7 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
 
 # How To Run
 
-In the /target directory you will find the pre-compiled jar file naps_data.jar. This is a shaded jar file which means that it contains all of the 3rd party dependencies inside of it. Assuming you have Java 17 installed and 
+You can find the latest package [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/packages/2159892). Alternatively, in the /target directory you can find the pre-compiled jar file naps_data.jar. This is a shaded jar file which means that it contains all of the 3rd party dependencies inside of it. Assuming you have Java 17 installed and 
 part of your system path you can simply invoke the class by running the following:
 ```
  java -cp naps_data.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
