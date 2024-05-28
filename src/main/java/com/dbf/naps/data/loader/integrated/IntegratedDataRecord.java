@@ -7,6 +7,8 @@ import com.dbf.naps.data.loader.DataRecord;
 public class IntegratedDataRecord extends DataRecord {
 
 	private Boolean fine;
+	private String cartridge;
+	private String media;
 	private BigDecimal mass;
 	private BigDecimal volume;
 	private BigDecimal tsp;
@@ -52,5 +54,21 @@ public class IntegratedDataRecord extends DataRecord {
 
 	public void setDuration(Double duration) {
 		this.duration = duration;
+	}
+
+	public String getCartridge() {
+		return cartridge;
+	}
+
+	public void setCartridge(String cartridge) {
+		this.cartridge = cartridge;
+	}
+
+	public String getMedia() {
+		return media;
+	}
+
+	public void setMedia(String media) {
+		this.media = media;
 	}	
 }

@@ -6,13 +6,13 @@ import org.apache.ibatis.annotations.Select;
 
 public interface DataMapper {
 	
-	@Select("SELECT id from naps.pollutants where name = #{name}")
-	public Integer getPollutantID(String name);
+	@Select("SELECT id from naps.pollutants where name = #{name} AND method = #{method}")
+	public Integer getPollutantID(String name, String method);
 	
-	@Insert("INSERT into naps.pollutants (name)"
-			+ " values (#{name})"
+	@Insert("INSERT into naps.pollutants (name, method)"
+			+ " values (#{name}, #{method})"
 			+ " ON CONFLICT DO NOTHING;")
-	public int insertPollutant(String name);
+	public int insertPollutant(String name, String method);
 	
 	@Select("SELECT id from naps.sites where NAPS_id = #{NAPSId}")
 	public Integer getSiteID(Integer NAPSId);

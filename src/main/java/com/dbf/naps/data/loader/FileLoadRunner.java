@@ -18,7 +18,7 @@ public abstract class FileLoadRunner implements Runnable {
 	//Holds a mapping of NAPSID to SiteID, shared across threads
 	private static final Map<Integer, Integer> siteIDLookup = new ConcurrentHashMap<Integer, Integer>(300);
 	
-	//Holds a mapping of Compound to PollutantID, shared across threads
+	//Holds a mapping of lookup key (Compound_Method) to PollutantID, shared across threads
 	private static final Map<String, Integer> pollutantIDLookup = new ConcurrentHashMap<String, Integer>(20);
 	
 	private final int threadId;
@@ -99,18 +99,20 @@ public abstract class FileLoadRunner implements Runnable {
 		}
 	}
 	
-	protected Integer getPollutantID(String compound) {
+	protected Integer getPollutantID(String compound, String method) {
+		String lookupKey = compound + "_" + method;
+		
 		//If one thread stamps overrides the data of another it's no big deal
-		return pollutantIDLookup.computeIfAbsent(compound, key -> {
+		return pollutantIDLookup.computeIfAbsent(lookupKey, k -> {
 			Integer pollutantID = null;
 			//May or may not insert, let the DB manage contention
 			try(SqlSession session = sqlSessionFactory.openSession(true)) {
 				DataMapper mapper = session.getMapper(DataMapper.class);
-				mapper.insertPollutant(compound);
-				pollutantID = mapper.getPollutantID(compound);
+				mapper.insertPollutant(compound, method);
+				pollutantID = mapper.getPollutantID(compound, method);
 			}
 			if(null == pollutantID) {
-				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + compound);
+				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + compound + ", and method " + method);
 			}
 			return pollutantID;
 		});
