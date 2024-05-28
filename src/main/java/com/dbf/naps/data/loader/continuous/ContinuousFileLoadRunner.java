@@ -71,12 +71,16 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 				}
 				
 				int columnOffset = isPM25 ? 1:0;
-				if(isPM25) compoudString += "_" + line.get(1); //Append the method to the compound
+				String method = "CONT";
+				if(isPM25) {
+					//Append the PM25-specific method to the overall method
+					method += "_" + line.get(1); 
+				}
 				
 				//We create 24 records per CSV line, 1 per hour
 				for(int hour = 0; hour < 24; hour++) {
 					ContinuousDataRecord record = new ContinuousDataRecord();
-					record.setPollutantId(getPollutantID(compoudString));
+					record.setPollutantId(getPollutantID(compoudString, method));
 					record.setSiteId(getSiteID(
 							line.get(1 + columnOffset),
 							line.get(2 + columnOffset),

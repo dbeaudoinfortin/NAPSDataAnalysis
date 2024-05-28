@@ -4,13 +4,12 @@ CREATE TABLE IF NOT EXISTS naps.pollutants
 (
    id SERIAL NOT NULL,
    name VARCHAR(255) NOT NULL,
+   method VARCHAR(255) NOT NULL,
    PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_pollutants_name ON naps.pollutants (name ASC);
-
--- Insert the basic pollutants
-INSERT into naps.pollutants (name) values ('CO'), ('NO'), ('NO2'), ('NOX'), ('O3'), ('PM10'), ('PM25'), ('SO2') ON CONFLICT DO NOTHING;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_pollutants_name ON naps.pollutants (name, method ASC);
+CREATE INDEX IF NOT EXISTS idx_pollutants_method ON naps.pollutants (method ASC);
 
 CREATE TABLE IF NOT EXISTS naps.sites
 (
@@ -81,6 +80,8 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    day smallint not null,
    day_of_week smallint not null,
    fine boolean null,
+   cartridge VARCHAR(2) null,
+   media VARCHAR(2) null,
    sample_mass NUMERIC(12,6) NULL,
    sample_vol NUMERIC(12,6) NULL,
    sample_duration double precision NULL,
@@ -96,7 +97,7 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
 			    ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, date_time, fine);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, date_time, fine, cartridge, media);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_pollutant_id ON naps.integrated_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_date_time ON naps.integrated_data (date_time ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_year ON naps.integrated_data (year ASC);

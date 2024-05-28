@@ -91,12 +91,14 @@ public class DataCleaner {
         // Split the duration string into hours, minutes, and seconds
         String[] parts = duration.split(":");
         
-        if (parts.length != 3) throw new NumberFormatException("Unparsable duration string: " + duration);
+        if (parts.length > 3 || parts.length < 2)
+        	throw new NumberFormatException("Unparsable duration string: " + duration);
         
         // Parse the parts into integers
         int hours = Integer.parseInt(parts[0]);
         int minutes = Integer.parseInt(parts[1]);
-        int seconds = Integer.parseInt(parts[2]);
+        //Some durations are in the form of "24:00" instead of "24:00:00"
+        int seconds = parts.length == 3 ? Integer.parseInt(parts[2]) : 0;
 
         // Convert minutes and seconds to hours
         double minutesToHours = minutes / 60.0;

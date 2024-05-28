@@ -44,20 +44,34 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("SURROGATE"); //Surrogate Recovery
 		DEFAULT_IGNORED_HEADERS.add("48 H"); //Not sure why this is a column
 		DEFAULT_IGNORED_HEADERS.add("CANISTER"); //Canister ID#
+		DEFAULT_IGNORED_HEADERS.add("CART"); //Cart, Cartridge
 		DEFAULT_IGNORED_HEADERS.add("START"); //Start Time
+		DEFAULT_IGNORED_HEADERS.add("END"); //End Time
 		DEFAULT_IGNORED_HEADERS.add("DURATION"); //Duration
 		DEFAULT_IGNORED_HEADERS.add("SUM"); //Sum PCB TEQ*
 		DEFAULT_IGNORED_HEADERS.add("FIELD"); //Field ID
-	}
-	
-	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
-		super(threadId, config, sqlSessionFactory, rawFile);
+		DEFAULT_IGNORED_HEADERS.add("SPECIATION"); //Speciation Mass (ug/m3)
+		DEFAULT_IGNORED_HEADERS.add("MEDIA"); //Media
+		DEFAULT_IGNORED_HEADERS.add("FRACTION"); //Fraction
+		DEFAULT_IGNORED_HEADERS.add("DICH"); //Dich/Partisol Mass (ug/m3)
+		DEFAULT_IGNORED_HEADERS.add("PRESS"); //PRESS
+		DEFAULT_IGNORED_HEADERS.add("TEMP"); //TEMP
+		DEFAULT_IGNORED_HEADERS.add("WS"); //WS
+		DEFAULT_IGNORED_HEADERS.add("HUM"); //HUM
+		DEFAULT_IGNORED_HEADERS.add("TDP"); //TDP
+		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
 	}
 	
 	private ExcelSheet sheet;
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer lastColumn; //Track when we have reached the NAPS ID which represents the last column
+	private final String method;
+	
+	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method) {
+		super(threadId, config, sqlSessionFactory, rawFile);
+		this.method = "INT_" + method;
+	}
 	
 	/**
 	 * Main entry-point method for processing the sheet.
@@ -186,6 +200,9 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	 */
 	private boolean isColumnIgnored(String columnHeader) {
 		columnHeader = columnHeader.toUpperCase();
+		//ID is a special case that uses an exact match otherwise we might match 
+		//a compound that either start or end with the letter "id"
+		if (columnHeader.equals("ID")) return true;
 		for(String ignoredHeader : getIgnoredColumnList()) {
 			if (columnHeader.startsWith(ignoredHeader) || columnHeader.endsWith(ignoredHeader)) return true;
 		}
@@ -226,7 +243,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
     	IntegratedDataRecord record = new IntegratedDataRecord();
 		record.setDatetime(date);
 		record.setSiteId(siteID);
-    	record.setPollutantId(getPollutantID(columnHeader));
+    	record.setPollutantId(getPollutantID(columnHeader, method));
 
     	//Treat less-than as zeros (below detection limit)
     	if (cellValue.startsWith("<") || "N.D.".equals(cellValue)) {
@@ -242,6 +259,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
     	
         return record;
 	}
+	
+	
 	
 	/**
 	 * Inserts or updates the provided IntegratedDataRecord records into the database.

@@ -14,8 +14,8 @@ import com.dbf.naps.data.utilities.DataCleaner;
  */
 public class CFFileLoadRunner extends IntegratedFileLoadRunner {
 
-	public CFFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
-		super(threadId, config, sqlSessionFactory, rawFile);
+	public CFFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method) {
+		super(threadId, config, sqlSessionFactory, rawFile, method);
 	}
 
 	@Override
