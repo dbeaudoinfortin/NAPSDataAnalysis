@@ -100,6 +100,8 @@ A Java tool that loads all of the raw integrated data (downloaded by the NAPSInt
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
 
+**NOTE:** The NAPSSitesLoader must be run first in order to populate the naps.sites table with site (station) definitions prior to loading the integrated data! 
+
 **Command line usage:**
 ```
  -p,   --dataPath <arg>       Local path for raw data files previously downloaded.
