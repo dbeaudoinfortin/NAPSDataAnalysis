@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>NAPSData</groupId>
   <artifactId>naps_data</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <name>NAPS Data Downloader</name>
   <build>
 	 <finalName>${project.artifactId}</finalName>
