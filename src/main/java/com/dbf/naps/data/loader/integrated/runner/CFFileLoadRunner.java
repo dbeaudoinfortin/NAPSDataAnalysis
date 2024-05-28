@@ -20,6 +20,7 @@ public class CFFileLoadRunner extends IntegratedFileLoadRunner {
 
 	@Override
 	protected List<IntegratedDataRecord> processRow(int row, Date date) {
+		//TODO: It would be better to lookup the column index using the header instead of hard-coding the column index
 		
 		//Second column always contains the coarse/fine flag
 		boolean fine = "F".equals(getSheet().getCellContents(1, row).toUpperCase());

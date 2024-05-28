@@ -40,9 +40,9 @@ public class SampleMetaDataFileLoadRunner extends IntegratedFileLoadRunner {
 
 		List<IntegratedDataRecord> records = super.processRow(row, date);
 		
-		BigDecimal sampleVol = null == sampleVolumeCol ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(sampleVolumeCol, row), true);
-		Double sampleDuration = null == sampleDurationCol ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(sampleDurationCol, row), true);
-		BigDecimal tsp = null == tspCol ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(tspCol, row), true);
+		BigDecimal sampleVol = (null == sampleVolumeCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(sampleVolumeCol, row), true);
+		Double sampleDuration = (null == sampleDurationCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(sampleDurationCol, row), true);
+		BigDecimal tsp = (null == tspCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(tspCol, row), true);
 		
 		for(IntegratedDataRecord record : records) {
 			//Enhance the data with metadata specific to this dataset

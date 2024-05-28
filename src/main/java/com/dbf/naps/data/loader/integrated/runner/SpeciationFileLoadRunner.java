@@ -43,21 +43,22 @@ public class SpeciationFileLoadRunner extends IntegratedFileLoadRunner {
 	@Override
 	protected List<IntegratedDataRecord> processRow(int row, Date date) {
 		
-		BigDecimal mass = DataCleaner.extractDecimalData(getSheet().getCellContents(massCol, row), true);
+		//Mas is not always present
+		BigDecimal mass = (null == massCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(massCol, row), true);
 		
 		//TODO: This is separate from sample mass and should be its own column
-		BigDecimal speciationMass = DataCleaner.extractDecimalData(getSheet().getCellContents(speciationMassCol, row), true);
+		BigDecimal speciationMass = (null == speciationMassCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(speciationMassCol, row), true);
 		
 		//TODO: Handle the "Dich/Partisol Mass (ug/m3)" column?
 		
-		Double startTime = DataCleaner.extractDoubleData(getSheet().getCellContents(startTimeCol, row), true);
-		Double endTime = DataCleaner.extractDoubleData(getSheet().getCellContents(endTimeCol, row), true);
+		Double startTime = (null == startTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(startTimeCol, row), true);
+		Double endTime = (null == endTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(endTimeCol, row), true);
 		Double duration = (startTime != null && endTime != null) ? (endTime - startTime) : null;
 		
-		String cartridge = getSheet().getCellContents(cartridgeCol, row);
+		String cartridge = (null == cartridgeCol) ? null : getSheet().getCellContents(cartridgeCol, row);
 		if("".equals(cartridge)) cartridge = null;
 		
-		String media = getSheet().getCellContents(mediaCol, row);
+		String media = (null == mediaCol) ? null : getSheet().getCellContents(mediaCol, row);
 		if("".equals(media)) media = null;
 		
 		List<IntegratedDataRecord> records = super.processRow(row, date);
