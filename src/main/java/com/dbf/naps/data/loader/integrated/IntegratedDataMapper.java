@@ -13,7 +13,7 @@ public interface IntegratedDataMapper {
         "<foreach collection='dataRecords' item='record' index='index' open='(' separator = '),(' close=')' >"
         + "#{record.siteId}, #{record.pollutantId}, #{record.datetime}, #{record.year}, #{record.month}, #{record.day}, "
         + "#{record.fine, typeHandler=org.apache.ibatis.type.BooleanTypeHandler}, #{record.cartridge}, #{record.media}, #{record.dayOfWeek}, "
-        + "#{record.mass}, #{record.volume}, #{record.tsp}, #{record.duration}, #{record.data}"
+        + "#{record.mass}, #{record.volume}, #{record.duration}, #{record.tsp}, #{record.data}"
         + "</foreach>"
         + " ON CONFLICT DO NOTHING;",
         "</script>"})
