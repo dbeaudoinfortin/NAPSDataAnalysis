@@ -33,11 +33,14 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	
 	static {
 		DEFAULT_IGNORED_HEADERS.add("%"); //% Recovery
-		DEFAULT_IGNORED_HEADERS.add("RECOVERY"); //Recovery %
+		DEFAULT_IGNORED_HEADERS.add("RECOVERY"); //Recovery %, Recovery-AE, Recovery-PHE, etc.
 		DEFAULT_IGNORED_HEADERS.add("SAMPLE"); //Sample Volume, Sample Type, Sample Date & Sample ID
+		DEFAULT_IGNORED_HEADERS.add("SAMPLING"); //Sampling Date, Sampling Type
 		DEFAULT_IGNORED_HEADERS.add("TSP"); //Total suspended particles
 		DEFAULT_IGNORED_HEADERS.add("T.S.P"); //Total suspended particles
 		DEFAULT_IGNORED_HEADERS.add("D.L."); //Detection limit
+		DEFAULT_IGNORED_HEADERS.add("_DL"); //Detection limit
+		DEFAULT_IGNORED_HEADERS.add("-MDL"); //Detection limit
 		DEFAULT_IGNORED_HEADERS.add("TOTAL"); //TOTAL PAH
 		DEFAULT_IGNORED_HEADERS.add("C/F"); //Coarse/Fine
 		DEFAULT_IGNORED_HEADERS.add("MASS"); //Sample Mass
@@ -60,17 +63,20 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("HUM"); //HUM
 		DEFAULT_IGNORED_HEADERS.add("TDP"); //TDP
 		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
+		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
 	}
 	
 	private ExcelSheet sheet;
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
-	private Integer lastColumn; //Track when we have reached the NAPS ID which represents the last column
+	private Integer siteIDColumn; //Track when we have reached the NAPS ID which represents the last column
+	private final String fileType;
 	private final String method;
 	
-	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method) {
+	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType) {
 		super(threadId, config, sqlSessionFactory, rawFile);
-		this.method = "INT_" + method;
+		this.fileType = fileType;
+		this.method = "INT_" + fileType;
 	}
 	
 	/**
@@ -79,12 +85,12 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	@Override
 	protected void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
-		sheet = ExcelSheetFactory.createSheet(getRawFile());
+		sheet = ExcelSheetFactory.createSheet(getRawFile(), fileType);
 
 		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
 		
-		//The first row is skipped. It has information in the form of
-		//Dichotomous Sampler Concentrations (ug/m3) at ST. JOHN'S - DUCKWORTH/ORDINANCE NAPS No. 10101
+		//The first row is skipped. It has information in the form of:
+		//"Dichotomous Sampler Concentrations (ug/m3) at ST. JOHN'S - DUCKWORTH/ORDINANCE NAPS No. 10101"
 		for (int row = 0; row < sheet.rowCount(); row++) {
 			
 			//We need to find the actual column header row, which may be the second or third (or more) row
@@ -93,13 +99,14 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				headerRowNumber = row; //We can now start processing data on the next row
 				
 				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
-				for(int col = sheet.columnCount()-1; col > 2; col--) {
-					if (sheet.getCellContents(col, headerRowNumber).equals("NAPS ID")) {
-						lastColumn = col;
+				for(int col = sheet.columnCount()-1; col >= 0; col--) {
+					String columnHeader = sheet.getCellContents(col, headerRowNumber).toUpperCase();
+					if (columnHeader.equals("NAPS ID") || columnHeader.equals("NAPS SITE ID")) {
+						siteIDColumn = col;
 						break;
 					}
 				}
-				if(null == lastColumn) throw new IllegalArgumentException("Could not locate the NAPS ID column.");
+				if(null == siteIDColumn) throw new IllegalArgumentException("Could not locate the NAPS ID column.");
 				
 				preProcessRow();
 				//Done with header validation, ready to process the first row of data
@@ -108,8 +115,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 			
 			Date date;
 			try {
-				//First column contains the date in the form of 11-20-84
-				date = sheet.getCellDate(0, row);
+				//First column contains the date in the form of 11-20-84, uless the first column is being used as the NAPS Site ID
+				date = sheet.getCellDate(siteIDColumn == 0 ? 1 : 0, row);
 				if(null == date) continue; //We have reached padding at the end of the file
 			} catch(IllegalArgumentException e) {
 				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
@@ -120,7 +127,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 			//Only read the site id on the first row since it will not change
 			//Last column is the NAPS ID
 			if(siteID == null) {
-				siteID = getSiteID(sheet.getCellContents(lastColumn, row), row);
+				siteID = getSiteID(sheet.getCellContents(siteIDColumn, row), row);
 			}
 			
 			records.addAll(processRow(row, date));
@@ -146,7 +153,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	 * Must be in upper case will be compared with a startsWith().
 	 */
 	protected String[] getFirstColumnHeaders() {
-		return new String[] {"COMPOUND","DATE","CONGENER","SAMPLING"}; //This is sometimes COMPOUND and sometimes COMPOUNDS
+		 //COMPOUND is sometimes "COMPOUND" and sometimes "COMPOUNDS"
+		return new String[] {"COMPOUND","DATE","CONGENER","SAMPLING", "NAPS SITE ID"};
 	}
 	
 	/**
@@ -187,8 +195,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
         	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber());
         	if(isColumnIgnored(columnHeader)) continue;
         	
-        	IntegratedDataRecord record = processSingleRecord(getSheet().getCellContents(col, getHeaderRowNumber()), getSheet().getCellContents(col, row), date);
-        	if(null != record) singleRowRecords.add(record);
+        	IntegratedDataRecord record = processSingleRecord(columnHeader, getSheet().getCellContents(col, row), date);
+        	if(null != record && (getConfig().isIncludeNulls() || record.getData() != null)) singleRowRecords.add(record);
          }
         return singleRowRecords;
 	}
@@ -222,7 +230,6 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 
 	/**
 	 * Called once per cell to process the raw data and produce an IntegratedDataRecord.
-	 * 
 	 */
 	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
         
@@ -230,10 +237,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
     	if("".equals(columnHeader)) return null;
     	
     	cellValue = cellValue.trim();
-    	
-    	//Ignore empty cells, but not zeros
-    	if("".equals(cellValue) || "N.M.".equals(cellValue)|| "-".equals(cellValue)) return null;
-    	
+
     	//Looks like someone may have copied and pasted a bad formula from another spreadsheet ☺
     	if(cellValue.startsWith("ERROR")) {
     		log.warn(getThreadId() + ":: Bad data for column " + columnHeader + " (" + cellValue + ") in file " + getRawFile() + ".");
@@ -245,16 +249,19 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		record.setSiteId(siteID);
     	record.setPollutantId(getPollutantID(columnHeader, method));
 
-    	//Treat less-than as zeros (below detection limit)
-    	if (cellValue.startsWith("<") || "N.D.".equals(cellValue)) {
-    		record.setData(new BigDecimal(0));
-    	} else {
-    		try {
-    			record.setData(DataCleaner.extractDecimalData(cellValue, false)); //Set ignore error to false so we get the full exception details
-    		} catch (IllegalArgumentException e){
-    			log.warn(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e.getMessage());
-    			return null; //We still want to try processing subsequent records. Don't throw an exception.
-    		}
+    	//Ignore empty cells, but not zeros
+    	if(!"N.M.".equals(cellValue)) {
+	    	//Treat less-than as zeros (below detection limit)
+	    	if (cellValue.startsWith("<") || "N.D.".equals(cellValue)) {
+	    		record.setData(new BigDecimal(0));
+	    	} else {
+	    		try {
+	    			record.setData(DataCleaner.extractDecimalData(cellValue, false)); //Set ignore error to false so we get the full exception details
+	    		} catch (IllegalArgumentException e){
+	    			log.warn(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e.getMessage());
+	    			return null; //We still want to try processing subsequent records. Don't throw an exception.
+	    		}
+	    	}
     	}
     	
         return record;
@@ -307,6 +314,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	}
 
 	protected Integer getLastColumn() {
-		return lastColumn;
+		//When the NAPS Site ID column is at the end then it is considered the end of valid data
+		//Otherwise, we have no good way of knowing when the data ends, so we assume the last column
+		return siteIDColumn == 0 ? sheet.columnCount()-1 : siteIDColumn;
 	}
 }

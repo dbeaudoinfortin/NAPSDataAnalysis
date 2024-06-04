@@ -2,6 +2,8 @@ package com.dbf.naps.data.utilities;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class DataCleaner {
 	
 	public static BigDecimal extractDecimalData(String rawValue, boolean ignoreError) {
 		//Data points are allowed to be null
-		if (rawValue == null || rawValue.equals("")) return null;
+		if (rawValue == null || rawValue.equals("") || rawValue.equals("-") || rawValue.startsWith("-99")) return null;
 		
 		try {
 			BigDecimal decimalVal = new BigDecimal(rawValue);
@@ -107,4 +109,26 @@ public class DataCleaner {
         // Sum up hours, minutes in hours, and seconds in hours
         return hours + minutesToHours + secondsToHours;
     }
+	
+	private static final Pattern COLUMN_ABBREVIATION_PATTERN = Pattern.compile(" \\([A-Za-z0-9]+\\)"); //" (BkFLT)" in "Benzo(k)Fluoranthene (BkFLT)"
+	
+	public static String replaceColumnHeaderAbbreviation(String rawColumnHeader) {
+		Matcher matcher = COLUMN_ABBREVIATION_PATTERN.matcher(rawColumnHeader);
+
+        int lastMatchStart = -1;
+        int lastMatchEnd = -1;
+
+        // Find the last match
+        while (matcher.find()) {
+            lastMatchStart = matcher.start();
+            lastMatchEnd = matcher.end();
+        }
+
+        // If a match is found, perform the replacement
+        if (lastMatchStart != -1 && lastMatchEnd != -1) {
+           return rawColumnHeader.substring(0, lastMatchStart) + rawColumnHeader.substring(lastMatchEnd);
+        }
+        
+        return rawColumnHeader;
+	}
 }

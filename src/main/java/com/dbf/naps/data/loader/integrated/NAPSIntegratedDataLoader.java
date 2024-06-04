@@ -2,13 +2,18 @@ package com.dbf.naps.data.loader.integrated;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import com.dbf.naps.data.loader.NAPSDataLoader;
 import com.dbf.naps.data.loader.integrated.runner.CFFileLoadRunner;
 import com.dbf.naps.data.loader.integrated.runner.SampleMetaDataFileLoadRunner;
 import com.dbf.naps.data.loader.integrated.runner.SpeciationFileLoadRunner;
+import com.dbf.naps.data.loader.integrated.runner.XLSXFileLoadRunner;
 
 public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
+	private static final Pattern XLSX_PAH_PATTERN = Pattern.compile("S[0-9]+_PAH_[0-9]{4}\\.XLSX"); //Match S90121_PAH_2010.XLSX
+	
 	public NAPSIntegratedDataLoader(String[] args) {
 		super(args);
 	}
@@ -57,7 +62,10 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 			return new SpeciationFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, "WICPMS");
 		} else if( fileName.endsWith("_LEV.XLS")) {
 			return new SpeciationFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, "LEV");
-		} 
+		} else if(XLSX_PAH_PATTERN.matcher(fileName).matches()) {
+			return new XLSXFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, "PAH");
+		}
+		
 		throw new IllegalArgumentException("Unsupported data file: " + dataFile);
 	}
 }
