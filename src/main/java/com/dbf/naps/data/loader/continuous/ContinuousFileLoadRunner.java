@@ -61,7 +61,7 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 					continue;
 				}
 			
-				//More sanity checks, the line need to start with a known pollutant
+				//More sanity checks, the line needs to start with a known pollutant
 				String compoudString = line.get(0).replace(".", ""); //PM2.5 -> PM25
 				if(!Compound.contains(compoudString)) continue;
 				

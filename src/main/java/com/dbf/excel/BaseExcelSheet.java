@@ -10,8 +10,9 @@ import org.apache.poi.ss.usermodel.DateUtil;
 public abstract class BaseExcelSheet implements ExcelSheet {
 	
 	//Note: SimpleDateFormat is not thread safe, must not be static
-	private final SimpleDateFormat TYPICAL_DATE_FORMAT = new SimpleDateFormat("MM-dd-yy");
-	private final SimpleDateFormat BAD_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
+	protected final SimpleDateFormat TYPICAL_DATE_FORMAT = new SimpleDateFormat("MM-dd-yy");
+	protected final SimpleDateFormat NEWER_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH); //2010 and beyond
+	protected final SimpleDateFormat BAD_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
 		
 	//Work-around for all the strange date formats across several excel versions
 	protected Date extractRawDate(String rawDate) {
@@ -26,10 +27,15 @@ public abstract class BaseExcelSheet implements ExcelSheet {
 			}
         } catch (ParseException | NumberFormatException e) {
         	try {
-        		//Someone messed up the dates on a couple rows
-        		return BAD_DATE_FORMAT.parse(rawDate);
-        	} catch (ParseException  e2) {
-        		throw new IllegalArgumentException("Could not parse date " + rawDate + ". Expecting format " + TYPICAL_DATE_FORMAT, e);
+        		//Files after 2010 use the ISO standard
+        		return NEWER_DATE_FORMAT.parse(rawDate);
+        	} catch (ParseException | NumberFormatException e2) {
+        		try {
+            		//Someone messed up the dates on a couple rows
+            		return BAD_DATE_FORMAT.parse(rawDate);
+            	} catch (ParseException  e3) {
+            		throw new IllegalArgumentException("Could not parse date " + rawDate + ". Expecting format " + TYPICAL_DATE_FORMAT + " or " + NEWER_DATE_FORMAT);
+            	}
         	}
         }
 	}

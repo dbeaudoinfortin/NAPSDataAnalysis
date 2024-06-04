@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
 import org.apache.poi.hssf.record.BOFRecord;
 import org.apache.poi.hssf.record.CodepageRecord;
 import org.apache.poi.hssf.record.FormatRecord;
@@ -21,16 +20,14 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.excel.Records.OldDimensionsRecord;
 
-public class OldBIFFExcelSheet extends BaseExcelSheet {
+public class OldBIFFExcelSheet extends RawDataExcelSheet {
 	
-	private static final Logger log = LoggerFactory.getLogger(ExcelSheetFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(OldBIFFExcelSheet.class);
 	
 	@SuppressWarnings("unused") //Will use eventually
 	private int biffVersion;
 	
     private BOFRecord bof;
-    
-	private String[][] rawData;
 	
 	public OldBIFFExcelSheet(File excelFile) throws IOException {
 		loadOldBIFFFile(excelFile);
@@ -53,6 +50,7 @@ public class OldBIFFExcelSheet extends BaseExcelSheet {
 					case OldSheetRecord.sid:
 						OldSheetRecord sheetRecord = new OldSheetRecord(ris);
 						sheetRecord.setCodePage(codepage);
+						//TODO: support workbooks with multiple sheets - find the correct sheet.
 						log.debug("Found sheet " + sheetRecord.getSheetname());
 						break;
 					case OldLabelRecord.biff2_sid:
@@ -119,30 +117,5 @@ public class OldBIFFExcelSheet extends BaseExcelSheet {
 			throw new IllegalArgumentException("File is not a worksheet.");
 		}
 		bof.getType();
-	}
-
-	@Override
-	public int columnCount() {
-		return rawData.length;
-	}
-
-	@Override
-	public int rowCount() {
-		if (rawData.length < 1) return 0;
-		return rawData[0].length;
-	}
-
-	@Override
-	public String getCellContents(int column, int row) {
-		String s = rawData[column][row];
-		return (null == s) ? "" : s;
-	}
-
-	@Override
-	public Date getCellDate(int column, int row) {
-		String rawDate = rawData[column][row];
-		if(null == rawDate || "".equals(rawDate)) return null;
-		
-		return extractRawDate(rawDate);
 	}
 }
