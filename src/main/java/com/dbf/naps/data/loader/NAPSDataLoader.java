@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.apache.ibatis.io.Resources;
@@ -96,7 +97,7 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 		waitForTaskCompletion(futures);
 	}
 	
-	private void recurseDir(final Path dirPath, List<Future<?>> futures) throws IOException {
+	private void recurseDir(final Path dirPath, Collection<Future<?>> futures) throws IOException {
 		Files.list(dirPath).forEach(path -> {
 			File dataFile = path.toFile();
 			if (dataFile.isDirectory()) {
@@ -108,8 +109,8 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 				}
 			} else if (dataFile.isFile()) {
 				try {
-					Runnable task = processFile(dataFile);
-					if(null != task) futures.add(submitTask(task));
+					Collection<Runnable> tasks = processFile(dataFile);
+					if(null != tasks) futures.addAll(submitTasks(tasks));
 				} catch (Exception e) {
 					log.error("Failed to queue up task for file: " + dataFile, e);
 					return; //Don't prevent other files from processing
@@ -122,5 +123,5 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 		return LoaderOptions.class;
 	}
 	
-	protected abstract Runnable processFile(File dataFile);
+	protected abstract Collection<Runnable> processFile(File dataFile);
 }

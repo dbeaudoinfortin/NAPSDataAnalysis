@@ -33,7 +33,9 @@ public class XLSXFileLoadRunner extends IntegratedFileLoadRunner {
 
 		//Exclude all FB records as these are sample blanks
 		String sampleType = (null == sampleTypeCol) ? "" : getSheet().getCellContents(sampleTypeCol, row);
-		if ("FB".equals(sampleType.toUpperCase())) return Collections.emptyList();
+		sampleType.toUpperCase();
+		
+		if ("FB".equals(sampleType) || "TB".equals(sampleType)) return Collections.emptyList();
 
 		return super.processRow(row, date);
 	}

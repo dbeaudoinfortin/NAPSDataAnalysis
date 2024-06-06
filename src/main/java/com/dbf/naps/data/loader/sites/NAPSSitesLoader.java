@@ -1,6 +1,7 @@
 package com.dbf.naps.data.loader.sites;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import com.dbf.naps.data.loader.NAPSDataLoader;
@@ -22,8 +23,8 @@ public class NAPSSitesLoader extends NAPSDataLoader {
 	}
 
 	@Override
-	protected Runnable processFile(File dataFile) {
+	protected Collection<Runnable> processFile(File dataFile) {
 		if(!dataFile.getName().toLowerCase().equals("sites.csv")) return null;
-		return new SitesFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile);
+		return Collections.singletonList(new SitesFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile));
 	}
 }
