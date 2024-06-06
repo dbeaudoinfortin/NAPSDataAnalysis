@@ -43,6 +43,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("-MDL"); //Detection limit
 		DEFAULT_IGNORED_HEADERS.add("TOTAL"); //TOTAL PAH
 		DEFAULT_IGNORED_HEADERS.add("C/F"); //Coarse/Fine
+		DEFAULT_IGNORED_HEADERS.add("F/C"); //Fine/Coarse
 		DEFAULT_IGNORED_HEADERS.add("MASS"); //Sample Mass
 		DEFAULT_IGNORED_HEADERS.add("SURROGATE"); //Surrogate Recovery
 		DEFAULT_IGNORED_HEADERS.add("48 H"); //Not sure why this is a column
@@ -57,13 +58,14 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("MEDIA"); //Media
 		DEFAULT_IGNORED_HEADERS.add("FRACTION"); //Fraction
 		DEFAULT_IGNORED_HEADERS.add("DICH"); //Dich/Partisol Mass (ug/m3)
-		DEFAULT_IGNORED_HEADERS.add("PRESS"); //PRESS
-		DEFAULT_IGNORED_HEADERS.add("TEMP"); //TEMP
+		DEFAULT_IGNORED_HEADERS.add("PRES"); //PRESS, Pres.
+		DEFAULT_IGNORED_HEADERS.add("TEMP"); //TEMP, Temp.
 		DEFAULT_IGNORED_HEADERS.add("WS"); //WS
 		DEFAULT_IGNORED_HEADERS.add("HUM"); //HUM
 		DEFAULT_IGNORED_HEADERS.add("TDP"); //TDP
 		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
 		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
+		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume
 	}
 	
 	private ExcelSheet sheet;
@@ -113,15 +115,23 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				continue;
 			}
 			
+			int dateColumn = siteIDColumn == 0 ? 1 : 0;
+			
 			Date date;
 			try {
-				//First column contains the date in the form of 11-20-84, uless the first column is being used as the NAPS Site ID
-				date = sheet.getCellDate(siteIDColumn == 0 ? 1 : 0, row);
-				if(null == date) continue; //We have reached padding at the end of the file
+				//First column contains the date in the form of 11-20-84, unless the first column is being used as the NAPS Site ID
+				date = sheet.getCellDate(dateColumn, row);
 			} catch(IllegalArgumentException e) {
 				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
 				continue; //This could be bad data or it could simply be a footer
-			}	
+			}
+			
+			if(null == date) continue; //We have reached padding at the end of the file
+			
+			if(date.getTime() < 0 || date.after(new Date())) {
+				//Date can't be before 1970, since the data starts in 1972
+				throw new IllegalArgumentException("Invalid date \"" +  date + "\" for column " + dateColumn + ", row " + row + ".");
+			}
 			
 			//Some sheets are broken and are missing data at the end
 			//Only read the site id on the first row since it will not change

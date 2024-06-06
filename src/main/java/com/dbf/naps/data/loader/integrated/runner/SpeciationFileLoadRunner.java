@@ -2,6 +2,7 @@ package com.dbf.naps.data.loader.integrated.runner;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -57,9 +58,11 @@ public class SpeciationFileLoadRunner extends IntegratedFileLoadRunner {
 		
 		String cartridge = (null == cartridgeCol) ? null : getSheet().getCellContents(cartridgeCol, row);
 		if("".equals(cartridge)) cartridge = null;
+		if(null != cartridge  && "FB".equals(cartridge.toUpperCase())) return Collections.emptyList(); //Field blank
 		
 		String media = (null == mediaCol) ? null : getSheet().getCellContents(mediaCol, row);
 		if("".equals(media)) media = null;
+		if(null != media  && "FB".equals(media.toUpperCase())) return Collections.emptyList(); //Field blank
 		
 		List<IntegratedDataRecord> records = super.processRow(row, date);
 		for(IntegratedDataRecord record : records) {

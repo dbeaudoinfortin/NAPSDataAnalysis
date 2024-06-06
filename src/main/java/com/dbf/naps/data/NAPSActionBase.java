@@ -1,6 +1,7 @@
 package com.dbf.naps.data;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -65,7 +66,7 @@ public abstract class NAPSActionBase<O extends BaseOptions> {
 		return threadPool.submit(task);
 	}
 	
-	protected List<Future<?>> submitTasks(List<Runnable> tasks) {
+	protected Collection<Future<?>> submitTasks(Collection<Runnable> tasks) {
 		return tasks.stream().map(this::submitTask).collect(Collectors.toList());
 	}
 	
