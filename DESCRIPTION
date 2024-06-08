@@ -1,0 +1,4 @@
+Title: NAPS Data Analysis Toolbox
+Description: Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, schema importer and visualization.
+License: MIT
+Package: naps_data
