@@ -40,4 +40,9 @@ public class BIFF8ExcelSheet extends BaseExcelSheet {
 		if ("".equals(rawDate)) return null;
 		return extractRawDate(rawDate);
 	}
+
+	@Override
+	public String getName() {
+		return sheet.getName();
+	}
 }

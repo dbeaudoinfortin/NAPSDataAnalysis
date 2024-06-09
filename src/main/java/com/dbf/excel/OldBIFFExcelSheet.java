@@ -50,8 +50,9 @@ public class OldBIFFExcelSheet extends RawDataExcelSheet {
 					case OldSheetRecord.sid:
 						OldSheetRecord sheetRecord = new OldSheetRecord(ris);
 						sheetRecord.setCodePage(codepage);
+						sheetName = sheetRecord.getSheetname();
 						//TODO: support workbooks with multiple sheets - find the correct sheet.
-						log.debug("Found sheet " + sheetRecord.getSheetname());
+						log.debug("Found sheet " + sheetName);
 						break;
 					case OldLabelRecord.biff2_sid:
 					case OldLabelRecord.biff345_sid:

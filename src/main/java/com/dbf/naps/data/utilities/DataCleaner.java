@@ -2,6 +2,8 @@ package com.dbf.naps.data.utilities;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,24 +113,33 @@ public class DataCleaner {
     }
 	
 	private static final Pattern COLUMN_ABBREVIATION_PATTERN = Pattern.compile(" \\([A-Za-z0-9]+\\)"); //" (BkFLT)" in "Benzo(k)Fluoranthene (BkFLT)"
-	
+	private static final Map<String, String> COLUMN_ABBREVIATION_CACHE = new ConcurrentHashMap<String, String>();
 	public static String replaceColumnHeaderAbbreviation(String rawColumnHeader) {
-		Matcher matcher = COLUMN_ABBREVIATION_PATTERN.matcher(rawColumnHeader);
+		return COLUMN_ABBREVIATION_CACHE.computeIfAbsent(rawColumnHeader, columnHeader -> {
+			Matcher matcher = COLUMN_ABBREVIATION_PATTERN.matcher(columnHeader);
 
-        int lastMatchStart = -1;
-        int lastMatchEnd = -1;
+	        int lastMatchStart = -1;
+	        int lastMatchEnd = -1;
 
-        // Find the last match
-        while (matcher.find()) {
-            lastMatchStart = matcher.start();
-            lastMatchEnd = matcher.end();
-        }
+	        // Find the last match
+	        while (matcher.find()) {
+	            lastMatchStart = matcher.start();
+	            lastMatchEnd = matcher.end();
+	        }
 
-        // If a match is found, perform the replacement
-        if (lastMatchStart != -1 && lastMatchEnd != -1) {
-           return rawColumnHeader.substring(0, lastMatchStart) + rawColumnHeader.substring(lastMatchEnd);
-        }
-        
-        return rawColumnHeader;
+	        // If a match is found, perform the replacement
+	        if (lastMatchStart != -1 && lastMatchEnd != -1) {
+	           return columnHeader.substring(0, lastMatchStart) + columnHeader.substring(lastMatchEnd);
+	        }
+	        
+	        return columnHeader;
+		});
+	}
+	
+	private static final Map<String, String> COLUMN_UNITS_CACHE = new ConcurrentHashMap<String, String>();
+	public static String replaceColumnHeaderUnits(String rawColumnHeader) {
+		return COLUMN_UNITS_CACHE.computeIfAbsent(rawColumnHeader, columnHeader -> {	        
+			return columnHeader.replace(" (ug/m3)", "").replace(" ug/m3", ""); //Sometimes we have brackets, sometimes we don't ¯\_(ツ)_/¯
+		});	
 	}
 }
