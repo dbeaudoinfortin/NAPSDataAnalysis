@@ -42,29 +42,29 @@ public class SpeciationFileLoadRunner extends IntegratedFileLoadRunner {
 	}
 
 	@Override
-	protected List<IntegratedDataRecord> processRow(int row, Date date) {
+	protected List<IntegratedDataRecord> processRow(Date date) {
 		
 		//Mas is not always present
-		BigDecimal mass = (null == massCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(massCol, row), true);
+		BigDecimal mass = (null == massCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(massCol, getRow()), true);
 		
 		//TODO: This is separate from sample mass and should be its own column
-		BigDecimal speciationMass = (null == speciationMassCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(speciationMassCol, row), true);
+		BigDecimal speciationMass = (null == speciationMassCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(speciationMassCol, getRow()), true);
 		
 		//TODO: Handle the "Dich/Partisol Mass (ug/m3)" column?
 		
-		Double startTime = (null == startTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(startTimeCol, row), true);
-		Double endTime = (null == endTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(endTimeCol, row), true);
+		Double startTime = (null == startTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(startTimeCol, getRow()), true);
+		Double endTime = (null == endTimeCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(endTimeCol, getRow()), true);
 		Double duration = (startTime != null && endTime != null) ? (endTime - startTime) : null;
 		
-		String cartridge = (null == cartridgeCol) ? null : getSheet().getCellContents(cartridgeCol, row);
+		String cartridge = (null == cartridgeCol) ? null : getSheet().getCellContents(cartridgeCol, getRow());
 		if("".equals(cartridge)) cartridge = null;
 		if(null != cartridge  && "FB".equals(cartridge.toUpperCase())) return Collections.emptyList(); //Field blank
 		
-		String media = (null == mediaCol) ? null : getSheet().getCellContents(mediaCol, row);
+		String media = (null == mediaCol) ? null : getSheet().getCellContents(mediaCol, getRow());
 		if("".equals(media)) media = null;
 		if(null != media  && "FB".equals(media.toUpperCase())) return Collections.emptyList(); //Field blank
 		
-		List<IntegratedDataRecord> records = super.processRow(row, date);
+		List<IntegratedDataRecord> records = super.processRow(date);
 		for(IntegratedDataRecord record : records) {
 			//Enhance the data with metadata specific to this dataset
 			record.setDuration(duration);

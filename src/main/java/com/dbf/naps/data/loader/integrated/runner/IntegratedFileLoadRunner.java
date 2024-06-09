@@ -3,6 +3,7 @@ package com.dbf.naps.data.loader.integrated.runner;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("CART"); //Cart, Cartridge
 		DEFAULT_IGNORED_HEADERS.add("START"); //Start Time
 		DEFAULT_IGNORED_HEADERS.add("END"); //End Time
+		DEFAULT_IGNORED_HEADERS.add("STOP"); //Stop Time
 		DEFAULT_IGNORED_HEADERS.add("DURATION"); //Duration
 		DEFAULT_IGNORED_HEADERS.add("SUM"); //Sum PCB TEQ*
 		DEFAULT_IGNORED_HEADERS.add("FIELD"); //Field ID
@@ -68,17 +70,20 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume
 	}
 	
+	//State held during processing
 	private ExcelSheet sheet;
+	private int row;
+	protected String method;
+	
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer siteIDColumn; //Track when we have reached the NAPS ID which represents the last column
 	private final String fileType;
-	private final String method;
+	
 	
 	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 		this.fileType = fileType;
-		this.method = "INT_" + fileType;
 	}
 	
 	/**
@@ -87,13 +92,35 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	@Override
 	protected void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
-		sheet = ExcelSheetFactory.createSheet(getRawFile(), fileType);
+		List<ExcelSheet> sheets = ExcelSheetFactory.getSheets(getRawFile(), getMatchingSheetNames());
+		log.info(getThreadId() + ":: Found " + sheets.size() + " matching sheet(s).");
+		
+		for(ExcelSheet sheet : sheets) {
+			processSheetFile(sheet);
+		}
+	}
+	
+	protected List<String> getMatchingSheetNames() {
+		return Collections.singletonList(fileType);
+	}
+	
+	protected void setMethod() {
+		this.method = "INT_" + fileType;
+	}
+	
+	protected void processSheetFile(ExcelSheet sheet) throws Exception {
+		this.sheet = sheet;
+		
+		//Method may differ per sheet
+		setMethod();
+		
+		log.info(getThreadId() + ":: Processing sheet " + sheet.getName() + ".");
 
 		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
 		
 		//The first row is skipped. It has information in the form of:
 		//"Dichotomous Sampler Concentrations (ug/m3) at ST. JOHN'S - DUCKWORTH/ORDINANCE NAPS No. 10101"
-		for (int row = 0; row < sheet.rowCount(); row++) {
+		for (row = 0; row < sheet.rowCount(); row++) {
 			
 			//We need to find the actual column header row, which may be the second or third (or more) row
 			if(null == headerRowNumber) {
@@ -122,7 +149,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				//First column contains the date in the form of 11-20-84, unless the first column is being used as the NAPS Site ID
 				date = sheet.getCellDate(dateColumn, row);
 			} catch(IllegalArgumentException e) {
-				log.warn("Expected a date for column 0, row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
+				log.warn("Expected a date for column " + dateColumn + ", row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
 				continue; //This could be bad data or it could simply be a footer
 			}
 			
@@ -140,7 +167,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				siteID = getSiteID(sheet.getCellContents(siteIDColumn, row), row);
 			}
 			
-			records.addAll(processRow(row, date));
+			records.addAll(processRow(date));
 			
 			//Save everything to the database
 			//For faster performance, do it in bulk
@@ -195,7 +222,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	/**
 	 * Called once per row to process the data on the provided row.
 	 */
-	protected List<IntegratedDataRecord> processRow(int row, Date date) {
+	protected List<IntegratedDataRecord> processRow(Date date) {
 		//Reset the records list 
 		singleRowRecords.clear();
 		
@@ -250,7 +277,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 
     	//Looks like someone may have copied and pasted a bad formula from another spreadsheet ☺
     	if(cellValue.startsWith("ERROR")) {
-    		log.warn(getThreadId() + ":: Bad data for column " + columnHeader + " (" + cellValue + ") in file " + getRawFile() + ".");
+    		log.warn(getThreadId() + ":: Bad data on row " + row + " for column " + columnHeader + " (" + cellValue + ") in file " + getRawFile() + ".");
     		return null;
     	}
     
@@ -268,7 +295,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	    		try {
 	    			record.setData(DataCleaner.extractDecimalData(cellValue, false)); //Set ignore error to false so we get the full exception details
 	    		} catch (IllegalArgumentException e){
-	    			log.warn(getThreadId() + ":: Invalid raw data (" + cellValue + ") for column " + columnHeader + ", in file " + getRawFile() + ".", e.getMessage());
+	    			log.warn(getThreadId() + ":: Invalid raw data (" + cellValue + ") on row " + row + " for column " + columnHeader + ", in file " + getRawFile() + ".", e.getMessage());
 	    			return null; //We still want to try processing subsequent records. Don't throw an exception.
 	    		}
 	    	}
@@ -276,8 +303,6 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
     	
         return record;
 	}
-	
-	
 	
 	/**
 	 * Inserts or updates the provided IntegratedDataRecord records into the database.
@@ -327,5 +352,9 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		//When the NAPS Site ID column is at the end then it is considered the end of valid data
 		//Otherwise, we have no good way of knowing when the data ends, so we assume the last column
 		return siteIDColumn == 0 ? sheet.columnCount()-1 : siteIDColumn;
+	}
+	
+	protected int getRow() {
+		return row;
 	}
 }

@@ -19,17 +19,17 @@ public class CFFileLoadRunner extends IntegratedFileLoadRunner {
 	}
 
 	@Override
-	protected List<IntegratedDataRecord> processRow(int row, Date date) {
+	protected List<IntegratedDataRecord> processRow(Date date) {
 		//TODO: It would be better to lookup the column index using the header instead of hard-coding the column index
 		
 		//Second column always contains the coarse/fine flag
-		boolean fine = "F".equals(getSheet().getCellContents(1, row).toUpperCase());
+		boolean fine = "F".equals(getSheet().getCellContents(1, getRow()).toUpperCase());
 		
 		//Third column is always mass
 		//Mass is missing in a few cases and is allowed to be null
-		BigDecimal mass = DataCleaner.extractDecimalData(getSheet().getCellContents(2, row), true);
+		BigDecimal mass = DataCleaner.extractDecimalData(getSheet().getCellContents(2, getRow()), true);
 		
-		List<IntegratedDataRecord> records = super.processRow(row, date);
+		List<IntegratedDataRecord> records = super.processRow(date);
 		for(IntegratedDataRecord record : records) {
 			//Enhance the data with metadata specific to this dataset
 			record.setFine(fine);

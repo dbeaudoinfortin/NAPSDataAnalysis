@@ -1,0 +1,48 @@
+package com.dbf.naps.data.loader.integrated.runner;
+
+import java.util.regex.Pattern;
+
+public class IntegratedRunnerMapping {
+
+	private Class<? extends IntegratedFileLoadRunner> runnerClass;
+	private String fileType;
+	private String fileNameMatch;
+	private Pattern fileNamePattern;
+	
+	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, String fileNameMatch) {
+		this.runnerClass = runnerClass;
+		this.fileType = fileType;
+		this.fileNameMatch = fileNameMatch.toUpperCase();
+	}
+	
+	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, Pattern fileNamePattern) {
+		this.runnerClass = runnerClass;
+		this.fileType = fileType;
+		this.fileNamePattern = fileNamePattern;
+	}
+	
+	public Class<? extends IntegratedFileLoadRunner> getRunnerClass() {
+		return runnerClass;
+	}
+	public void setRunnerClass(Class<IntegratedFileLoadRunner> runnerClass) {
+		this.runnerClass = runnerClass;
+	}
+	public String getFileType() {
+		return fileType;
+	}
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+	public String getFileNameMatch() {
+		return fileNameMatch;
+	}
+	public void setFileNameMatch(String fileNameMatch) {
+		this.fileNameMatch = fileNameMatch;
+	}
+	public Pattern getFileNamePattern() {
+		return fileNamePattern;
+	}
+	public void setFileNamePattern(Pattern fileNamePattern) {
+		this.fileNamePattern = fileNamePattern;
+	}
+}

@@ -6,6 +6,8 @@ public abstract class RawDataExcelSheet extends BaseExcelSheet {
 	
 	protected String[][] rawData;
 	
+	protected String sheetName;
+	
 	@Override
 	public int columnCount() {
 		return rawData.length;
@@ -29,5 +31,10 @@ public abstract class RawDataExcelSheet extends BaseExcelSheet {
 		if(null == rawDate || "".equals(rawDate)) return null;
 		
 		return extractRawDate(rawDate);
+	}
+	
+	@Override
+	public String getName() {
+		return sheetName;
 	}
 }

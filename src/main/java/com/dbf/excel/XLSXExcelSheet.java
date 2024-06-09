@@ -12,6 +12,7 @@ public class XLSXExcelSheet extends RawDataExcelSheet {
 	}
 
 	private void loadXLSXFFile(Sheet sheet) {
+		this.sheetName = sheet.getSheetName();
 		 int rows = sheet.getPhysicalNumberOfRows();
 
 		// Determine the maximum number of columns we will need.
