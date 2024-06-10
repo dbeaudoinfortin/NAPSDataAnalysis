@@ -50,6 +50,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("MASS"); //Sample Mass
 		DEFAULT_IGNORED_HEADERS.add("SURROGATE"); //Surrogate Recovery
 		DEFAULT_IGNORED_HEADERS.add("48 H"); //Not sure why this is a column
+		DEFAULT_IGNORED_HEADERS.add("48-H"); //Same as 48 H
 		DEFAULT_IGNORED_HEADERS.add("CANISTER"); //Canister ID#
 		DEFAULT_IGNORED_HEADERS.add("CART"); //Cart, Cartridge
 		DEFAULT_IGNORED_HEADERS.add("START"); //Start Time
@@ -70,7 +71,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
 		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
 		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume
-		
+		DEFAULT_IGNORED_HEADERS.add("SITE"); //Site Type
 		DEFAULT_IGNORED_SHEETS.add("CHANGELOG"); 
 		DEFAULT_IGNORED_SHEETS.add("STATION");
 		DEFAULT_IGNORED_SHEETS.add("METADATA"); 
@@ -142,7 +143,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				
 				//Sanity check. The last column may not be the NAPS ID. We need to confirm it.
 				for(int col = sheet.columnCount()-1; col >= 0; col--) {
-					String columnHeader = sheet.getCellContents(col, headerRowNumber).toUpperCase();
+					String columnHeader = sheet.getCellContents(col, headerRowNumber).trim().toUpperCase();
 					if (columnHeader.equals("NAPS ID") || columnHeader.equals("NAPS SITE ID")) {
 						siteIDColumn = col;
 						break;
@@ -250,7 +251,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		//Data is expected to start on column 2
 		//Last column is NAPS ID and is ignored
         for (int col = 1; col < getLastColumn(); col++) {
-        	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber());
+        	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber()).trim();
         	if(isColumnIgnored(columnHeader)) continue;
         	
         	IntegratedDataRecord record = processSingleRecord(columnHeader, getSheet().getCellContents(col, row), date);

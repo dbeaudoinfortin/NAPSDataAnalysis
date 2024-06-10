@@ -116,6 +116,7 @@ public class DataCleaner {
 	private static final Pattern COLUMN_ABBREVIATION_PATTERN = Pattern.compile(" \\([A-Za-z0-9]+\\)"); //" (BkFLT)" in "Benzo(k)Fluoranthene (BkFLT)"
 	private static final Map<String, String> COLUMN_ABBREVIATION_CACHE = new ConcurrentHashMap<String, String>();
 	public static String replaceColumnHeaderAbbreviation(String rawColumnHeader) {
+		rawColumnHeader = rawColumnHeader.trim();
 		return COLUMN_ABBREVIATION_CACHE.computeIfAbsent(rawColumnHeader, columnHeader -> {
 			Matcher matcher = COLUMN_ABBREVIATION_PATTERN.matcher(columnHeader);
 
@@ -139,6 +140,7 @@ public class DataCleaner {
 	
 	private static final Map<String, String> COLUMN_UNITS_CACHE = new ConcurrentHashMap<String, String>();
 	public static String replaceColumnHeaderUnits(String rawColumnHeader) {
+		rawColumnHeader = rawColumnHeader.trim();
 		return COLUMN_UNITS_CACHE.computeIfAbsent(rawColumnHeader, columnHeader -> {	        
 			return columnHeader.replace(" (ug/m3)", "").replace(" ug/m3", ""); //Sometimes we have brackets, sometimes we don't ¯\_(ツ)_/¯
 		});	
