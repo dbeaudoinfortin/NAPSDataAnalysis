@@ -9,6 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.globals.PollutantMapping;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 public abstract class FileLoadRunner implements Runnable {
@@ -99,20 +100,21 @@ public abstract class FileLoadRunner implements Runnable {
 		}
 	}
 	
-	protected Integer getPollutantID(String compound, String method) {
-		String lookupKey = compound + "_" + method;
+	protected Integer getPollutantID(String rawPollutantName, String method) {
+		String lookupKey = rawPollutantName + "_" + method;
 		
 		//If one thread stamps overrides the data of another it's no big deal
-		return pollutantIDLookup.computeIfAbsent(lookupKey, k -> {
+		return pollutantIDLookup.computeIfAbsent(lookupKey, pollutantName -> {
 			Integer pollutantID = null;
+			pollutantName = PollutantMapping.lookupPollutantName(pollutantName);
 			//May or may not insert, let the DB manage contention
 			try(SqlSession session = sqlSessionFactory.openSession(true)) {
 				DataMapper mapper = session.getMapper(DataMapper.class);
-				mapper.insertPollutant(compound, method);
-				pollutantID = mapper.getPollutantID(compound, method);
+				mapper.insertPollutant(pollutantName, method);
+				pollutantID = mapper.getPollutantID(pollutantName, method);
 			}
 			if(null == pollutantID) {
-				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + compound + ", and method " + method);
+				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + rawPollutantName + ", and method " + method);
 			}
 			return pollutantID;
 		});
