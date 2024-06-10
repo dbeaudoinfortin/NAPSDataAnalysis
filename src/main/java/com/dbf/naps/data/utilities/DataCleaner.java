@@ -85,7 +85,8 @@ public class DataCleaner {
 			}
 			return Double.parseDouble(rawValue); //Try as a double
 		} catch (NumberFormatException e){
-			if(!ignoreError) throw new IllegalArgumentException("Invalid integer data point: " + rawValue, e);
+			if(!ignoreError)
+				throw new IllegalArgumentException("Invalid integer data point: " + rawValue, e);
 			log.warn("Invalid integer data point: " + rawValue);
 			return null;
 		}

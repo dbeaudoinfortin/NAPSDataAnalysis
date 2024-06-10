@@ -19,8 +19,8 @@ public class ExcelSheetFactory {
 	
 	private static final Logger log = LoggerFactory.getLogger(ExcelSheetFactory.class);
 	
-	public static List<ExcelSheet> getSheets(File excelFile, List<String> matchingSheetNames) throws IOException {
-		if(excelFile.getName().toUpperCase().endsWith(".XLS")) return createXLSSheet(excelFile, matchingSheetNames);
+	public static List<ExcelSheet> getSheets(File excelFile, List<String> matchingSheetNames, List<String> excludedSheetNames) throws IOException {
+		if(excelFile.getName().toUpperCase().endsWith(".XLS")) return createXLSSheet(excelFile, matchingSheetNames, excludedSheetNames);
 		
 		//Handle XLSX sheet
 		log.info("Trying to load XLSX Excel workbook " + excelFile + " into memory.");
@@ -34,19 +34,20 @@ public class ExcelSheetFactory {
 			
 			//We need to find the sheet that we want using a case-insensitive partial match approach
 			List<ExcelSheet> matchingSheets = new ArrayList<ExcelSheet>();
-			List<String> matchingSheetNamesUpper = getMatchingSheetNames(matchingSheetNames);
 			for(int i = 0; i < workbook.getNumberOfSheets(); i++ ) {
-				if (sheetNameMatches(workbook.getSheetName(i), matchingSheetNamesUpper))
+				if (sheetNameMatches(workbook.getSheetName(i), matchingSheetNames, excludedSheetNames))
 					matchingSheets.add(new XLSXExcelSheet(workbook.getSheetAt(i)));
 			}
 			
-			if (matchingSheets.isEmpty())
-				throw new IllegalArgumentException("Could not locate a matching sheet inside of the workbook using sheet names: " + matchingSheetNames);
+			if (matchingSheets.isEmpty()) {
+				log.warn("Could not locate a matching sheet inside of the workbook using sheet names " + matchingSheetNames + ". Falling back to the first sheet.");
+				matchingSheets.add(new XLSXExcelSheet(workbook.getSheetAt(0)));
+			}
 			return matchingSheets;
 		}
 	}
 	
-	private static List<ExcelSheet> createXLSSheet(File excelFile, List<String> matchingSheetNames) throws IOException {
+	private static List<ExcelSheet> createXLSSheet(File excelFile, List<String> matchingSheetNames, List<String> excludedSheetNames) throws IOException {
 		//NOTE: the XLS data files are inconsistent with most seemingly in BIFF4 format and some in BIFF8 format.
 		//I suspect they were all initially generated in BIFF4 format and some were later corrected and re-uploaded in BIFF8.
 		//This is surprising since data up until 2009 is in BIFF4, which is a format from 1992.
@@ -63,14 +64,15 @@ public class ExcelSheetFactory {
 			
 			//We need to find the sheet that we want using a case-insensitive partial match approach
 			List<ExcelSheet> matchingSheets = new ArrayList<ExcelSheet>();
-			List<String> matchingSheetNamesUpper = getMatchingSheetNames(matchingSheetNames);
 			for(String sheetName : workbook.getSheetNames()) {
-				if (sheetNameMatches(sheetName, matchingSheetNamesUpper))
+				if (sheetNameMatches(sheetName, matchingSheetNames, excludedSheetNames))
 					matchingSheets.add(new BIFF8ExcelSheet(workbook.getSheet(sheetName)));
 			}
-			if (matchingSheets.isEmpty())
-				throw new IllegalArgumentException("Could not locate a matching sheet inside of the workbook using sheet names: " + matchingSheetNames);
-			
+			if (matchingSheets.isEmpty()) {
+				log.warn("Could not locate a matching sheet inside of the workbook using sheet names " + matchingSheetNames + ". Falling back to the first sheet.");
+				matchingSheets.add(new BIFF8ExcelSheet(workbook.getSheet(0)));
+			}
+
 			//Note: the input stream is already closed, we don't really want to call workbook.close() 
 			//since that will clear the underlying data	
 			return matchingSheets;
@@ -81,20 +83,18 @@ public class ExcelSheetFactory {
 		}
 	}
 	
-	private static boolean sheetNameMatches(String sheetName, List<String> matchingSheetNames) {
+	private static boolean sheetNameMatches(String sheetName, List<String> matchingSheetNames, List<String> excludedSheetNames) {
 		String sheetNameUpper = sheetName.toUpperCase();
+		
+		for (String excludedSheetName : excludedSheetNames) {
+			if (sheetNameUpper.startsWith(excludedSheetName)) return false;
+		}
+		
 		for (String matchingSheetName : matchingSheetNames) {
 			if (sheetNameUpper.startsWith(matchingSheetName)) return true;
 		}
-		log.debug("Ignored sheet " + sheetName);
+		
+		log.warn("Ignoring unexpected sheet: " + sheetName);
 		return false;
-	}
-	
-	private static List<String> getMatchingSheetNames(List<String> matchingSheetNames) {
-		List<String> matchingSheetNamesUpper = new ArrayList<String>(matchingSheetNames.size());
-		for(String sheetName : matchingSheetNames) {
-			matchingSheetNamesUpper.add(sheetName.toUpperCase());
-		}
-		return matchingSheetNamesUpper;
 	}
 }

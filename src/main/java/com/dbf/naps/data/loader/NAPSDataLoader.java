@@ -88,12 +88,16 @@ public abstract class NAPSDataLoader extends NAPSActionBase<LoaderOptions> {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		final Path rawPath = getOptions().getDataPath();
 		
+		log.info("Examining all files at the path " + rawPath);
+
 		if(!rawPath.toFile().isDirectory()) {
 			log.error("The path to the raw data is not valid: " + rawPath);
 			return;
 		}
 		
 		recurseDir(rawPath, futures);
+		log.info("All files have been examined. " + futures.size() + " task(s) have been created. Waiting for completion...");
+		
 		waitForTaskCompletion(futures);
 	}
 	

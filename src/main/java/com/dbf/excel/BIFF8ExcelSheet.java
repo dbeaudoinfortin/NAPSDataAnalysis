@@ -11,6 +11,7 @@ public class BIFF8ExcelSheet extends BaseExcelSheet {
 	private Sheet sheet;
 	
 	public BIFF8ExcelSheet(Sheet sheet) {
+		super();
 		this.sheet = sheet;	
 	}
 

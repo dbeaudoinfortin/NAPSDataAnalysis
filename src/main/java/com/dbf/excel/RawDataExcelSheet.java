@@ -8,6 +8,10 @@ public abstract class RawDataExcelSheet extends BaseExcelSheet {
 	
 	protected String sheetName;
 	
+	public RawDataExcelSheet() {
+		super();
+	}
+	
 	@Override
 	public int columnCount() {
 		return rawData.length;

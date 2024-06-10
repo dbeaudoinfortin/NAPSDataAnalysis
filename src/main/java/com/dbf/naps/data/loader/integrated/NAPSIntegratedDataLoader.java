@@ -23,6 +23,7 @@ import com.dbf.naps.data.loader.integrated.runner.XLSXFileLoadRunner;
 public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
 	private static final List<IntegratedRunnerMapping> mappings = new ArrayList<IntegratedRunnerMapping>();
+	private static final List<Pattern> excludedPatterns = new ArrayList<Pattern>();
 	static {
 		mappings.add(new IntegratedRunnerMapping(CFFileLoadRunner.class, "DICHOT", "_DICH.XLS"));
 		mappings.add(new IntegratedRunnerMapping(CFFileLoadRunner.class, "PM2.5", "_PART25.XLS"));
@@ -30,6 +31,8 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PAH", "_PAH.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "HCB", "_HCB.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "VOC", "_VOC.XLS"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "VOC", "_VOCS.XLS")); //One file is mis-named :) 
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLSX"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCB", "_PCB.XLS"));
 		
@@ -44,12 +47,17 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PAH", Pattern.compile("S[0-9]+_PAH_[0-9]{4}(_EN)?\\.XLSX"))); //Match S90121_PAH_2010.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PM2.5", Pattern.compile("S[0-9]+_PM25_[0-9]{4}(_EN)?\\.XLSX"))); //Match S40103_PM25_2010.XLSX
-		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PM2.5-10", Pattern.compile("S[0-9]+_PM25_[0-9]{4}\\-10(_EN)?\\.XLSX"))); //Match S30113_PM25-10_2010.XLSX
+		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PM2.5-10", Pattern.compile("S[0-9]+_PM25\\-10_[0-9]{4}(_EN)?\\.XLSX"))); //Match S30113_PM25-10_2010.XLSX
+
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "CARB", Pattern.compile("S[0-9]+_CARBONYLS_[0-9]{4}(_EN)?\\.XLSX"))); //Match S070119_CARBONYLS_2018_EN.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "VOC", Pattern.compile("S[0-9]+_VOC_[0-9]{4}(_EN)?\\.XLSX"))); //Match S070119_VOC_2018_EN.XLSX
 		
-		mappings.add(new IntegratedRunnerMapping(VOCFileLoadRunner.class, "VOC", Pattern.compile("S[0-9]+_VOC_[0-9]{4}(_EN)?\\.XLS"))); //Match S54401_VOC_2016_EN.XLS
+		mappings.add(new IntegratedRunnerMapping(VOCFileLoadRunner.class, "VOC", Pattern.compile("S[0-9]+(_24HR)?_VOC_[0-9]{4}(_EN)?\\.XLS"))); //Match S54401_VOC_2016_EN.XLS, S62601_24hr_VOC_2014.XLS
+		mappings.add(new IntegratedRunnerMapping(VOCFileLoadRunner.class, "VOC_4HR", Pattern.compile("S[0-9]+_4HR_VOC_[0-9]{4}(_EN)?\\.XLS"))); //S62601_4hr_VOC_2014.XLS
 		mappings.add(new IntegratedRunnerMapping(CarbonylsFileLoadRunner.class, "CARB", Pattern.compile("S[0-9]+_CARBONYLS_[0-9]{4}(_EN)?\\.XLS"))); //Match S54401_CARBONYLS_2016_EN.XLS
+		
+		excludedPatterns.add(Pattern.compile("S[0-9]+_PM25_[0-9]{4}(_EN)?\\.XLS"));
+		excludedPatterns.add(Pattern.compile("S[0-9]+_PM25_[0-9]{4}(_EN)?\\.XLS"));
 	}
 	
 	public NAPSIntegratedDataLoader(String[] args) {
@@ -71,6 +79,10 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		
 		String fileName = dataFile.getName().toUpperCase();
 		
+		//Ignore changelogs
+		if(fileName.startsWith("CHANGE") )
+			return Collections.emptyList();
+		
 		//Ignore the CSV versions of the files, we will process the Excel sheets
 		if(fileName.endsWith(".CSV") )
 			return Collections.emptyList();
@@ -79,6 +91,12 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		if(fileName.endsWith("_FR.XLS") || fileName.endsWith("_FR.XLSX"))
 			return Collections.emptyList();
 
+		//These are files that we explicitly know we don't want to read
+		for(Pattern excludedPattern : excludedPatterns) {
+			if(excludedPattern.matcher(fileName).matches()) 
+				return Collections.emptyList();
+		}
+		
 		try {
 			for(IntegratedRunnerMapping mapping : mappings) {
 				if((null != mapping.getFileNameMatch() && fileName.endsWith(mapping.getFileNameMatch()))

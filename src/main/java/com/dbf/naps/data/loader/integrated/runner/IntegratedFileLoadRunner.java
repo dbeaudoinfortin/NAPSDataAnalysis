@@ -29,9 +29,11 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(IntegratedFileLoadRunner.class);
 	
-	//This are all of the known headers that are derived or represent metadata rather than raw data.
+	//These are all of the known headers that are derived or represent metadata rather than raw data.
 	private static final List<String> DEFAULT_IGNORED_HEADERS = new ArrayList<String>();
 	
+	//These are all of the know sheet that can be safely ignored
+	private static final List<String> DEFAULT_IGNORED_SHEETS = new ArrayList<String>();
 	static {
 		DEFAULT_IGNORED_HEADERS.add("%"); //% Recovery
 		DEFAULT_IGNORED_HEADERS.add("RECOVERY"); //Recovery %, Recovery-AE, Recovery-PHE, etc.
@@ -68,6 +70,11 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
 		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
 		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume
+		
+		DEFAULT_IGNORED_SHEETS.add("CHANGELOG"); 
+		DEFAULT_IGNORED_SHEETS.add("STATION");
+		DEFAULT_IGNORED_SHEETS.add("METADATA"); 
+		DEFAULT_IGNORED_SHEETS.add("TSP"); 
 	}
 	
 	//State held during processing
@@ -87,12 +94,12 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	}
 	
 	/**
-	 * Main entry-point method for processing the sheet.
+	 * Main entry-point method for processing the workbook.
 	 */
 	@Override
 	protected void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting to parse data from Excel workbook " + getRawFile() + ".");
-		List<ExcelSheet> sheets = ExcelSheetFactory.getSheets(getRawFile(), getMatchingSheetNames());
+		List<ExcelSheet> sheets = ExcelSheetFactory.getSheets(getRawFile(), getMatchingSheetNames(), getExcludedSheetNames());
 		log.info(getThreadId() + ":: Found " + sheets.size() + " matching sheet(s).");
 		
 		for(ExcelSheet sheet : sheets) {
@@ -104,18 +111,24 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		return Collections.singletonList(fileType);
 	}
 	
+	protected List<String> getExcludedSheetNames() {
+		return DEFAULT_IGNORED_SHEETS;
+	}
+	
 	protected void setMethod() {
 		this.method = "INT_" + fileType;
 	}
 	
+	/**
+	 * Processing of a single sheet of the workbook.
+	 */
 	protected void processSheetFile(ExcelSheet sheet) throws Exception {
 		this.sheet = sheet;
 		
 		//Method may differ per sheet
 		setMethod();
 		
-		log.info(getThreadId() + ":: Processing sheet " + sheet.getName() + ".");
-
+		log.info(getThreadId() + ":: Processing sheet" + (sheet.getName() == null ? "" : " " + sheet.getName()) + ".");
 		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
 		
 		//The first row is skipped. It has information in the form of:
@@ -135,7 +148,13 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 						break;
 					}
 				}
-				if(null == siteIDColumn) throw new IllegalArgumentException("Could not locate the NAPS ID column.");
+				if(null == siteIDColumn) {
+					//Some of the PM25 files are just quick summaries and don't contain full data. Add a quick sanity check.
+					if(fileType.equals("PM2.5") && sheet.getCellContents(0, 0).toUpperCase().startsWith("SAMPLING DATE")) {
+						return;
+					}
+					throw new IllegalArgumentException("Could not locate the NAPS ID column.");
+				}
 				
 				preProcessRow();
 				//Done with header validation, ready to process the first row of data
@@ -149,7 +168,9 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 				//First column contains the date in the form of 11-20-84, unless the first column is being used as the NAPS Site ID
 				date = sheet.getCellDate(dateColumn, row);
 			} catch(IllegalArgumentException e) {
-				log.warn("Expected a date for column " + dateColumn + ", row " + row + ". Raw value is: " + sheet.getCellContents(0, row));
+				if(!sheet.getCellContents(dateColumn, row).startsWith("Sampling")) {
+					log.error("Expected a date for column " + dateColumn + ", row " + row + ". Raw value is: " + sheet.getCellContents(dateColumn, row));
+				}
 				continue; //This could be bad data or it could simply be a footer
 			}
 			
@@ -191,7 +212,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	 */
 	protected String[] getFirstColumnHeaders() {
 		 //COMPOUND is sometimes "COMPOUND" and sometimes "COMPOUNDS"
-		return new String[] {"COMPOUND","DATE","CONGENER","SAMPLING", "NAPS SITE ID"};
+		return new String[] {"COMPOUND","DATE","CONGENER","SAMPLING", "NAPS SITE ID", "NAPS ID"};
 	}
 	
 	/**

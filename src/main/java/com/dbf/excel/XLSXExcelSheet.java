@@ -1,5 +1,7 @@
 package com.dbf.excel;
 
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,12 +10,17 @@ import org.apache.poi.ss.usermodel.Sheet;
 public class XLSXExcelSheet extends RawDataExcelSheet {
 
 	public XLSXExcelSheet(Sheet sheet) {
+		super();
 		loadXLSXFFile(sheet);
 	}
 
 	private void loadXLSXFFile(Sheet sheet) {
 		this.sheetName = sheet.getSheetName();
-		 int rows = sheet.getPhysicalNumberOfRows();
+		 int rows = sheet.getLastRowNum();
+		 
+		 if (rows > 9000) {
+			 throw new IllegalArgumentException("Sheet is too big. Row count of " + rows + " exceeds the maximum of 9000.");
+		 }
 
 		// Determine the maximum number of columns we will need.
 		// Note that the number of columns varies per row
@@ -21,10 +28,14 @@ public class XLSXExcelSheet extends RawDataExcelSheet {
 		for (int r = 0; r < rows; r++) {
 			Row row = sheet.getRow(r);
 			if (row == null) continue;
-			cols = Math.max(cols, row.getPhysicalNumberOfCells());
+			cols = Math.max(cols, row.getLastCellNum());
 		}
+		
+		if (cols > 500) {
+			 throw new IllegalArgumentException("Sheet is too big. Column count of " + cols + " exceeds the maximum of 150.");
+		 }
 
-		rawData = new String[cols][rows];
+		rawData = new String[cols][rows+1];
 
 		// Copy the raw cell contents into the rawData array
 		for (int r = 0; r < rows; r++) {
@@ -66,4 +77,12 @@ public class XLSXExcelSheet extends RawDataExcelSheet {
                 return "Unsupported Cell Type";
         }
     }
+	
+	@Override
+	public Date getCellDate(int column, int row) {
+		String rawDate = rawData[column][row];
+		if(null == rawDate || "".equals(rawDate)) return null;
+		
+		return extractRawDate(rawDate);
+	}
 }
