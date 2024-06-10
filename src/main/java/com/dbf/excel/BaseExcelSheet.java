@@ -10,10 +10,16 @@ import org.apache.poi.ss.usermodel.DateUtil;
 public abstract class BaseExcelSheet implements ExcelSheet {
 	
 	//Note: SimpleDateFormat is not thread safe, must not be static
-	protected final SimpleDateFormat TYPICAL_DATE_FORMAT = new SimpleDateFormat("MM-dd-yy");
+	protected final SimpleDateFormat TYPICAL_DATE_FORMAT = new SimpleDateFormat("MM-dd-yy", Locale.ENGLISH);
 	protected final SimpleDateFormat NEWER_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH); //2010 and beyond
 	protected final SimpleDateFormat BAD_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
-		
+	
+	public BaseExcelSheet() {
+		TYPICAL_DATE_FORMAT.setLenient(false);
+		NEWER_DATE_FORMAT.setLenient(false);
+		BAD_DATE_FORMAT.setLenient(false);
+	}
+	
 	//Work-around for all the strange date formats across several excel versions
 	protected Date extractRawDate(String rawDate) {
 		try {
@@ -39,5 +45,4 @@ public abstract class BaseExcelSheet implements ExcelSheet {
         	}
         }
 	}
-
 }

@@ -18,6 +18,7 @@ public class XLSXFileLoadRunner extends IntegratedFileLoadRunner {
 	private static final List<String> VALID_SHEETS  = new ArrayList<String>();
 	private static final List<String> VALID_METHODS = new ArrayList<String>();
 	static {
+		//Note: must be in all upper-case to match correctly
 		VALID_SHEETS.add("PAH");
 		VALID_SHEETS.add("PM2.5");
 		VALID_SHEETS.add("ELEMENTS");
@@ -79,7 +80,6 @@ public class XLSXFileLoadRunner extends IntegratedFileLoadRunner {
 				this.method = this.method + "_" + method;
 				break;
 			}
-			
 		}
 	}
 	

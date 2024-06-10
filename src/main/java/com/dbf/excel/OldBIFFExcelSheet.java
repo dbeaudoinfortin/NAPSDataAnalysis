@@ -30,6 +30,7 @@ public class OldBIFFExcelSheet extends RawDataExcelSheet {
     private BOFRecord bof;
 	
 	public OldBIFFExcelSheet(File excelFile) throws IOException {
+		super();
 		loadOldBIFFFile(excelFile);
 	}
 	
