@@ -28,6 +28,7 @@
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Known Issues](#known-issues)
 - [Notes](#notes)
+- [Legal Stuff](#legal-stuff)
 
 # Overview
 Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, schema importer and visualization. 
