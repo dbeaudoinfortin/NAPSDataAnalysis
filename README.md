@@ -6,8 +6,8 @@
 
 ## Contents
 
-- [NAPS Data Analysis Toolbox](#naps-data-analysis-toolbox)
 - [Overview](#overview)
+- [Clean Data Exports](#clean-data-exports)
 - [Data Analysis](#data-analysis)
 - [Getting Started](#getting-started)
   * [Installing PostgreSQL](#installing-postgresql)
@@ -26,6 +26,7 @@
   * [NAPSIntegratedDataDownloader](#napsintegrateddatadownloader)
   * [NAPSIntegratedDataLoader](#napsintegrateddataloader)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
+- [Database Design](#database-data)
 - [Known Issues](#known-issues)
 - [Notes](#notes)
 - [Legal Stuff](#legal-stuff)
@@ -36,6 +37,16 @@ Canada National Air Pollution Surveillance Program (NAPS) data downloader, extra
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
 
 All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
+
+# Clean Data Exports
+
+(coming soon)
+
+The NAPS data is messy; the data files contain many inconsistencies in structure, formatting, labelling, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
+
+In the /exports directory you will find several files that re-publish that NAPS data but cleaned-up.
+
+If you are curious about some of the data issues I have encountered, I have started keeping track of them [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues?q=is%3Aissue+label%3A%22Data+Issue%22).
 
 # Data Analysis
 
@@ -258,16 +269,22 @@ part of your system path you can simply invoke the class by running the followin
 
 In the above example, the data will be loaded from the C:\temp\NAPSData\RawFiles directory into the database using a thread pool size of 24, and all default database connection options (see above for details).
 
+# Database Design
+
+I am using a normalized relational PostgreSQL database to store the data. I have chosen to hold the continuous data and the integrated data in separate tables to improve performance. I don't think there is a frequent need to query the data in both tables at the same time. The following diagram illustrates the schema design.
+
+
 # Known Issues
 
 This repository makes use of GitHub's built-in issue tracker. You can view all open issues [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues). Most of the issues are problems with the data files that are distributed from the NAPS website.
 
-# Notes
+# Developer Notes
 
 - Requires Java 17
 - Tested with PostgreSQL 16.3. The database should be created with the UTF-8 characterset in order to support accented characters.
 - If you want to build the jar from the source code you will need [Apache Maven](https://maven.apache.org/).
 - Other than the sample reports, everything in this toolbox should be multi-platform (supporting Windows, Linux, MacOS, etc.) and multi-architecture (supporting x86 and ARM). However, I am only one person and I have only developed and tested the code on Windows 11 x64.
+- The NAPS data is parsed from the Excel files downloaded from the website. There are 3 different Excel formats used: XLSX (Excel 2007 and later), XLS (BIFF8, Excel 5 - 1993 and later), and XLS (BIFF4, Excel 4 - 1992). For parsing XLSX, I'm using the [Apache POI](https://poi.apache.org/) library. For parsing XLS BIFF8, I'm using JXL - the [Java Excel API](https://jexcelapi.sourceforge.net/). For parsing XLS BIFF4, I could not find a library that supports it, so I build my own parser adapted from the Apache POI library's [OldExcelExtractor](https://github.com/apache/poi/blob/trunk/poi/src/main/java/org/apache/poi/hssf/extractor/OldExcelExtractor.java).
 
 # Legal Stuff
 
