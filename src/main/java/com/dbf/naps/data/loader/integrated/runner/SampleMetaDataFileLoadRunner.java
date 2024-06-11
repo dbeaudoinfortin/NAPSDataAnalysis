@@ -40,7 +40,8 @@ public class SampleMetaDataFileLoadRunner extends IntegratedFileLoadRunner {
 
 		List<IntegratedDataRecord> records = super.processRow(date);
 		
-		BigDecimal sampleVol = (null == sampleVolumeCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(sampleVolumeCol, getRow()), true);
+		String sampleVolRaw = getSheet().getCellContents(sampleVolumeCol, getRow()).replace("mL", ""); //A few data rows have units
+		BigDecimal sampleVol = (null == sampleVolumeCol) ? null : DataCleaner.extractDecimalData(sampleVolRaw, true);
 		Double sampleDuration = (null == sampleDurationCol) ? null : DataCleaner.extractDoubleData(getSheet().getCellContents(sampleDurationCol, getRow()), true);
 		BigDecimal tsp = (null == tspCol) ? null : DataCleaner.extractDecimalData(getSheet().getCellContents(tspCol, getRow()), true);
 		
