@@ -28,24 +28,24 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		mappings.add(new IntegratedRunnerMapping(CFFileLoadRunner.class, "DICHOT", "_DICH.XLS"));
 		mappings.add(new IntegratedRunnerMapping(CFFileLoadRunner.class, "PM2.5", "_PART25.XLS"));
 		
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PAH", "_PAH.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "HCB", "_HCB.XLS"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PAH", "_PAH.XLS", "ng/m³"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "HCB", "_HCB.XLS", "ng/m³"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "VOC", "_VOC.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "VOC", "_VOCS.XLS")); //One file is mis-named :) 
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLSX"));
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCB", "_PCB.XLS"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLSX", "pg/m³"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCDD", "_PCDD.XLS", "pg/m³"));
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataFileLoadRunner.class, "PCB", "_PCB.XLS", "pg/m³"));
 		
 		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "CARB", "_CARB.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "IC", "_IC.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "ICPMS", "_ICPMS.XLS"));
+		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "ICPMS", "_ICPMS.XLS", "ng/m³"));
 		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "NA", "_NA.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "NH4", "_NH4.XLS"));
 		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "SPEC", "_SPEC.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "WICPMS", "_WICPMS.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "LEV", "_LEV.XLS"));
+		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "WICPMS", "_WICPMS.XLS", "ng/m³"));
+		mappings.add(new IntegratedRunnerMapping(SpeciationFileLoadRunner.class, "LEV", "_LEV.XLS", "ng/m³"));
 		
-		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PAH", Pattern.compile("S[0-9]+_PAH_[0-9]{4}(_EN)?\\.XLSX"))); //Match S90121_PAH_2010.XLSX
+		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PAH", Pattern.compile("S[0-9]+_PAH_[0-9]{4}(_EN)?\\.XLSX"), "ng/m³")); //Match S90121_PAH_2010.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PM2.5", Pattern.compile("S[0-9]+_PM25_[0-9]{4}(_EN)?\\.XLSX"))); //Match S40103_PM25_2010.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSXFileLoadRunner.class, "PM2.5-10", Pattern.compile("S[0-9]+_PM25\\-10_[0-9]{4}(_EN)?\\.XLSX"))); //Match S30113_PM25-10_2010.XLSX
 
@@ -101,8 +101,8 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 			for(IntegratedRunnerMapping mapping : mappings) {
 				if((null != mapping.getFileNameMatch() && fileName.endsWith(mapping.getFileNameMatch()))
 					|| (null != mapping.getFileNamePattern() && mapping.getFileNamePattern().matcher(fileName).matches())) {
-					return Collections.singletonList((Runnable) mapping.getRunnerClass().getConstructor(int.class, LoaderOptions.class, SqlSessionFactory.class, File.class, String.class)
-							.newInstance(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, mapping.getFileType()));
+					return Collections.singletonList((Runnable) mapping.getRunnerClass().getConstructor(int.class, LoaderOptions.class, SqlSessionFactory.class, File.class, String.class, String.class)
+							.newInstance(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, mapping.getFileType(), mapping.getUnits()));
 				}
 			}
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException

@@ -6,13 +6,26 @@ import org.apache.ibatis.annotations.Select;
 
 public interface DataMapper {
 	
-	@Select("SELECT id from naps.pollutants where name = #{name} AND method = #{method}")
-	public Integer getPollutantID(String name, String method);
+	@Select("SELECT id from naps.pollutants where name = #{name}")
+	public Integer getPollutantID(String name);
 	
-	@Insert("INSERT into naps.pollutants (name, method)"
-			+ " values (#{name}, #{method})"
+	@Insert("INSERT into naps.pollutants (name)"
+			+ " values (#{name})"
 			+ " ON CONFLICT DO NOTHING;")
-	public int insertPollutant(String name, String method);
+	public int insertPollutant(String name);
+	
+	@Select("<script> "
+			+ "SELECT id from naps.methods where dataset = #{dataset} and report_type = #{reportType} and method "
+			+ "<if test=\"method != null\">= #{method}</if>"
+			+ "<if test=\"method == null\">IS NULL</if>"
+			+ " and units = #{units}"
+			+ "</script>")
+	public Integer getMethodID(String dataset, String reportType, String method, String units);
+	
+	@Insert("INSERT into naps.methods (dataset, report_type, method, units)"
+			+ " values (#{dataset}, #{reportType}, #{method}, #{units})"
+			+ " ON CONFLICT DO NOTHING;")
+	public int insertMethod(String dataset, String reportType, String method, String units);
 	
 	@Select("SELECT id from naps.sites where NAPS_id = #{NAPSId}")
 	public Integer getSiteID(Integer NAPSId);

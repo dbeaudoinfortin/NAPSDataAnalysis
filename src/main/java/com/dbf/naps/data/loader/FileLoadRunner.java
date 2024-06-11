@@ -19,8 +19,11 @@ public abstract class FileLoadRunner implements Runnable {
 	//Holds a mapping of NAPSID to SiteID, shared across threads
 	private static final Map<Integer, Integer> siteIDLookup = new ConcurrentHashMap<Integer, Integer>(300);
 	
-	//Holds a mapping of lookup key (Compound_Method) to PollutantID, shared across threads
-	private static final Map<String, Integer> pollutantIDLookup = new ConcurrentHashMap<String, Integer>(20);
+	//Holds a mapping of PollutantName to PollutantID, shared across threads
+	private static final Map<String, Integer> pollutantIDLookup = new ConcurrentHashMap<String, Integer>(200);
+	
+	//Holds a mapping of lookupKey (dataset, report_type, method) to MethodID, shared across threads
+	private static final Map<String, Integer> methodIDLookup = new ConcurrentHashMap<String, Integer>(50);
 	
 	private final int threadId;
 	private final LoaderOptions config;
@@ -100,23 +103,42 @@ public abstract class FileLoadRunner implements Runnable {
 		}
 	}
 	
-	protected Integer getPollutantID(String rawPollutantName, String method) {
-		String lookupKey = rawPollutantName + "_" + method;
+	protected Integer getPollutantID(String rawPollutantName) {
 		
 		//If one thread stamps overrides the data of another it's no big deal
-		return pollutantIDLookup.computeIfAbsent(lookupKey, pollutantName -> {
+		return pollutantIDLookup.computeIfAbsent(rawPollutantName, pollutantName -> {
 			Integer pollutantID = null;
 			pollutantName = PollutantMapping.lookupPollutantName(pollutantName);
 			//May or may not insert, let the DB manage contention
 			try(SqlSession session = sqlSessionFactory.openSession(true)) {
 				DataMapper mapper = session.getMapper(DataMapper.class);
-				mapper.insertPollutant(pollutantName, method);
-				pollutantID = mapper.getPollutantID(pollutantName, method);
+				mapper.insertPollutant(pollutantName);
+				pollutantID = mapper.getPollutantID(pollutantName);
 			}
-			if(null == pollutantID) {
-				throw new IllegalArgumentException("Could not find matching Pollutant ID for compound " + rawPollutantName + ", and method " + method);
+			if(null == pollutantID) { //Sanity check, should be impossible
+				throw new IllegalArgumentException("Could not find a matching pollutant ID with name " + rawPollutantName);
 			}
 			return pollutantID;
+		});
+	}
+	
+	protected Integer getMethodID(String dataset, String reportType, String method, String units) {
+		String lookupKey = dataset + "_" + reportType + "_" + method + "_" + units;
+		
+		//If one thread stamps overrides the data of another it's no big deal
+		return methodIDLookup.computeIfAbsent(lookupKey, key -> {
+			Integer methodID = null;
+
+			//May or may not insert, let the DB manage contention
+			try(SqlSession session = sqlSessionFactory.openSession(true)) {
+				DataMapper mapper = session.getMapper(DataMapper.class);
+				mapper.insertMethod(dataset, reportType, method, units);
+				methodID = mapper.getMethodID(dataset, reportType, method, units);
+			}
+			if(null == methodID) { //Sanity check, should be impossible
+				throw new IllegalArgumentException("Could not find a matching method ID using lookup key: " + key);
+			}
+			return methodID;
 		});
 	}
 

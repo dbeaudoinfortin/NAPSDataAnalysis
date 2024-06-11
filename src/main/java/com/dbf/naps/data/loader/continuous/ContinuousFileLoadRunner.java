@@ -27,7 +27,6 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 	
 	private static final CSVFormat csvFormat;
 	
-
 	private static final Long ONE_HOUR_MS = 60*60*1000L;
 	
 	static {
@@ -46,12 +45,11 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 	
-	
 	@Override
 	public void processFile() throws Exception {
 		log.info(getThreadId() + ":: Starting CSV parsing for file " + getRawFile() + ".");
 		List<ContinuousDataRecord> records = new ArrayList<ContinuousDataRecord>(100);
-		
+
 		//Load all the rows into memory. Let's assume we don't run out of memory. :) 
 		try (Reader reader = new FileReader(getRawFile(), StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
 			for(CSVRecord line : parser) {
@@ -62,25 +60,39 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 				}
 			
 				//More sanity checks, the line needs to start with a known pollutant
-				String compoudString = line.get(0).replace(".", ""); //PM2.5 -> PM25
+				String compoudString = line.get(0).replace(".", "").toUpperCase(); //PM2.5 -> PM25
 				if(!Compound.contains(compoudString)) continue;
 				
-				boolean isPM25 = compoudString.equalsIgnoreCase(Compound.PM25.name());
+				boolean isPM25 = compoudString.equals(Compound.PM25.name());
 				if(!((isPM25 && line.size() == 32) || (!isPM25 &&  line.size() == 31))) {
 					throw new IllegalArgumentException("Wrong number of columns (" + line.size() + ") on row " + line.getRecordNumber() + ". Expected " + (isPM25? "32.":"31."));
 				}
 				
 				int columnOffset = isPM25 ? 1:0;
-				String method = "CONT";
+				String method = null;
 				if(isPM25) {
-					//Append the PM25-specific method to the overall method
-					method += "_" + line.get(1); 
+					//Only PM25 has a specific method
+					method = line.get(1); 
+				}
+				
+				//The units are expected to be consistent for each compound type
+				String units = null;
+				if (compoudString.equals(Compound.CO.name())) {
+					units = "ppm";
+				} else if (compoudString.equals(Compound.SO2.name()) || compoudString.equals(Compound.O3.name())) {
+					units = "ppb";
+				} else if(isPM25 || compoudString.equals(Compound.PM10.name()) 
+						         || compoudString.equals(Compound.NOX.name())
+						         || compoudString.equals(Compound.NO2.name())
+						         || compoudString.equals(Compound.NO.name())) {
+					units = "µg/m³";
 				}
 				
 				//We create 24 records per CSV line, 1 per hour
 				for(int hour = 0; hour < 24; hour++) {
 					ContinuousDataRecord record = new ContinuousDataRecord();
-					record.setPollutantId(getPollutantID(compoudString, method));
+					record.setPollutantId(getPollutantID(compoudString));
+					record.setMethodId(getMethodID("Continuous", compoudString, method, units));
 					record.setSiteId(getSiteID(
 							line.get(1 + columnOffset),
 							line.get(2 + columnOffset),

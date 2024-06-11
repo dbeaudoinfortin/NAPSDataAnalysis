@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
@@ -38,8 +41,11 @@ public class XLSXFileLoadRunner extends IntegratedFileLoadRunner {
 		VALID_METHODS.add("IC");
 	}
 	
-	public XLSXFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method) {
-		super(threadId, config, sqlSessionFactory, rawFile, method);
+	//Contains the units (eg. "ng/m³") for each of the data columns. Cached for faster lookup
+	private final Map<String, String> columnUnits = new HashMap<String, String>(50);
+	
+	public XLSXFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, method, units);
 	}
 
 	//Store these column indexes so we only have to look them up once for the entire sheet 
@@ -65,19 +71,29 @@ public class XLSXFileLoadRunner extends IntegratedFileLoadRunner {
 	@Override
 	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
 		//Strip the abbreviation out of the column header
-		columnHeader = DataCleaner.replaceColumnHeaderAbbreviation(columnHeader); 
+		columnHeader = DataCleaner.replaceColumnHeaderAbbreviation(columnHeader);
+		
+		//Override the default units using the value explicitly defined above the column header
+		this.units = columnUnits.computeIfAbsent(columnHeader, header-> {
+			String units = getSheet().getCellContents(getColumn(), this.getHeaderRowNumber()-1).trim();
+			if("".equals(units)) {
+				throw new IllegalArgumentException("Unable to locate the units for " + header + " on column " + getColumn());
+			}
+			units = units.replace("m3", "m³");
+			return units;
+		});
+						
 		return super.processSingleRecord(columnHeader, cellValue, date);
 	}
 	
 	@Override
 	protected void setMethod() {
-		super.setMethod();
 		String sheetNameUpper = getSheet().getName().toUpperCase();
 		
 		//Other sheets may have the same data but using a different method
 		for (String method : VALID_METHODS) {
 			if(sheetNameUpper.contains(method)) {
-				this.method = this.method + "_" + method;
+				this.method = method;
 				break;
 			}
 		}
