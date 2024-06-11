@@ -15,8 +15,8 @@ import com.dbf.naps.data.utilities.DataCleaner;
  */
 public class SampleMetaDataFileLoadRunner extends IntegratedFileLoadRunner {
 
-	public SampleMetaDataFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method) {
-		super(threadId, config, sqlSessionFactory, rawFile, method);
+	public SampleMetaDataFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, method, units);
 	}
 
 	//Store these column indexes so we only have to look them up once for the entire sheet 

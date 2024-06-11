@@ -2,35 +2,36 @@ CREATE SCHEMA IF NOT EXISTS naps;
 
 CREATE TABLE IF NOT EXISTS naps.pollutants
 (
-   id SERIAL NOT NULL,
-   name VARCHAR(255) NOT NULL,
-   method VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id)
+   id SERIAL PRIMARY KEY,
+   name VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_pollutants_name ON naps.pollutants (name, method ASC);
-CREATE INDEX IF NOT EXISTS idx_pollutants_method ON naps.pollutants (method ASC);
+CREATE TABLE IF NOT EXISTS naps.methods
+(
+   id SERIAL PRIMARY KEY,
+   dataset VARCHAR(15) NOT NULL,
+   report_type VARCHAR(15) NOT NULL,
+   method VARCHAR(10) NULL,
+   units VARCHAR(10) NOT NULL,
+   UNIQUE NULLS NOT DISTINCT (dataset, report_type, method, units)
+);
 
 CREATE TABLE IF NOT EXISTS naps.sites
 (
-   id            SERIAL NOT NULL,
-   NAPS_id       int not null,
-   station_name  VARCHAR(255) null,
+   id            SERIAL PRIMARY KEY,
+   NAPS_id       int NOT NULL UNIQUE,
+   station_name  VARCHAR(255) NULL,
    city_name     VARCHAR(255) NOT NULL,
    prov_terr     VARCHAR(50) NOT NULL,
    latitude      NUMERIC(16,12) NOT NULL,
    longitude     NUMERIC(16,12) NOT NULL,
-   site_type     VARCHAR(2) null,
-   urbanization  VARCHAR(2) null,
-   neighbourhood VARCHAR(2) null,
-   land_use      VARCHAR(1) null,
-   scale         VARCHAR(2) null,
-   elevation     int null,
-   PRIMARY KEY (id)
+   site_type     VARCHAR(2) NULL,
+   urbanization  VARCHAR(2) NULL,
+   neighbourhood VARCHAR(2) NULL,
+   land_use      VARCHAR(1) NULL,
+   scale         VARCHAR(2) NULL,
+   elevation     int NULL
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_site_NAPS_id ON naps.sites (NAPS_id ASC);
-
 CREATE INDEX IF NOT EXISTS idx_sites_prov_terr ON naps.sites (prov_terr ASC);
 CREATE INDEX IF NOT EXISTS idx_sites_latitude ON naps.sites (latitude ASC);
 CREATE INDEX IF NOT EXISTS idx_sites_longitude ON naps.sites (longitude ASC);
@@ -44,15 +45,16 @@ CREATE INDEX IF NOT EXISTS idx_sites_elevation ON naps.sites (elevation ASC);
 CREATE TABLE IF NOT EXISTS naps.continuous_data
 (
    site_id int NOT NULL,
-   pollutant_id int not null,
+   pollutant_id int NOT NULL,
+   method_id int NOT NULL,
    date_time timestamp NOT NULL,
-   year smallint not null,
-   month smallint not null,
-   day smallint not null,
-   hour smallint not null,
-   day_of_week smallint not null,
+   year smallint NOT NULL,
+   month smallint NOT NULL,
+   day smallint NOT NULL,
+   hour smallint NOT NULL,
+   day_of_week smallint NOT NULL,
    data NUMERIC(8,3) NOT NULL,
-   PRIMARY KEY (site_id, pollutant_id, date_time),
+   PRIMARY KEY (site_id, pollutant_id, method_id, date_time),
    CONSTRAINT fk_continuous_data_site_id
 			    FOREIGN KEY (site_id)
 			    REFERENCES naps.sites (id)
@@ -60,9 +62,13 @@ CREATE TABLE IF NOT EXISTS naps.continuous_data
    CONSTRAINT fk_continuous_data_pollutant_id
 			    FOREIGN KEY (pollutant_id)
 			    REFERENCES naps.pollutants (id)
+			    ON DELETE CASCADE,
+   CONSTRAINT fk_continuous_data_method_id
+			    FOREIGN KEY (method_id)
+			    REFERENCES naps.methods (id)
 			    ON DELETE CASCADE
 );
-
+CREATE INDEX IF NOT EXISTS idx_continuous_data_method_id ON naps.continuous_data (method_id ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_pollutant_id ON naps.continuous_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_date_time ON naps.continuous_data (date_time ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_year ON naps.continuous_data (year ASC);
@@ -73,15 +79,16 @@ CREATE INDEX IF NOT EXISTS idx_continuous_data_day_of_week ON naps.continuous_da
 CREATE TABLE IF NOT EXISTS naps.integrated_data
 (
    site_id int NOT NULL,
-   pollutant_id int not null,
+   pollutant_id int NOT NULL,
+   method_id int NOT NULL,
    date_time timestamp NOT NULL,
-   year smallint not null,
-   month smallint not null,
-   day smallint not null,
-   day_of_week smallint not null,
-   fine boolean null,
-   cartridge VARCHAR(2) null,
-   media VARCHAR(2) null,
+   year smallint NOT NULL,
+   month smallint NOT NULL,
+   day smallint NOT NULL,
+   day_of_week smallint NOT NULL,
+   fine boolean NULL,
+   cartridge VARCHAR(2) NULL,
+   media VARCHAR(2) NULL,
    sample_mass NUMERIC(12,6) NULL,
    sample_vol NUMERIC(12,6) NULL,
    sample_duration double precision NULL,
@@ -94,10 +101,14 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    CONSTRAINT fk_integrated_data_pollutant_id
 			    FOREIGN KEY (pollutant_id)
 			    REFERENCES naps.pollutants (id)
+			    ON DELETE CASCADE,
+   CONSTRAINT fk_integrated_data_method_id
+			    FOREIGN KEY (method_id)
+			    REFERENCES naps.methods (id)
 			    ON DELETE CASCADE
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, date_time, fine, cartridge, media);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, method_id, date_time, fine, cartridge, media) NULLS NOT DISTINCT;
+CREATE INDEX IF NOT EXISTS idx_integrated_data_method_id ON naps.integrated_data (method_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_pollutant_id ON naps.integrated_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_date_time ON naps.integrated_data (date_time ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_year ON naps.integrated_data (year ASC);

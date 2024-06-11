@@ -7,6 +7,7 @@ public class DataRecord {
 
 	private Integer siteId;
 	private Integer pollutantId;
+	private Integer methodId;
 	private Date datetime;
 	private Integer year;
 	private Integer month;
@@ -15,17 +16,6 @@ public class DataRecord {
 	private BigDecimal data;
 
 	public DataRecord() {}
-	
-	public DataRecord(DataRecord other) {
-		this.siteId = other.siteId;
-		this.pollutantId = other.pollutantId;
-		this.datetime = other.datetime;
-		this.year = other.year;
-		this.month = other.month;
-		this.day = other.day;
-		this.dayOfWeek = other.dayOfWeek;
-		this.data = other.data;
-	}
 
 	public Integer getSiteId() {
 		return siteId;
@@ -95,5 +85,13 @@ public class DataRecord {
 	
 	public void setData(BigDecimal data) {
 		this.data = data;
+	}
+
+	public Integer getMethodId() {
+		return methodId;
+	}
+
+	public void setMethodId(Integer methodId) {
+		this.methodId = methodId;
 	}	
 }

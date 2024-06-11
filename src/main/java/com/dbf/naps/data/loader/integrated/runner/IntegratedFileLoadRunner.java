@@ -81,17 +81,19 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	//State held during processing
 	private ExcelSheet sheet;
 	private int row;
+	private int col;
 	protected String method;
+	protected String units;
 	
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer siteIDColumn; //Track when we have reached the NAPS ID which represents the last column
 	private final String fileType;
 	
-	
-	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType) {
+	public IntegratedFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType, String units) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 		this.fileType = fileType;
+		this.units = units;
 	}
 	
 	/**
@@ -116,9 +118,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		return DEFAULT_IGNORED_SHEETS;
 	}
 	
-	protected void setMethod() {
-		this.method = "INT_" + fileType;
-	}
+	protected void setMethod() {} //By default the method is null, do nothing here.
 	
 	/**
 	 * Processing of a single sheet of the workbook.
@@ -250,7 +250,7 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 		
 		//Data is expected to start on column 2
 		//Last column is NAPS ID and is ignored
-        for (int col = 1; col < getLastColumn(); col++) {
+        for (col = 1; col < getLastColumn(); col++) {
         	String columnHeader = getSheet().getCellContents(col, getHeaderRowNumber()).trim();
         	if(isColumnIgnored(columnHeader)) continue;
         	
@@ -266,6 +266,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	 * 
 	 */
 	private boolean isColumnIgnored(String columnHeader) {
+		if(columnHeader.equals("")) return true;
+		
 		columnHeader = columnHeader.toUpperCase();
 		//ID is a special case that uses an exact match otherwise we might match 
 		//a compound that either start or end with the letter "id"
@@ -306,7 +308,8 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
     	IntegratedDataRecord record = new IntegratedDataRecord();
 		record.setDatetime(date);
 		record.setSiteId(siteID);
-    	record.setPollutantId(getPollutantID(columnHeader, method));
+    	record.setPollutantId(getPollutantID(columnHeader));
+    	record.setMethodId(getMethodID("Integrated", fileType, method, units));
 
     	//Ignore empty cells, but not zeros
     	if(!"N.M.".equals(cellValue)) {
@@ -378,5 +381,9 @@ public class IntegratedFileLoadRunner extends FileLoadRunner {
 	
 	protected int getRow() {
 		return row;
+	}
+	
+	protected int getColumn() {
+		return col;
 	}
 }
