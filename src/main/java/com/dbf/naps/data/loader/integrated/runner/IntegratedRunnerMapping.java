@@ -4,39 +4,39 @@ import java.util.regex.Pattern;
 
 public class IntegratedRunnerMapping {
 
-	private Class<? extends IntegratedFileLoadRunner> runnerClass;
+	private Class<? extends IntegratedLoaderRunner> runnerClass;
 	private String fileType;
 	private String units = "ug/m³";
 	private String fileNameMatch;
 	private Pattern fileNamePattern;
 	
-	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, String fileNameMatch) {
+	public IntegratedRunnerMapping(Class<? extends IntegratedLoaderRunner> runnerClass, String fileType, String fileNameMatch) {
 		this.runnerClass = runnerClass;
 		this.fileType = fileType;
 		this.fileNameMatch = fileNameMatch.toUpperCase();
 	}
 	
-	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, String fileNameMatch, String units) {
+	public IntegratedRunnerMapping(Class<? extends IntegratedLoaderRunner> runnerClass, String fileType, String fileNameMatch, String units) {
 		this(runnerClass, fileType, fileNameMatch);
 		this.setUnits(units);
 	}
 	
-	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, Pattern fileNamePattern) {
+	public IntegratedRunnerMapping(Class<? extends IntegratedLoaderRunner> runnerClass, String fileType, Pattern fileNamePattern) {
 		this.runnerClass = runnerClass;
 		this.fileType = fileType;
 		this.fileNamePattern = fileNamePattern;
 	}
 	
-	public IntegratedRunnerMapping(Class<? extends IntegratedFileLoadRunner> runnerClass, String fileType, Pattern fileNamePattern, String units) {
+	public IntegratedRunnerMapping(Class<? extends IntegratedLoaderRunner> runnerClass, String fileType, Pattern fileNamePattern, String units) {
 		this(runnerClass, fileType, fileNamePattern);
 		this.setUnits(units);
 	}
 	
-	public Class<? extends IntegratedFileLoadRunner> getRunnerClass() {
+	public Class<? extends IntegratedLoaderRunner> getRunnerClass() {
 		return runnerClass;
 	}
 	
-	public void setRunnerClass(Class<IntegratedFileLoadRunner> runnerClass) {
+	public void setRunnerClass(Class<IntegratedLoaderRunner> runnerClass) {
 		this.runnerClass = runnerClass;
 	}
 	

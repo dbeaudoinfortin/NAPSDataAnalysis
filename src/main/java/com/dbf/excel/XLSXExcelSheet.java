@@ -81,7 +81,7 @@ public class XLSXExcelSheet extends RawDataExcelSheet {
 	@Override
 	public Date getCellDate(int column, int row) {
 		String rawDate = rawData[column][row];
-		if(null == rawDate || "".equals(rawDate)) return null;
+		if(null == rawDate || rawDate.isEmpty()) return null;
 		
 		return extractRawDate(rawDate);
 	}

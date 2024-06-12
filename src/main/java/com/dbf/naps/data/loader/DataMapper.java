@@ -2,7 +2,11 @@ package com.dbf.naps.data.loader;
 
 import java.math.BigDecimal;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+
+import com.dbf.naps.data.loader.records.SampleRecord;
+import com.dbf.naps.data.loader.records.SiteRecord;
 
 public interface DataMapper {
 	
@@ -26,6 +30,11 @@ public interface DataMapper {
 			+ " values (#{dataset}, #{reportType}, #{method}, #{units})"
 			+ " ON CONFLICT DO NOTHING;")
 	public int insertMethod(String dataset, String reportType, String method, String units);
+	
+	@Insert("INSERT into naps.samples (naps_sample_id, canister_id, fine, cartridge, media, sample_mass, spec_mass, dichot_mass, sample_vol, sample_duration, tsp)"
+			+ " values (#{napsID}, #{canisterID}, #{fine}, #{cartridge}, #{media}, #{mass}, #{specMass}, #{dichotMass}, #{volume}, #{duration}, #{tsp})")
+	@Options(useGeneratedKeys = true, keyProperty = "id")
+	public int insertSample(SampleRecord sample);
 	
 	@Select("SELECT id from naps.sites where NAPS_id = #{NAPSId}")
 	public Integer getSiteID(Integer NAPSId);

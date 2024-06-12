@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.NAPSActionBase;
-import com.dbf.naps.data.download.DownloaderOptions;
 import com.dbf.naps.data.download.NAPSDataDownloader;
+import com.dbf.naps.data.download.options.DownloaderOptions;
 
 public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 

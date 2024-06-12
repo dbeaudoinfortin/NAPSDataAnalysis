@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.download.YearlyFileDownloadRunner;
-import com.dbf.naps.data.download.YearlyDownloaderOptions;
+import com.dbf.naps.data.download.options.YearlyDownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.utilities.ZipUtil;
 
