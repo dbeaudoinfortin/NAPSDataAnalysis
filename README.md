@@ -273,7 +273,8 @@ In the above example, the data will be loaded from the C:\temp\NAPSData\RawFiles
 
 I am using a normalized relational PostgreSQL database to store the data. I have chosen to hold the continuous data and the integrated data in separate tables to improve performance. I don't think there is a frequent need to query the data in both tables at the same time. The following diagram illustrates the schema design.
 
-![schema diagram](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/a8cab845-24ab-4b3e-b4e8-58bd72ec1cdc)
+![schema diagram](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/fdc3b74d-f073-491b-8bdc-c811fecfcb2b)
+
 
 # Known Issues
 
