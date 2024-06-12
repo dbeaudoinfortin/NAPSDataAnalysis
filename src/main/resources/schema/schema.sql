@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS naps.methods
    id SERIAL PRIMARY KEY,
    dataset VARCHAR(15) NOT NULL,
    report_type VARCHAR(15) NOT NULL,
-   method VARCHAR(10) NULL,
+   method VARCHAR(20) NULL,
    units VARCHAR(10) NOT NULL,
    UNIQUE NULLS NOT DISTINCT (dataset, report_type, method, units)
 );
@@ -76,24 +76,42 @@ CREATE INDEX IF NOT EXISTS idx_continuous_data_month ON naps.continuous_data (mo
 CREATE INDEX IF NOT EXISTS idx_continuous_data_hour ON naps.continuous_data (hour ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_day_of_week ON naps.continuous_data (day_of_week ASC);
 
+CREATE TABLE IF NOT EXISTS naps.samples
+(
+   id SERIAL PRIMARY KEY,
+   naps_sample_id VARCHAR(15) NULL,
+   canister_id VARCHAR(15) NULL,
+   fine boolean NULL,
+   cartridge VARCHAR(10) NULL,
+   media VARCHAR(10) NULL,
+   type VARCHAR(15) NULL,
+   sample_mass NUMERIC(12,6) NULL,
+   spec_mass NUMERIC(12,6) NULL,
+   dichot_mass NUMERIC(12,6) NULL,
+   sample_vol NUMERIC(12,6) NULL,
+   sample_duration double precision NULL,
+   tsp NUMERIC(12,6) NULL
+);
+CREATE INDEX IF NOT EXISTS idx_samples_sample_id ON naps.samples (naps_sample_id ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_canister_id ON naps.samples (canister_id ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_fine ON naps.samples (fine ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_cartridge ON naps.samples (cartridge ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_media ON naps.samples (media ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_type ON naps.samples (type ASC);
+
 CREATE TABLE IF NOT EXISTS naps.integrated_data
 (
    site_id int NOT NULL,
    pollutant_id int NOT NULL,
    method_id int NOT NULL,
+   sample_id int NOT NULL,
    date_time timestamp NOT NULL,
    year smallint NOT NULL,
    month smallint NOT NULL,
    day smallint NOT NULL,
    day_of_week smallint NOT NULL,
-   fine boolean NULL,
-   cartridge VARCHAR(2) NULL,
-   media VARCHAR(2) NULL,
-   sample_mass NUMERIC(12,6) NULL,
-   sample_vol NUMERIC(12,6) NULL,
-   sample_duration double precision NULL,
-   tsp NUMERIC(12,6) NULL,
    data NUMERIC(8,3) NOT NULL,
+   PRIMARY KEY (site_id, pollutant_id, method_id, sample_id, date_time),
    CONSTRAINT fk_integrated_data_site_id
 			    FOREIGN KEY (site_id)
 			    REFERENCES naps.sites (id)
@@ -105,13 +123,17 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    CONSTRAINT fk_integrated_data_method_id
 			    FOREIGN KEY (method_id)
 			    REFERENCES naps.methods (id)
+			    ON DELETE CASCADE,
+   CONSTRAINT fk_integrated_data_sample_id
+			    FOREIGN KEY (sample_id)
+			    REFERENCES naps.samples (id)
 			    ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX IF NOT EXISTS idx_integrated_data_pk ON naps.integrated_data (site_id, pollutant_id, method_id, date_time, fine, cartridge, media) NULLS NOT DISTINCT;
 CREATE INDEX IF NOT EXISTS idx_integrated_data_method_id ON naps.integrated_data (method_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_pollutant_id ON naps.integrated_data (pollutant_id ASC);
+CREATE INDEX IF NOT EXISTS idx_integrated_data_sample_id ON naps.integrated_data (sample_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_date_time ON naps.integrated_data (date_time ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_year ON naps.integrated_data (year ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_month ON naps.integrated_data (month ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_day_of_week ON naps.integrated_data (day_of_week ASC);
-CREATE INDEX IF NOT EXISTS idx_integrated_data_fine ON naps.integrated_data (fine ASC);
+

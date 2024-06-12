@@ -1,4 +1,4 @@
-package com.dbf.naps.data.download;
+package com.dbf.naps.data.download.options;
 
 import java.time.Year;
 import org.apache.commons.cli.CommandLine;

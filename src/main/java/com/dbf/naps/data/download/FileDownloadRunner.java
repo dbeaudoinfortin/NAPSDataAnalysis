@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.download.options.DownloaderOptions;
+
 public abstract class FileDownloadRunner<O extends DownloaderOptions> implements Runnable {
 	
 	private static final Logger log = LoggerFactory.getLogger(FileDownloadRunner.class);

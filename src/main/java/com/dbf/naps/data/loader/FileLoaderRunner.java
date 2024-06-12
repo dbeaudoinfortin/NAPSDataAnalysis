@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.dbf.naps.data.globals.PollutantMapping;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public abstract class FileLoadRunner implements Runnable {
+public abstract class FileLoaderRunner implements Runnable {
 	
-	private static final Logger log = LoggerFactory.getLogger(FileLoadRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(FileLoaderRunner.class);
 	
 	//Holds a mapping of NAPSID to SiteID, shared across threads
 	private static final Map<Integer, Integer> siteIDLookup = new ConcurrentHashMap<Integer, Integer>(300);
@@ -30,7 +30,7 @@ public abstract class FileLoadRunner implements Runnable {
 	private final File rawFile;
 	private final SqlSessionFactory sqlSessionFactory;
 	
-	public FileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public FileLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		this.threadId = threadId;
 		this.config = config;
 		this.rawFile = rawFile;

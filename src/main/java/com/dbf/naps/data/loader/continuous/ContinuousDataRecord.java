@@ -1,6 +1,6 @@
 package com.dbf.naps.data.loader.continuous;
 
-import com.dbf.naps.data.loader.DataRecord;
+import com.dbf.naps.data.loader.records.DataRecord;
 
 public class ContinuousDataRecord extends DataRecord {
 

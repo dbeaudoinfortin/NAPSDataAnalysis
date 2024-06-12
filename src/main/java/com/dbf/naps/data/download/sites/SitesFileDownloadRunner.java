@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.download.DownloaderOptions;
 import com.dbf.naps.data.download.FileDownloadRunner;
+import com.dbf.naps.data.download.options.DownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 
 public class SitesFileDownloadRunner extends FileDownloadRunner<DownloaderOptions> {

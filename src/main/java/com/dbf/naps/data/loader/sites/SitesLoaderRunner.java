@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 import com.dbf.naps.data.loader.DataMapper;
-import com.dbf.naps.data.loader.FileLoadRunner;
+import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.SiteRecord;
+import com.dbf.naps.data.loader.records.SiteRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public class SitesFileLoadRunner extends FileLoadRunner {
+public class SitesLoaderRunner extends FileLoaderRunner {
 	
-	private static final Logger log = LoggerFactory.getLogger(SitesFileLoadRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(SitesLoaderRunner.class);
 	
 	private static final CSVFormat csvFormat;
 
@@ -35,7 +35,7 @@ public class SitesFileLoadRunner extends FileLoadRunner {
 				.build();
 	}
 	
-	public SitesFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public SitesLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 	

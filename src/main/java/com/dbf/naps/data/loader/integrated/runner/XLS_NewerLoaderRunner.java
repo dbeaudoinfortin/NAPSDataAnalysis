@@ -10,17 +10,17 @@ import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public class VOCFileLoadRunner extends IntegratedFileLoadRunner {
+public class XLS_NewerLoaderRunner extends SampleMetaDataLoaderRunner {
 
-	public VOCFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
+	public XLS_NewerLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
 		super(threadId, config, sqlSessionFactory, rawFile, method, units);
 	}
 	
 	@Override
-	protected IntegratedDataRecord processSingleRecord(String columnHeader, String cellValue, Date date) {
+	protected IntegratedDataRecord processDataRecord(String columnHeader, String cellValue, Date date) {
 		//Strip the units out of the headers
 		columnHeader = DataCleaner.replaceColumnHeaderUnits(columnHeader); //This uses caching
-		return super.processSingleRecord(columnHeader, cellValue, date);
+		return super.processDataRecord(columnHeader, cellValue, date);
 	}
 	
 	@Override

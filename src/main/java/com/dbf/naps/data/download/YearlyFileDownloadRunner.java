@@ -2,6 +2,8 @@ package com.dbf.naps.data.download;
 
 import java.nio.file.Path;
 
+import com.dbf.naps.data.download.options.YearlyDownloaderOptions;
+
 public abstract class YearlyFileDownloadRunner extends FileDownloadRunner<YearlyDownloaderOptions> {
 	
 	private final int year;

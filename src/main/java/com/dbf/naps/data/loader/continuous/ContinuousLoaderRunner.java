@@ -18,12 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.globals.continuous.Compound;
-import com.dbf.naps.data.loader.FileLoadRunner;
+import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 
-public class ContinuousFileLoadRunner extends FileLoadRunner {
+public class ContinuousLoaderRunner extends FileLoaderRunner {
 	
-	private static final Logger log = LoggerFactory.getLogger(ContinuousFileLoadRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(ContinuousLoaderRunner.class);
 	
 	private static final CSVFormat csvFormat;
 	
@@ -41,7 +41,7 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 	private final SimpleDateFormat EARLY_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	private final SimpleDateFormat LATE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 		
-	public ContinuousFileLoadRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
+	public ContinuousLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 	}
 	
@@ -133,7 +133,7 @@ public class ContinuousFileLoadRunner extends FileLoadRunner {
 					
 					//Save everything to the database
 					//For faster performance, do it in bulk
-					if(records.size() == 100) loadRecords(records);
+					if(records.size() == 200) loadRecords(records);
 				}
 			}
 		}

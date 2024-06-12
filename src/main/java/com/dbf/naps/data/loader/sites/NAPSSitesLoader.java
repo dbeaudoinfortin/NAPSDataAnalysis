@@ -25,6 +25,6 @@ public class NAPSSitesLoader extends NAPSDataLoader {
 	@Override
 	protected Collection<Runnable> processFile(File dataFile) {
 		if(!dataFile.getName().toLowerCase().equals("sites.csv")) return null;
-		return Collections.singletonList(new SitesFileLoadRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile));
+		return Collections.singletonList(new SitesLoaderRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile));
 	}
 }

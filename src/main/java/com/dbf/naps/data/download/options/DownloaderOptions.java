@@ -1,4 +1,4 @@
-package com.dbf.naps.data.download;
+package com.dbf.naps.data.download.options;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
