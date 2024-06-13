@@ -1,10 +1,12 @@
-package com.dbf.naps.data.loader.continuous;
+package com.dbf.naps.data.db.mappers;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
+
+import com.dbf.naps.data.records.ContinuousDataRecord;
 
 public interface ContinuousDataMapper {
 

@@ -1,4 +1,4 @@
-package com.dbf.naps.data.globals.integrated;
+package com.dbf.naps.data.loader.integrated;
 
 import java.util.ArrayList;
 import java.util.List;

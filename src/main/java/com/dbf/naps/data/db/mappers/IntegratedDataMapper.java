@@ -1,8 +1,10 @@
-package com.dbf.naps.data.loader.integrated;
+package com.dbf.naps.data.db.mappers;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
+
+import com.dbf.naps.data.records.IntegratedDataRecord;
 
 public interface IntegratedDataMapper {
 	

@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.excel.ExcelSheet;
 import com.dbf.excel.ExcelSheetFactory;
-import com.dbf.naps.data.globals.integrated.Headers;
-import com.dbf.naps.data.loader.DataMapper;
+import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.integrated.IntegratedDataMapper;
-import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
-import com.dbf.naps.data.loader.records.SampleRecord;
+import com.dbf.naps.data.loader.integrated.Headers;
+import com.dbf.naps.data.records.IntegratedDataRecord;
+import com.dbf.naps.data.records.SampleRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 /**

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
 import com.dbf.naps.data.loader.NAPSDataLoader;
 
 public class NAPSContinuousDataLoader extends NAPSDataLoader {

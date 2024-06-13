@@ -1,4 +1,4 @@
-package com.dbf.excel.Records;
+package com.dbf.excel.records;
 
 import java.util.Map;
 import java.util.function.Supplier;

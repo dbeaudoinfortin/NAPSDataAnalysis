@@ -18,7 +18,7 @@ import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.excel.Records.OldDimensionsRecord;
+import com.dbf.excel.records.OldDimensionsRecord;
 
 public class OldBIFFExcelSheet extends RawDataExcelSheet {
 	

@@ -1,12 +1,12 @@
-package com.dbf.naps.data.loader;
+package com.dbf.naps.data.db.mappers;
 
 import java.math.BigDecimal;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
-import com.dbf.naps.data.loader.records.SampleRecord;
-import com.dbf.naps.data.loader.records.SiteRecord;
+import com.dbf.naps.data.records.SampleRecord;
+import com.dbf.naps.data.records.SiteRecord;
 
 public interface DataMapper {
 	

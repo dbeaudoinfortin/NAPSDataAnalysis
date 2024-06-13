@@ -3,7 +3,7 @@ package com.dbf.naps.data.loader.integrated.runner;
 import java.io.File;
 import org.apache.ibatis.session.SqlSessionFactory;
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.records.SampleRecord;
+import com.dbf.naps.data.records.SampleRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 /**

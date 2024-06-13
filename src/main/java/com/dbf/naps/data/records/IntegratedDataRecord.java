@@ -1,6 +1,4 @@
-package com.dbf.naps.data.loader.integrated;
-
-import com.dbf.naps.data.loader.records.DataRecord;
+package com.dbf.naps.data.records;
 
 public class IntegratedDataRecord extends DataRecord {
 

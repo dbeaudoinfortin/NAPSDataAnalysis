@@ -1,4 +1,4 @@
-package com.dbf.naps.data.loader.records;
+package com.dbf.naps.data.records;
 
 import java.math.BigDecimal;
 import java.util.Date;
