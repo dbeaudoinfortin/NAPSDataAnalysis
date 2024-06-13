@@ -9,6 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.globals.PollutantMapping;
 import com.dbf.naps.data.utilities.DataCleaner;
 

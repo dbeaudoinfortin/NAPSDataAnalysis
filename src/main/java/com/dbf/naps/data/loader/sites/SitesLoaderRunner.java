@@ -14,11 +14,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
-import com.dbf.naps.data.loader.DataMapper;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.records.SiteRecord;
+import com.dbf.naps.data.records.SiteRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 public class SitesLoaderRunner extends FileLoaderRunner {

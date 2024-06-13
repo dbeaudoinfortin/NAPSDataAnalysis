@@ -8,9 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.session.SqlSessionFactory;
+
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
-import com.dbf.naps.data.loader.records.SampleRecord;
+import com.dbf.naps.data.records.IntegratedDataRecord;
+import com.dbf.naps.data.records.SampleRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 /**

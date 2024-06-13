@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
+
 import com.dbf.naps.data.loader.LoaderOptions;
-import com.dbf.naps.data.loader.integrated.IntegratedDataRecord;
+import com.dbf.naps.data.records.IntegratedDataRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 public class XLS_NewerLoaderRunner extends SampleMetaDataLoaderRunner {

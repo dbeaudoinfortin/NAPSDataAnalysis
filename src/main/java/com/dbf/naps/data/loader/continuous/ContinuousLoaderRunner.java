@@ -17,9 +17,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
 import com.dbf.naps.data.globals.continuous.Compound;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
+import com.dbf.naps.data.records.ContinuousDataRecord;
 
 public class ContinuousLoaderRunner extends FileLoaderRunner {
 	

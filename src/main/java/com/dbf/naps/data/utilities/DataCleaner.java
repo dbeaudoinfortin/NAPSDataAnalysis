@@ -145,4 +145,16 @@ public class DataCleaner {
 			return columnHeader.replace(" (ug/m3)", "").replace(" ug/m3", ""); //Sometimes we have brackets, sometimes we don't ¯\_(ツ)_/¯
 		});	
 	}
+	
+	public static String sanatizeFileName(String fileName) {
+		fileName.replace("/", "-");
+		fileName.replace("\\", "-");
+		fileName.replace("\"", "'");
+		fileName.replace("*", "#");
+		fileName.replace(":", ";");
+		fileName.replace("|", "-");
+		fileName.replace("<", "");
+		fileName.replace(">", "");
+		return fileName;
+	}
 }

@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.NAPSDataLoader;
 import com.dbf.naps.data.loader.integrated.runner.XLS_SimpleLoaderRunner;
