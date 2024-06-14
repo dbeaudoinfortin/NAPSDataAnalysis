@@ -15,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.NAPSActionBase;
-import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.db.mappers.MethodMapper;
+import com.dbf.naps.data.db.mappers.PollutantMapper;
+import com.dbf.naps.data.db.mappers.SiteMapper;
 import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class NAPSDBAction<O extends DBOptions> extends NAPSActionBase<O> {
@@ -54,7 +56,9 @@ public abstract class NAPSDBAction<O extends DBOptions> extends NAPSActionBase<O
 		Environment environment = new Environment("local", transactionFactory, dbDataSource);
 		
 		Configuration configuration = new Configuration(environment);
-		configuration.addMapper(DataMapper.class);
+		configuration.addMapper(PollutantMapper.class);
+		configuration.addMapper(MethodMapper.class);
+		configuration.addMapper(SiteMapper.class);
 		
 		for(Class<?> clazz :  getDBMappers()) {
 			configuration.addMapper(clazz);

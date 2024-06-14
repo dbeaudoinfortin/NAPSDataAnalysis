@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.excel.ExcelSheet;
 import com.dbf.excel.ExcelSheetFactory;
-import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
+import com.dbf.naps.data.db.mappers.SampleMapper;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.Headers;
@@ -268,7 +268,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	        	if(null == sampleId) {
 	        		SampleRecord sample = processSampleRecord();
 	        		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-	        			session.getMapper(DataMapper.class).insertSample(sample);
+	        			session.getMapper(SampleMapper.class).insertSample(sample);
 	    			}
 	        		sampleId = sample.getId();
 	        		if (null == sampleId)

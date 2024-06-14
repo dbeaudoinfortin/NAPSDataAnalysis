@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
+import com.dbf.naps.data.db.mappers.SampleMapper;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.NAPSDataLoader;
 import com.dbf.naps.data.loader.integrated.runner.XLS_SimpleLoaderRunner;
@@ -72,7 +73,7 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 
 	@Override
 	protected List<Class<?>> getDBMappers() {
-		return List.of(IntegratedDataMapper.class);
+		return List.of(IntegratedDataMapper.class, SampleMapper.class);
 	}
 
 	@Override

@@ -13,19 +13,17 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.BaseRunner;
 import com.dbf.naps.data.download.options.DownloaderOptions;
 
-public abstract class FileDownloadRunner<O extends DownloaderOptions> implements Runnable {
+public abstract class FileDownloadRunner<O extends DownloaderOptions> extends BaseRunner<O> {
 	
 	private static final Logger log = LoggerFactory.getLogger(FileDownloadRunner.class);
 	
-	private final int threadId;
-	private final O config;
 	private final Path downloadPath;
 	
 	public FileDownloadRunner(int threadId, O config, Path downloadPath) {
-		this.threadId = threadId;
-		this.config = config;
+		super(threadId, config);
 		this.downloadPath = downloadPath;
 	}
 	
@@ -34,17 +32,17 @@ public abstract class FileDownloadRunner<O extends DownloaderOptions> implements
 		
 		Path path = downloadPath.resolve(fileName.toString());
 		File file = path.toFile();
-		log.info(threadId + ":: using file path " + path);
+		log.info(getThreadId() + ":: using file path " + path);
 		
 		if(file.exists()) {
 			if(file.isDirectory()) {
-				 log.error(threadId + ":: directory found at file location " + path);
+				 log.error(getThreadId() + ":: directory found at file location " + path);
 				 throw new IOException("Directory found at file location " + path);
-			} else if (config.isOverwriteFiles()) {
-				log.info(threadId + ":: existing file found at path " + path + ". Deleting file.");
+			} else if (getConfig().isOverwriteFiles()) {
+				log.info(getThreadId() + ":: existing file found at path " + path + ". Deleting file.");
 				Files.delete(path);
 			} else {
-				log.info(threadId + ":: existing file found at path " + path + ". Skipping file.");
+				log.info(getThreadId() + ":: existing file found at path " + path + ". Skipping file.");
 				throw new IOException("Existing file found at path " + path);
 			}
 		}
@@ -67,17 +65,5 @@ public abstract class FileDownloadRunner<O extends DownloaderOptions> implements
 			Files.delete(filePath);
 		}
 		log.info(getThreadId() + ":: File download for URL " + url + " resulted in status code " + response.statusCode());
-	}
-	
-	public int getThreadId() {
-		return threadId;
-	}
-
-	public Path getDownloadPath() {
-		return downloadPath;
-	}
-	
-	public O getOptions() {
-		return config;
 	}
 }
