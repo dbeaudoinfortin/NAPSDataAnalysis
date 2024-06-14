@@ -14,7 +14,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.db.mappers.SiteMapper;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
@@ -94,7 +94,7 @@ public class SitesLoaderRunner extends FileLoaderRunner {
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				//Shouldn't time out, there aren't that many records
 				for(SiteRecord site: records) {
-					session.getMapper(DataMapper.class).insertSiteFull(site);
+					session.getMapper(SiteMapper.class).insertSiteFull(site);
 				}
 			}
 		}

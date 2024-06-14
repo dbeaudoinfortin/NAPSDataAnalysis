@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS naps.continuous_data
 			    REFERENCES naps.methods (id)
 			    ON DELETE CASCADE
 );
+CREATE INDEX IF NOT EXISTS idx_continuous_data_site_id ON naps.continuous_data (site_id ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_method_id ON naps.continuous_data (method_id ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_pollutant_id ON naps.continuous_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_date_time ON naps.continuous_data (date_time ASC);
@@ -129,6 +130,7 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
 			    REFERENCES naps.samples (id)
 			    ON DELETE CASCADE
 );
+CREATE INDEX IF NOT EXISTS idx_integrated_data_site_id ON naps.integrated_data (site_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_method_id ON naps.integrated_data (method_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_pollutant_id ON naps.integrated_data (pollutant_id ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_sample_id ON naps.integrated_data (sample_id ASC);

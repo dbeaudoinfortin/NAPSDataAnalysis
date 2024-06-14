@@ -9,11 +9,14 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.db.DBRunner;
+import com.dbf.naps.data.db.mappers.MethodMapper;
+import com.dbf.naps.data.db.mappers.PollutantMapper;
+import com.dbf.naps.data.db.mappers.SiteMapper;
 import com.dbf.naps.data.globals.PollutantMapping;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public abstract class FileLoaderRunner implements Runnable {
+public abstract class FileLoaderRunner extends DBRunner<LoaderOptions> {
 	
 	private static final Logger log = LoggerFactory.getLogger(FileLoaderRunner.class);
 	
@@ -26,16 +29,11 @@ public abstract class FileLoaderRunner implements Runnable {
 	//Holds a mapping of lookupKey (dataset, report_type, method) to MethodID, shared across threads
 	private static final Map<String, Integer> methodIDLookup = new ConcurrentHashMap<String, Integer>(50);
 	
-	private final int threadId;
-	private final LoaderOptions config;
 	private final File rawFile;
-	private final SqlSessionFactory sqlSessionFactory;
 	
 	public FileLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile) {
-		this.threadId = threadId;
-		this.config = config;
+		super(threadId, config, sqlSessionFactory);
 		this.rawFile = rawFile;
-		this.sqlSessionFactory = sqlSessionFactory;
 	}
 	
 	@Override
@@ -60,8 +58,8 @@ public abstract class FileLoaderRunner implements Runnable {
 				Integer siteID = null;
 				
 				//May or may not insert, let the DB manage contention
-				try(SqlSession session = sqlSessionFactory.openSession(true)) {					
-					DataMapper mapper = session.getMapper(DataMapper.class);
+				try(SqlSession session = getSqlSessionFactory().openSession(true)) {					
+					SiteMapper mapper = session.getMapper(SiteMapper.class);
 					mapper.insertSitePartial(NAPSID, cityName, provTerr.toUpperCase(), DataCleaner.parseLatitude(latitudeRaw), DataCleaner.parseLongitude(longitudeRaw));
 					siteID = mapper.getSiteID(NAPSID);
 				}
@@ -90,8 +88,8 @@ public abstract class FileLoaderRunner implements Runnable {
 			return siteIDLookup.computeIfAbsent(NAPSID, key -> {
 				Integer siteID = null;
 				
-				try(SqlSession session = sqlSessionFactory.openSession(true)) {
-					siteID = session.getMapper(DataMapper.class).getSiteID(NAPSID);
+				try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+					siteID = session.getMapper(SiteMapper.class).getSiteID(NAPSID);
 				}
 				
 				if(null == siteID) {
@@ -111,8 +109,8 @@ public abstract class FileLoaderRunner implements Runnable {
 			Integer pollutantID = null;
 			pollutantName = PollutantMapping.lookupPollutantName(pollutantName);
 			//May or may not insert, let the DB manage contention
-			try(SqlSession session = sqlSessionFactory.openSession(true)) {
-				DataMapper mapper = session.getMapper(DataMapper.class);
+			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+				PollutantMapper mapper = session.getMapper(PollutantMapper.class);
 				mapper.insertPollutant(pollutantName);
 				pollutantID = mapper.getPollutantID(pollutantName);
 			}
@@ -131,8 +129,8 @@ public abstract class FileLoaderRunner implements Runnable {
 			Integer methodID = null;
 
 			//May or may not insert, let the DB manage contention
-			try(SqlSession session = sqlSessionFactory.openSession(true)) {
-				DataMapper mapper = session.getMapper(DataMapper.class);
+			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+				MethodMapper mapper = session.getMapper(MethodMapper.class);
 				mapper.insertMethod(dataset, reportType, method, units);
 				methodID = mapper.getMethodID(dataset, reportType, method, units);
 			}
@@ -143,19 +141,7 @@ public abstract class FileLoaderRunner implements Runnable {
 		});
 	}
 
-	public int getThreadId() {
-		return threadId;
-	}
-
-	public LoaderOptions getConfig() {
-		return config;
-	}
-
 	public File getRawFile() {
 		return rawFile;
-	}
-
-	public SqlSessionFactory getSqlSessionFactory() {
-		return sqlSessionFactory;
 	}
 }

@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.NAPSDBAction;
+import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.records.DataGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
@@ -47,71 +49,59 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 			return;
 		}
 		
-		createTasksPerYear(futures);
+		log.info("Calculating file data groups based on the provided arguments.");
+		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
+		{
+			List<DataGroup> dataGroups = getDataGroups(getOptions().getYearStart(), getOptions().getYearEnd(),
+					getOptions().getPollutants(),  getOptions().getSites(),
+					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite());
+					
+			log.info(dataGroups.size() + " file(s) will be created.");
+			for(DataGroup group : dataGroups) {
+				processFile(futures, group.getYear(), group.getPollutantName(), group.getSiteID());
+			}
+		} else {
+			processFile(futures, null, null, null);
+		}
+
 		log.info(futures.size() + " task(s) have been created. Waiting for completion...");
 		waitForTaskCompletion(futures);
 	}
 	
-	private void createTasksPerYear(List<Future<?>> futures) {
-		if (getOptions().isFilePerYear()) {
-			//Not every year specified might actually exist in the database
-			Set<Integer> allYears = null;
-			for (int year = getOptions().getYearStart(); year <= getOptions().getYearEnd(); year++) {
-				if (allYears.contains(year)) createTasksPerPollutant(futures, year);
-			}
-		} else {
-			createTasksPerPollutant(futures, null);
-		}
-	}
-	
-	private void createTasksPerPollutant(List<Future<?>> futures, Integer year) {
-		if (getOptions().isFilePerPollutant()) {
-			//Not every pollutant specified might actually exist in the database
-			Set<String> allPollutants = null;
-			for(String pollutant : getOptions().getPollutants()) {
-				if (allPollutants.contains(pollutant)) createTasksPerSite(futures, year, pollutant);
-			}
-		} else {
-			createTasksPerSite(futures, year, null);
-		}
-	}
-	
-	private void createTasksPerSite(List<Future<?>> futures, Integer year, String pollutant) {
-		if (getOptions().isFilePerSite()) {
-			//Not every site specified might actually exist in the database
-			Set<Integer> allSites = null;
-			for(Integer site : getOptions().getSites()) {
-				if (allSites.contains(site)) processFile(futures, year, pollutant, site);
-			}
-		} else {
-			processFile(futures, year, pollutant, null);
-		}
-	}
+	protected abstract List<DataGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,  Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite);
 	
 	private void processFile(List<Future<?>> futures, Integer year, String pollutant, Integer site) {
 		StringBuilder fileName = new StringBuilder(getFilePrefix());
 		if(null != pollutant) {
 			fileName.append("_");
-			fileName.append("pollutant");
+			fileName.append(pollutant);
 		}
 		if(null != site) {
 			fileName.append("_");
-			fileName.append("site");
+			fileName.append(site);
 		}
 		if(null != year) {
 			fileName.append("_");
-			fileName.append("year");
+			fileName.append(year);
 		}
 		fileName.append(".csv");
 		
 		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
 	}
 	
-	protected abstract Runnable processFile(File dataFile, Integer year, String pollutant, Integer site);
-	
-	protected abstract String getFilePrefix();
+	protected Runnable processFile(File dataFile, Integer year, String pollutant, Integer site) {
+		return new ExporterRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, getDataMapperClass());
+	}
 	
 	public Class<ExporterOptions> getOptionsClass(){
 		return ExporterOptions.class;
 	}
+	
+	@Override
+	protected List<Class<?>> getDBMappers() {
+		return List.of(getDataMapperClass());
+	}
+	
+	protected abstract Class<? extends DataMapper> getDataMapperClass();
+	protected abstract String getFilePrefix();
 }
