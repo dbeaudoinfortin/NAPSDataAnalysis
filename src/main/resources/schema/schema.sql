@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS naps.methods
 CREATE TABLE IF NOT EXISTS naps.sites
 (
    id            SERIAL PRIMARY KEY,
-   NAPS_id       int NOT NULL UNIQUE,
+   naps_id       int NOT NULL UNIQUE,
    station_name  VARCHAR(255) NULL,
    city_name     VARCHAR(255) NOT NULL,
    prov_terr     VARCHAR(50) NOT NULL,

@@ -1,6 +1,6 @@
 package com.dbf.naps.data.records;
 
-public class DataGroup {
+public class DataRecordGroup {
 	private Integer year;
 	private String  pollutantName;
 	private Integer siteID;
