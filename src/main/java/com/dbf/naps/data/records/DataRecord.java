@@ -3,7 +3,7 @@ package com.dbf.naps.data.records;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class DataRecord {
+public abstract class DataRecord {
 
 	private Integer siteId;
 	private Integer pollutantId;

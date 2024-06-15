@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.NAPSDBAction;
 import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.records.DataGroup;
+import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
+import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
@@ -52,12 +55,12 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 		log.info("Calculating file data groups based on the provided arguments.");
 		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
 		{
-			List<DataGroup> dataGroups = getDataGroups(getOptions().getYearStart(), getOptions().getYearEnd(),
+			List<DataRecordGroup> dataGroups = getDataGroups(getOptions().getYearStart(), getOptions().getYearEnd(),
 					getOptions().getPollutants(),  getOptions().getSites(),
 					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite());
 					
 			log.info(dataGroups.size() + " file(s) will be created.");
-			for(DataGroup group : dataGroups) {
+			for(DataRecordGroup group : dataGroups) {
 				processFile(futures, group.getYear(), group.getPollutantName(), group.getSiteID());
 			}
 		} else {
@@ -68,10 +71,16 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 		waitForTaskCompletion(futures);
 	}
 	
-	protected abstract List<DataGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,  Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite);
+	protected List<DataRecordGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,
+			Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite) {
+		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+			return session.getMapper(DataMapper.class).getDataGroups(startYear, endYear, pollutants,
+					sites, groupByYear, groupByPollutant, groupBySite, getDataset());
+		}
+	}
 	
 	private void processFile(List<Future<?>> futures, Integer year, String pollutant, Integer site) {
-		StringBuilder fileName = new StringBuilder(getFilePrefix());
+		StringBuilder fileName = new StringBuilder(getDataset());
 		if(null != pollutant) {
 			fileName.append("_");
 			fileName.append(pollutant);
@@ -85,12 +94,11 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 			fileName.append(year);
 		}
 		fileName.append(".csv");
-		
 		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
 	}
 	
-	protected Runnable processFile(File dataFile, Integer year, String pollutant, Integer site) {
-		return new ExporterRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, getDataMapperClass());
+	protected Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
+		return new ExporterRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, specificYear, specificPollutant, specificSite, getDataset());
 	}
 	
 	public Class<ExporterOptions> getOptionsClass(){
@@ -99,9 +107,8 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 	
 	@Override
 	protected List<Class<?>> getDBMappers() {
-		return List.of(getDataMapperClass());
+		return List.of(DataMapper.class);
 	}
 	
-	protected abstract Class<? extends DataMapper> getDataMapperClass();
-	protected abstract String getFilePrefix();
+	protected abstract String getDataset();
 }

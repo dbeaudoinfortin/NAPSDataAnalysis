@@ -28,6 +28,7 @@ public class ExporterOptions extends DBOptions {
 	private boolean filePerYear = false;
 	private boolean filePerPollutant = false;
 	private boolean filePerSite = false;
+	private boolean overwriteFiles = false;
 	
 	static {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the exported data.");
@@ -38,6 +39,7 @@ public class ExporterOptions extends DBOptions {
 		getOptions().addOption("fy","filePerYear", false, "Create a seperate file for each year.");
 		getOptions().addOption("fp","filePerPollutant", false, "Create a seperate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a seperate file for each site.");
+		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
 	}
 
 	public ExporterOptions(String[] args) throws IllegalArgumentException {
@@ -60,6 +62,7 @@ public class ExporterOptions extends DBOptions {
 		
 		loadPollutants(cmd);
 		loadSites(cmd);
+		loadOverwriteFiles(cmd);
 		
 		filePerYear = cmd.hasOption("filePerYear");
 		log.info("Will" + (filePerYear ? "" : " not") +  " create a file per year.");
@@ -69,6 +72,11 @@ public class ExporterOptions extends DBOptions {
 		
 		filePerSite = cmd.hasOption("filePerSite");
 		log.info("Will" + (filePerSite ? "" : " not") +  " create a file per site.");
+	}
+	
+	private void loadOverwriteFiles(CommandLine cmd) {
+		overwriteFiles = cmd.hasOption("overwriteFiles");
+		log.info("Overwrite existing files flag set to: " + overwriteFiles);
 	}
 	
 	private void loadSites(CommandLine cmd) {
@@ -183,5 +191,8 @@ public class ExporterOptions extends DBOptions {
 	public void setYearEnd(int yearEnd) {
 		this.yearEnd = yearEnd;
 	}
-
+	
+	public boolean isOverwriteFiles() {
+		return overwriteFiles;
+	}
 }

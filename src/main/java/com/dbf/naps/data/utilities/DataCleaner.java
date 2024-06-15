@@ -147,14 +147,14 @@ public class DataCleaner {
 	}
 	
 	public static String sanatizeFileName(String fileName) {
-		fileName.replace("/", "-");
-		fileName.replace("\\", "-");
-		fileName.replace("\"", "'");
-		fileName.replace("*", "#");
-		fileName.replace(":", ";");
-		fileName.replace("|", "-");
-		fileName.replace("<", "");
-		fileName.replace(">", "");
+		fileName = fileName.replace("/", "_");
+		fileName = fileName.replace("\\", "_");
+		fileName = fileName.replace("\"", "'");
+		fileName = fileName.replace("*", "#");
+		fileName = fileName.replace(":", ";");
+		fileName = fileName.replace("|", "-");
+		fileName = fileName.replace("<", "");
+		fileName = fileName.replace(">", "");
 		return fileName;
 	}
 }
