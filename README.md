@@ -226,6 +226,7 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.continuou
 ## NAPSContinuousDataExporter
 
 A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
+
 You can invoke this tool by running the class com.dbf.naps.data.exporter.continuous.NAPSContinuousDataExporter.
 
 **Command line usage:**
@@ -287,6 +288,7 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
 ## NAPSIntegratedDataExporter
 
 A Java tool that exports the integrated data, previously loaded by the NAPSIntegratedDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
+
 You can invoke this tool by running the class com.dbf.naps.data.exporter.integrated.NAPSIntegratedDataExporter.
 
 **Command line usage:**
