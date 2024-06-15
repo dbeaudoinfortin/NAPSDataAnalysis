@@ -22,9 +22,11 @@
 - [Continuous Data Tools](#continuous-data-tools)
   * [NAPSContinuousDataDownloader](#napscontinuousdatadownloader)
   * [NAPSContinuousDataLoader](#napscontinuousdataloader)
+  * [NAPSContinuousDataExporter](#napscontinuousdataexporter)
 - [Integrated Data Tools](#integrated-data-tools)
   * [NAPSIntegratedDataDownloader](#napsintegrateddatadownloader)
   * [NAPSIntegratedDataLoader](#napsintegrateddataloader)
+  * [NAPSIntegratedDataExporter](#napsintegrateddataexporter)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Database Design](#database-design)
 - [Known Issues](#known-issues)
@@ -44,7 +46,7 @@ All usage is for non-commercial research purposes. I am not affiliated with the 
 
 The NAPS data is messy; the data files contain many inconsistencies in structure, formatting, labelling, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
 
-In the /exports directory you will find several files that re-publish that NAPS data but cleaned-up.
+In the /exports directory you will find many CSV files that re-publish the same NAPS data but cleaned-up. These files were generated using the [NAPSContinuousDataExporter](#napscontinuousdataexporter) and [NAPSIntegratedDataExporter](#napsintegrateddataexporter).
 
 If you are curious about some of the data issues I have encountered, I have started keeping track of them [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues?q=is%3Aissue+label%3A%22Data+Issue%22).
 
@@ -187,7 +189,7 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.sites.NAP
 
 # Continuous Data Tools
 
-The following tools are used for downloading continuous air quality data loading the data into a database. The continuous data represents instantaneous air quality measurements collected on a continuous bases and reported hourly. 
+The following tools are used for downloading continuous air quality data, loading the data into a database and exporting the data to CSV files. The continuous data represents instantaneous air quality measurements collected on a continuous bases and reported hourly. 
 
 ## NAPSContinuousDataDownloader
 
@@ -206,7 +208,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.continu
 
 ## NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw continuous data (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in the continuous_data table of your database. Note that for the PM2.5 pollutant, each variation of the analysis method is given its own pollutant id since the data may not be directly comparable.
+A Java tool that loads all of the raw continuous data, previously downloaded by the NAPSContinuousDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of May 2024) in the continuous_data table of your database.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
 
@@ -221,9 +223,33 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.continuou
  -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
 
+## NAPSContinuousDataExporter
+
+A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
+You can invoke this tool by running the class com.dbf.naps.data.exporter.continuous.NAPSContinuousDataExporter.
+
+**Command line usage:**
+```
+ -t,--threadCount <arg>   Maximum number of parallel threads.
+ -dbh,--dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
+ -dbn,--dbName <arg>      Database name for the PostgreSQL database. Default: naps
+ -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
+ -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
+ -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fp,--filePerPollutant   Create a seperate file for each pollutant.
+ -fs,--filePerSite        Create a seperate file for each site.
+ -fy,--filePerYear        Create a seperate file for each year.
+ -o,--overwriteFiles      Replace existing files.
+ -p,--dataPath <arg>      Local path to save the exported data.
+ -pn,--pollutants <arg>   Comma-seperated list of pollutant names.
+ -sid,--sites <arg>       Comma-seperated list of site IDs.
+ -ye,--yearEnd <arg>      End year (inclusive).
+ -ys,--yearStart <arg>    Start year (inclusive).
+```
+
 # Integrated Data Tools
 
-The following tools are used for downloading integrated air quality data and loading the data into a database.  The integrated data represents air quality measurements that are sampled over a longer duration (typically 24 hours) and collected on a regular basis (every few days).
+The following tools are used for downloading integrated air quality data, loading the data into a database and exporting the data to CSV files. The integrated data represents air quality measurements that are sampled over a longer duration (typically 24 hours) and collected on a regular basis (every few days).
 
 ## NAPSIntegratedDataDownloader
 
@@ -242,7 +268,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.integra
 
 ## NAPSIntegratedDataLoader
 
-A Java tool that loads all of the raw integrated data (downloaded by the NAPSIntegratedDataDownloader) from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 65 million rows of data (as of May 2024) in the integrated_data table of your database.
+A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 65 million rows of data (as of May 2024) in the integrated_data table of your database.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
 
@@ -257,6 +283,29 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
  -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
  -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
  -t,   --threadCount <arg>    Maximum number of parallel threads.
+```
+## NAPSIntegratedDataExporter
+
+A Java tool that exports the integrated data, previously loaded by the NAPSIntegratedDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
+You can invoke this tool by running the class com.dbf.naps.data.exporter.integrated.NAPSIntegratedDataExporter.
+
+**Command line usage:**
+```
+ -t,--threadCount <arg>   Maximum number of parallel threads.
+ -dbh,--dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
+ -dbn,--dbName <arg>      Database name for the PostgreSQL database. Default: naps
+ -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
+ -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
+ -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fp,--filePerPollutant   Create a seperate file for each pollutant.
+ -fs,--filePerSite        Create a seperate file for each site.
+ -fy,--filePerYear        Create a seperate file for each year.
+ -o,--overwriteFiles      Replace existing files.
+ -p,--dataPath <arg>      Local path to save the exported data.
+ -pn,--pollutants <arg>   Comma-seperated list of pollutant names.
+ -sid,--sites <arg>       Comma-seperated list of site IDs.
+ -ye,--yearEnd <arg>      End year (inclusive).
+ -ys,--yearStart <arg>    Start year (inclusive).
 ```
 
 # How To Run Individual Tools
