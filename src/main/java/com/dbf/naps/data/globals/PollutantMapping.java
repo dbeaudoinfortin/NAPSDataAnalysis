@@ -141,6 +141,11 @@ public class PollutantMapping {
 		POLLUTANT_LOOKUP.put("Iso-Propylbenzene", "iso-Propylbenzene");
 		POLLUTANT_LOOKUP.put("trans-3-Methyl-2-pentene", "trans-3-Methyl-2-Pentene");
 		POLLUTANT_LOOKUP.put("trans-4-Methyl-2-pentene", "trans-4-Methyl-2-Pentene");
+		POLLUTANT_LOOKUP.put("Freon11", "Freon 11");
+		POLLUTANT_LOOKUP.put("Freon113", "Freon 113");
+		POLLUTANT_LOOKUP.put("Freon114", "Freon 114");
+		POLLUTANT_LOOKUP.put("Freon12", "Freon 12");
+		POLLUTANT_LOOKUP.put("Freon22", "Freon 22");
 	}
 	
 	public static String lookupPollutantName(String pollutantName) {
