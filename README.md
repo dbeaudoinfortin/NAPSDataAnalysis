@@ -56,7 +56,7 @@ If you are curious about the data issues I have encountered, I have started keep
 
 **Continuous Data**
 
-(comming soon)
+(coming soon)
 
 
 # Data Analysis
