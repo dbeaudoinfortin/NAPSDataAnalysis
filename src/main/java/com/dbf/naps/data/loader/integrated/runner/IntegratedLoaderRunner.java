@@ -46,15 +46,14 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	private ExcelSheet sheet;
 	private int row;
 	private int col;
-	protected String method;
 	protected Integer sampleId;
-	protected String units;
+	protected String defaultUnits;
 	protected int miniumColIndex = 0;
 
 	public IntegratedLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType, String units) {
 		super(threadId, config, sqlSessionFactory, rawFile);
 		this.fileType = fileType;
-		this.units = units;
+		this.defaultUnits = units;
 	}
 	
 	/**
@@ -92,7 +91,9 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	 * Allows sub-classes to implement their own logic to determine the method.
 	 * By default the method is null, so this does nothing here.
 	 */
-	protected void setMethod() {}
+	protected String getMethod() {
+		return null;
+	}
 	
 	/**
 	 * Processing of a single sheet of the workbook.
@@ -105,12 +106,8 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 		duplicateDataColumnIndexes.clear();
 		headerRowNumber = null;
 		siteIDColumn = null;
-		method = null;
 		sampleId = null;
 		miniumColIndex = 0;
-		
-		//Method may differ per sheet
-		setMethod();
 		
 		log.info(getThreadId() + ":: Processing sheet" + (sheet.getName() == null ? "" : " " + sheet.getName()) + ".");
 		List<IntegratedDataRecord> records = new ArrayList<IntegratedDataRecord>(100);
@@ -340,8 +337,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 		record.setDatetime(date);
 		record.setSiteId(siteID);
     	record.setPollutantId(getPollutantID(columnHeader));
-    	record.setMethodId(getMethodID("Integrated", fileType, method, units));
-    	
+    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(), getUnits()));
 
     	//Ignore empty cells, but not zeros
     	if(!"N.M.".equals(cellValue)) {
@@ -427,5 +423,9 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	
 	protected int getColumn() {
 		return col;
+	}
+	
+	protected String getUnits() {
+		return defaultUnits;
 	}
 }

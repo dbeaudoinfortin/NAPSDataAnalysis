@@ -269,7 +269,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.integra
 
 ## NAPSIntegratedDataLoader
 
-A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 65 million rows of data (as of May 2024) in the integrated_data table of your database.
+A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 13 million rows of data (as of May 2024) in the integrated_data table of your database.
 
 You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
 

@@ -1,7 +1,9 @@
 package com.dbf.naps.data.records;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public abstract class DataRecord {
 
@@ -37,14 +39,16 @@ public abstract class DataRecord {
 		return datetime;
 	}
 	
-	//Deprecated Date functions since Java 1.1, probably safe to ignore :)
-	@SuppressWarnings("deprecation")
 	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
-		this.day = datetime.getDate();
-		this.dayOfWeek = datetime.getDay();
-		this.month = datetime.getMonth() + 1;
-		this.year = datetime.getYear() + 1900; //This is really lazy, oh well
+		
+		//All dates in excel are in the GMT timezone
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		calendar.setTime(datetime);
+	    this.day = calendar.get(Calendar.DAY_OF_MONTH);
+	    this.dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+	    this.month = calendar.get(Calendar.MONTH) + 1;
+	    this.year = calendar.get(Calendar.YEAR);
 	}
 	
 	public Integer getYear() {

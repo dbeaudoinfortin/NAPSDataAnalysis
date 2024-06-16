@@ -132,6 +132,15 @@ public class PollutantMapping {
 		POLLUTANT_LOOKUP.put("Chrysene&Triphenylene", "Chrysene & Triphenylene");
 		POLLUTANT_LOOKUP.put("Chrysene & Triphenylene (C&T)", "Chrysene & Triphenylene");
 		POLLUTANT_LOOKUP.put("b-Pinene", "B-Pinene");
+		POLLUTANT_LOOKUP.put("a-Pinene", "A-Pinene");
+		POLLUTANT_LOOKUP.put("13c12-TCDD", "13C12-TCDD");
+		POLLUTANT_LOOKUP.put("3-Me-ChOLanthrene", "3-Me-Cholanthrene");
+		POLLUTANT_LOOKUP.put("3-Methyl-1-butene", "3-Methyl-1-Butene");
+		POLLUTANT_LOOKUP.put("cis-3-Methyl-2-pentene", "cis-3-Methyl-2-Pentene");
+		POLLUTANT_LOOKUP.put("d-Limonene", "D-Limonene");
+		POLLUTANT_LOOKUP.put("Iso-Propylbenzene", "iso-Propylbenzene");
+		POLLUTANT_LOOKUP.put("trans-3-Methyl-2-pentene", "trans-3-Methyl-2-Pentene");
+		POLLUTANT_LOOKUP.put("trans-4-Methyl-2-pentene", "trans-4-Methyl-2-Pentene");
 	}
 	
 	public static String lookupPollutantName(String pollutantName) {

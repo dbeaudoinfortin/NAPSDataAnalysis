@@ -47,7 +47,7 @@ public class SitesLoaderRunner extends FileLoaderRunner {
 		List<SiteRecord> records = new ArrayList<SiteRecord>(800);
 		
 		//Load all the rows into memory. Let's assume we don't run out of memory. :) 
-		try (Reader reader = new FileReader(getRawFile(), StandardCharsets.ISO_8859_1); CSVParser parser = csvFormat.parse(reader)) {
+		try (Reader reader = new FileReader(getRawFile(), StandardCharsets.UTF_8); CSVParser parser = csvFormat.parse(reader)) {
 			for(CSVRecord line : parser) {
 				if(line.size() < 41) continue; //Header lines
 				
