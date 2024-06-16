@@ -69,7 +69,7 @@ public class ExporterRunner extends DBRunner<ExporterOptions> {
 		List<ExportDataRecord> records = null;
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 			records = session.getMapper(DataMapper.class).getData(
-					specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearStart() + 1).boxed().toList(),
+					specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
 					specificPollutant != null ? List.of(specificPollutant) : getConfig().getPollutants(),
 					specificSite != null ? List.of(specificSite) : getConfig().getSites(), dataset);
 		}

@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.NAPSDBAction;
 import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 
