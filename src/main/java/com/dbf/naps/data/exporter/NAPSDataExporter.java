@@ -46,9 +46,15 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 		
 		log.info("Exporting data to the path " + exportPath);
 
-		if(!exportPath.toFile().isDirectory()) {
-			log.error("The export path is not valid: " + exportPath);
-			return;
+		File exportPathFile = exportPath.toFile();
+		if(exportPathFile.exists()) {
+			if(!exportPathFile.isDirectory()) {
+				log.error("The export path is not valid: " + exportPath);
+				return;
+			}
+		} else {
+			log.info("Creating the export path " + exportPath);
+			exportPathFile.mkdirs();
 		}
 		
 		log.info("Calculating file data groups based on the provided arguments.");
@@ -96,18 +102,11 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
 	}
 	
-	protected Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
-		return new ExporterRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, specificYear, specificPollutant, specificSite, getDataset());
-	}
+	protected abstract Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite);
 	
 	public Class<ExporterOptions> getOptionsClass(){
 		return ExporterOptions.class;
 	}
-	
-	@Override
-	protected List<Class<?>> getDBMappers() {
-		return List.of(DataMapper.class);
-	}
-	
+	 
 	protected abstract String getDataset();
 }

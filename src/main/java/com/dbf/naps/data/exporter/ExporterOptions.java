@@ -1,5 +1,6 @@
 package com.dbf.naps.data.exporter;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Year;
@@ -119,7 +120,8 @@ public class ExporterOptions extends DBOptions {
 	private void loadDataPath(CommandLine cmd) {
 		if(cmd.hasOption("dataPath")) {
 			dataPath = Paths.get(cmd.getOptionValue("dataPath"));
-			if (!dataPath.toFile().isDirectory()) {
+			File dataPathFile = dataPath.toFile();
+			if (dataPathFile.exists() && !dataPathFile.isDirectory()) {
 				throw new IllegalArgumentException("Data path " + dataPath + " is not a valid directory.");
 			}
 			log.info("Using data path: " + dataPath);

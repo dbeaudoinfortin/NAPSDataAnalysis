@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -19,7 +20,9 @@ import com.dbf.naps.data.db.DBRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.ExportDataRecord;
 
-public class ExporterRunner extends DBRunner<ExporterOptions> {
+public abstract class ExporterRunner extends DBRunner<ExporterOptions> {
+	
+	private static final int MAX_ROWS_PER_QUERY = 1_000_000;
 	
 	private static final Logger log = LoggerFactory.getLogger(ExporterRunner.class);
 	
@@ -27,18 +30,16 @@ public class ExporterRunner extends DBRunner<ExporterOptions> {
 	private Integer specificYear;
 	private String specificPollutant;
 	private Integer specificSite;
-	private String dataset;
 	
 	//Note: SimpleDateFormat is not thread safe, must not be static
 	private final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		
-	public ExporterRunner(int threadId, ExporterOptions config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite, String dataset) {
+	public ExporterRunner(int threadId, ExporterOptions config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
 		super(threadId, config, sqlSessionFactory);
 		this.dataFile = dataFile;
 		this.specificYear = specificYear;
 		this.specificPollutant = specificPollutant;
 		this.specificSite = specificSite;
-		this.dataset = dataset;
 	}
 	
 	@Override
@@ -66,33 +67,46 @@ public class ExporterRunner extends DBRunner<ExporterOptions> {
 			}
 		}
 		
-		List<ExportDataRecord> records = null;
-		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			records = session.getMapper(DataMapper.class).getData(
+		int offset = 0;
+		List<? extends ExportDataRecord> records = null;
+		while (true) {
+			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+				records = session.getMapper(getDataMapper()).getData(
 					specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
 					specificPollutant != null ? List.of(specificPollutant) : getConfig().getPollutants(),
-					specificSite != null ? List.of(specificSite) : getConfig().getSites(), dataset);
+					specificSite != null ? List.of(specificSite) : getConfig().getSites(), offset, MAX_ROWS_PER_QUERY);
+			}
+			
+			if(records.isEmpty()) {
+				if (offset == 0) log.info(getThreadId() + ":: No records found for " + dataFile + ". Skipping file.");
+				return;
+			}
+		
+			try {
+				writeToCSV(records, offset == 0);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Failed to write to CSV file " + dataFile, e);
+			}
+			
+			if(records.size() < MAX_ROWS_PER_QUERY) {
+				//Assume no more data
+				log.info(getThreadId() + ":: No more records found for " + dataFile + ".");
+				return;
+			}
+			offset += MAX_ROWS_PER_QUERY;
 		}
 		
-		if(records.isEmpty()) {
-			log.info(getThreadId() + ":: No records found for " + dataFile + ". Skipping file.");
-			return;
-		}
-	
-		try {
-			writeToCSV(records);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Failed to write to CSV file " + dataFile, e);
-		}
 	}
-	 
-	private void writeToCSV(List<ExportDataRecord> records) throws IOException {
+	
+	private void writeToCSV(List<? extends ExportDataRecord> records, boolean printHeader) throws IOException {
+		log.info(getThreadId() + ":: Writing " + records.size() + " record(s) for " + dataFile + ".");
 		CSVFormat format = CSVFormat.EXCEL
 			.builder()
 			.setTrim(false)
-			.setHeader(ExportDataRecord.Header.class)
+			.setHeader(records.get(0).getHeader())
+			.setSkipHeaderRecord(!printHeader)
 			.build();
-		try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath())) {
+		try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 			writer.write('\ufeff'); //Manually print the UTF-8 BOM
 			try(CSVPrinter printer = new CSVPrinter(writer, format)){
 				for(ExportDataRecord record : records) {
@@ -101,4 +115,8 @@ public class ExporterRunner extends DBRunner<ExporterOptions> {
 			}
 		}
 	}
+	
+	protected abstract Class<? extends DataMapper> getDataMapper();
+	
+	protected abstract String getDataset();
 }
