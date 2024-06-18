@@ -15,9 +15,7 @@ public class ExportDataRecord {
 	     Pollutant,
 	     Date,
 	     Value,
-	     Units,
-	     Report_Type,
-	     Method
+	     Units
 	 }
 	
 	private Integer siteNapsId;
@@ -26,13 +24,15 @@ public class ExportDataRecord {
 	private Date datetime;
 	private BigDecimal data;
 	private String units;
-	private String reportType;
-	private String method;
 	
 	public ExportDataRecord() {}
 	
 	public void printToCSV(CSVPrinter printer, SimpleDateFormat dateFormat) throws IOException {
-		printer.printRecord(siteNapsId, siteName, pollutantName, dateFormat.format(datetime), data, units, reportType, method);
+		printer.printRecord(siteNapsId, siteName, pollutantName, dateFormat.format(datetime), data, units);
+	}
+	
+	public Class<? extends Enum<?>> getHeader() {
+		return Header.class;
 	}
 
 	public Integer getSiteNapsId() {
@@ -51,13 +51,6 @@ public class ExportDataRecord {
 		return datetime;
 	}
 
-	public String getReportType() {
-		return reportType;
-	}
-
-	public String getMethod() {
-		return method;
-	}
 
 	public BigDecimal getData() {
 		return data;
@@ -81,14 +74,6 @@ public class ExportDataRecord {
 
 	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
-	}
-
-	public void setReportType(String reportType) {
-		this.reportType = reportType;
-	}
-
-	public void setMethod(String method) {
-		this.method = method;
 	}
 
 	public void setData(BigDecimal data) {

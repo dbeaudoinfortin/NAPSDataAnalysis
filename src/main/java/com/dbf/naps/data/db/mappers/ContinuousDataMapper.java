@@ -1,10 +1,14 @@
 package com.dbf.naps.data.db.mappers;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+
 import com.dbf.naps.data.records.ContinuousDataRecord;
+import com.dbf.naps.data.records.ExportDataRecord;
 
 public interface ContinuousDataMapper extends DataMapper {
 
@@ -22,4 +26,32 @@ public interface ContinuousDataMapper extends DataMapper {
         + " ON CONFLICT DO NOTHING;"
         + "</script>")
 	public int insertContinuousDataBulk(List<ContinuousDataRecord> dataRecords);
+	
+	@Override
+	@Select("<script>"
+			+ "select"
+			+ " s.naps_id as siteNapsId,"
+			+ " s.station_name as siteName,"
+			+ " p.name as pollutantName,"
+			+ " d.date_time as datetime,"
+			+ " d.data as data,"
+			+ " m.units as units"
+			+ " from naps.continuous_data d"
+			+ " inner join naps.pollutants p on d.pollutant_id = p.id"
+			+ " inner join naps.sites s on d.site_id = s.id"
+			+ " inner join naps.methods m on d.method_id = m.id"
+			+ " where"
+			+ " <if test=\"years != null &amp;&amp; !years.isEmpty()\">year in <foreach collection='years' item='year' index='index' open='(' separator = ',' close=')'>#{year}</foreach></if>"
+			+ " <if test=\"sites != null &amp;&amp; !sites.isEmpty()\">"
+			+ "   <if test=\"years != null  &amp;&amp; !years.isEmpty()\">and</if>"
+			+ "   s.naps_id in <foreach collection='sites' item='site' index='index' open='(' separator = ',' close=')'>#{site}</foreach>"
+			+ " </if>"
+			+ " <if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">"
+			+ "   <if test=\"(years != null  &amp;&amp; !years.isEmpty()) || (sites != null &amp;&amp; !sites.isEmpty()) \">and</if>"
+			+ "   p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach>"
+			+ " </if>"
+			+ " order by s.naps_id, p.name, d.date_time"
+			+ " OFFSET #{offset} LIMIT #{limit}"
+			+ "</script>")
+		public List<ExportDataRecord> getData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
 }
