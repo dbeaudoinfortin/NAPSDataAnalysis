@@ -52,14 +52,17 @@ If you are curious about the data issues I have encountered, I have started keep
 
 **Integrated Data**
 
+I have exported the data 3 different ways:
 - [PerPollutant](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/IntegratedData/PerPollutant) - contains data that is groupped into a single file for each pollutant.
 - [PerSite](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/IntegratedData/PerSite) - contains data that is group into a single file for each site (station).
 - [PerYear](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/IntegratedData/PerYear) - contains data that is group into a single file for each year.
 
 **Continuous Data**
 
-(coming soon)
-
+Since there is significantly more continuous data than integrated data, I have zipped all of the files in a single zip file per directory. The zip files will expand to about 15GB total. I have exported the data 3 different ways:
+- [PerPollutant](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerPollutant) - contains data that is groupped into a single file for each pollutant.
+- [PerSite](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerSite) - contains data that is group into a single file for each site (station).
+- [PerYear](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerYear) - contains data that is group into a single file for each year.
 
 # Data Analysis
 
