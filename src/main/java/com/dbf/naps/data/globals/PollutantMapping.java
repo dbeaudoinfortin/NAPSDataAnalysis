@@ -146,6 +146,7 @@ public class PollutantMapping {
 		POLLUTANT_LOOKUP.put("Freon114", "Freon 114");
 		POLLUTANT_LOOKUP.put("Freon12", "Freon 12");
 		POLLUTANT_LOOKUP.put("Freon22", "Freon 22");
+		POLLUTANT_LOOKUP.put("PM25", "PM2.5");
 	}
 	
 	public static String lookupPollutantName(String pollutantName) {

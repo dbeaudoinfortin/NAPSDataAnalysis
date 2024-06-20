@@ -414,7 +414,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	protected Integer getLastColumn() {
 		//When the NAPS Site ID column is at the end then it is considered the end of valid data
 		//Otherwise, we have no good way of knowing when the data ends, so we assume the last column
-		return siteIDColumn == 0 ? sheet.columnCount()-1 : siteIDColumn;
+		return siteIDColumn < 2 ? sheet.columnCount()-1 : siteIDColumn;
 	}
 	
 	protected int getRow() {

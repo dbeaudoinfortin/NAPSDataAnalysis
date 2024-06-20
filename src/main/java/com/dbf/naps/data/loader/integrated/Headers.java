@@ -46,6 +46,7 @@ public class Headers {
 		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
 		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume
 		DEFAULT_IGNORED_HEADERS.add("SITE"); //Site Type
+		DEFAULT_IGNORED_HEADERS.add("NAPS"); //NAPS ID, NAPS SITE ID
 	}
 	
 	//These are all of the know sheet that can be safely ignored
