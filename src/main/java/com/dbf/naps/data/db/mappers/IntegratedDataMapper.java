@@ -46,7 +46,7 @@ public interface IntegratedDataMapper extends DataMapper {
 			+ "   <if test=\"(years != null  &amp;&amp; !years.isEmpty()) || (sites != null &amp;&amp; !sites.isEmpty()) \">and</if>"
 			+ "   p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach>"
 			+ " </if>"
-			+ " order by s.naps_id, m.reportType, m.method, p.name, d.date_time"
+			+ " order by s.naps_id, m.report_Type, m.method, p.name, d.date_time, d.data"
 			+ " OFFSET #{offset} LIMIT #{limit}"
 			+ "</script>")
 		public List<IntegratedExportDataRecord> getData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
