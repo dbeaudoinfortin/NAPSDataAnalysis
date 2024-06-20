@@ -68,7 +68,9 @@ Since there is significantly more continuous data than integrated data, I have z
 
 ![Report 2](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/8104f1e2-8c9d-4d86-ac32-284274d2eaed)
 
-![Report 1](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/46437364-e6ef-4ac0-8d1b-d9c22aeb3bc7)
+![Report 1](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/a6411def-4a27-45d1-8afe-9c8f17768577)
+
+![Report 3](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/7869abff-c45e-4b16-892f-663dff79862f)
 
 In the [/reports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/reports) directory you will find a sample Microsoft Power BI report. This report is example of  how a BI tool can be used for visualizing the NAPS data. This report is designed to be used in conjunction with the database schema built and populated by the tools in this tool box. For information on how to set-up your database and connect to it using Power BI, check out the [Getting Started](#getting-started) section below.
 
