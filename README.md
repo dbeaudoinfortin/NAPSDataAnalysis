@@ -15,7 +15,7 @@
   * [Downloading the Data](#downloading-the-data)
   * [Loading the Data](#loading-the-data)
   * [Installing Microsoft Power BI](#installing-microsoft-power-bi)
-  * [Opening the Reports](#opening-the-reports)
+  * [Creating a Report](#creating-a-report)
 - [NAPS Site Tools](#naps-site-tools)
   * [NAPSSitesDownloader](#napssitesdownloader)
   * [NAPSSitesLoader](#napssitesloader)
@@ -66,11 +66,11 @@ Since there is significantly more continuous data than integrated data, I have z
 
 # Data Analysis
 
-(screenshots - coming soon)
+![Report 2](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/8104f1e2-8c9d-4d86-ac32-284274d2eaed)
 
-In the /reports directory you will find several sample Microsoft Power BI reports for the purpose of visualizing the NAPS data. These reports are designed to be used in conjunction with the database schema built and populated by the tools in this tool box. For information on how to set-up your database check out the [Getting Started](#getting-started) section below.
+![Report 1](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/46437364-e6ef-4ac0-8d1b-d9c22aeb3bc7)
 
-(description of each report - coming soon)
+In the [/reports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/reports) directory you will find a sample Microsoft Power BI report. This report is example of  how a BI tool can be used for visualizing the NAPS data. This report is designed to be used in conjunction with the database schema built and populated by the tools in this tool box. For information on how to set-up your database and connect to it using Power BI, check out the [Getting Started](#getting-started) section below.
 
 I plan to eventually add sample reports for other BI/Data Visualization software that are open source, free, and available on more platforms than just Windows x86-64.
 
@@ -160,12 +160,15 @@ For more information about the possible command line arguments, see the NAPSInte
 
 The desktop version of Microsoft Power BI is a free tool for exploring and visualizing data. You can find it [here](https://go.microsoft.com/fwlink/?LinkId=2240819). Unfortunately, it only supports Windows x86-64 systems. I do plan to eventually make sample reports for other BI/Data Visualization software.
 
-## Opening the Reports
+## Creating a Report
 
-(this section coming soon)
+After starting Microsoft Power BI and creating a new blank report, you will need connect to your database, previously populated with NAPS data (see steps above). Provided your database is installed locally and you have used all default database settings, connecting should be as easy as selecting the PostgreSQL database option in the Get Data menu, and entering `localhost` as the Server and `postgres` as the User.
+![get data](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/f9cf552f-cefa-4386-b911-bb440c9835aa)
+![Connect to DB](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/878af378-57a2-4792-8dd3-dd133fcda7e0)
 
-- Connecting to the running database.
-- Loading the BI reports from the /reports directory
+If you previously chose to load the entire NAPS dataset into your database, then I would highly suggest using the DirectQuery Data Connectivity mode, since there is likely too much database for Power BI to import.
+
+If you would like to view the sample report, you can simple download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
 
 # NAPS Site Tools
 
