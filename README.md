@@ -166,9 +166,18 @@ After starting Microsoft Power BI and creating a new blank report, you will need
 ![get data](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/f9cf552f-cefa-4386-b911-bb440c9835aa)
 ![Connect to DB](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/878af378-57a2-4792-8dd3-dd133fcda7e0)
 
-If you previously chose to load the entire NAPS dataset into your database, then I would highly suggest using the DirectQuery Data Connectivity mode, since there is likely too much database for Power BI to import.
+If you previously chose to load the entire NAPS dataset into your database, then I would highly suggest using the DirectQuery Data Connectivity mode, since there is likely too much database for Power BI to import. After successfully connecting to the database, Power BI will ask what tables you want to use. You should select all of them.
 
-If you would like to view the sample report, you can simple download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
+![Screenshot 2024-06-19 231428](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/cac00bbc-557a-4f7c-bb9e-4f2d65cea60c)
+
+It will then connect to each of the tables and build a model.
+![image](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/21fa57d8-a15f-407c-bbd9-057712c945fa)
+
+If all goes well, the model view of your report should look like the following:
+
+![image](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/0e7c51a7-d90a-421a-9d11-a12d1d8dfe62)
+
+You can now drag-and-drop columns onto the visualization to start building your report/dashboard. If you would like to view the sample report to see how it was made, you can simple download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
 
 # NAPS Site Tools
 
