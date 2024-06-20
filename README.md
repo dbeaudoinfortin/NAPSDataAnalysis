@@ -177,7 +177,7 @@ If all goes well, the model view of your report should look like the following:
 
 ![image](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/0e7c51a7-d90a-421a-9d11-a12d1d8dfe62)
 
-You can now drag-and-drop columns onto the visualization to start building your report/dashboard. If you would like to view the sample report to see how it was made, you can simple download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
+You can now drag-and-drop columns onto the visualization to start building your report/dashboard. If you would like to view the sample report to see how it was made, you can simply download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
 
 # NAPS Site Tools
 
