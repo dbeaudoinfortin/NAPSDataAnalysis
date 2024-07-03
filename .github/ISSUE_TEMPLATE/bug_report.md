@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: Bug Report
 about: Create a report to help us improve
 title: ''
 labels: bug
@@ -10,16 +10,16 @@ assignees: dbeaudoinfortin
 **Describe the bug**
 A description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
+**Steps to reproduce**
+Steps to reproduce the behaviour:
 
-**Expected behavior**
+**Expected behaviour**
 A description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Environment (please complete the following information):**
+**Environment (please complete):**
  - OS: [e.g. Windows/Mac/Linux]
  - Java Version [e.g. 21]
 
