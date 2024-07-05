@@ -5,11 +5,10 @@ services:
     restart: unless-stopped
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+    env_file:
+      - naps.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "postgres"]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -22,8 +21,8 @@ services:
       dockerfile: docker/Dockerfile
     container_name: naps-downloader
     command: downloader
-    environment:
-      THREADS: 8
+    env_file:
+      - naps.env
     volumes:
       - naps-files:/raw
 
@@ -38,8 +37,8 @@ services:
         condition: service_healthy
       naps-downloader:
         condition: service_completed_successfully
-    environment:
-      THREADS: 8
+    env_file:
+      - naps.env
     volumes:
       - naps-files:/raw
 
