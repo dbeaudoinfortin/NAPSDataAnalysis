@@ -12,7 +12,7 @@ public class DBOptions extends BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DBOptions.class);
 
-	private String dbHost = "naps-postgres";
+	private String dbHost = "localhost";
 	private int    dbPort = 5432;
 	private String dbName = "naps";
 	private String dbUser = "postgres";
