@@ -1,0 +1,50 @@
+services:
+  naps-postgres:
+    image: postgres:16
+    container_name: naps-postgres
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - naps-postgres:/var/lib/postgresql/data
+
+  naps-downloader:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: naps-downloader
+    command: downloader
+    environment:
+      THREADS: 8
+    volumes:
+      - naps-files:/raw
+
+  naps-loader:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: naps-loader
+    command: loader
+    depends_on:
+      naps-postgres:
+        condition: service_healthy
+      naps-downloader:
+        condition: service_completed_successfully
+    environment:
+      THREADS: 8
+    volumes:
+      - naps-files:/raw
+
+volumes:
+  naps-postgres:
+    name: naps-postgres
+  naps-files:
+    name: naps-files
