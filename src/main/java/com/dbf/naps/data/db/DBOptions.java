@@ -12,12 +12,12 @@ public class DBOptions extends BaseOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DBOptions.class);
 
-	private String dbHost = "localhost";
+	private String dbHost = "naps-postgres";
 	private int    dbPort = 5432;
 	private String dbName = "naps";
 	private String dbUser = "postgres";
 	private String dbPass = "password";
-	
+
 	static {
 		getOptions().addOption("dbh","dbHost", true, "Hostname for the PostgreSQL database. Default: localhost");
 		getOptions().addOption("dbt","dbPort", true,  "Port for the PostgreSQL database. Default: 5432");
@@ -30,7 +30,7 @@ public class DBOptions extends BaseOptions {
 		super(args);
 		loadFromArgs(args);
 	}
-	
+
 	private void loadFromArgs(String[] args) throws IllegalArgumentException {
 		CommandLine cmd = null;
 		try {
@@ -39,7 +39,7 @@ public class DBOptions extends BaseOptions {
 		catch(ParseException e) {
 			throw new IllegalArgumentException(e);
 		}
-		
+
 		loadDBHost(cmd);
 		loadDBPort(cmd);
 		loadDBName(cmd);
@@ -58,7 +58,7 @@ public class DBOptions extends BaseOptions {
 			log.info("Using default DB port number: " + dbPort);
 		}
 	}
-	
+
 	private void loadDBHost(CommandLine cmd) {
 		if(cmd.hasOption("dbHost")) {
 			dbHost = cmd.getOptionValue("dbHost");
@@ -67,7 +67,7 @@ public class DBOptions extends BaseOptions {
 			log.info("Using default DB hostname: " + dbHost);
 		}
 	}
-	
+
 	private void loadDBUser(CommandLine cmd) {
 		if(cmd.hasOption("dbUser")) {
 			dbUser = cmd.getOptionValue("dbUser");
@@ -76,7 +76,7 @@ public class DBOptions extends BaseOptions {
 			log.info("Using default DB user name: " + dbUser);
 		}
 	}
-	
+
 	private void loadDBPass(CommandLine cmd) {
 		if(cmd.hasOption("dbPass")) {
 			dbPass = cmd.getOptionValue("dbPass");
@@ -85,7 +85,7 @@ public class DBOptions extends BaseOptions {
 			log.info("Using default DB password: " + dbPass);
 		}
 	}
-	
+
 	private void loadDBName(CommandLine cmd) {
 		if(cmd.hasOption("dbName")) {
 			dbName = cmd.getOptionValue("dbName");

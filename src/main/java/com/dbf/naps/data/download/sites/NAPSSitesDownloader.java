@@ -19,32 +19,33 @@ public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 		NAPSSitesDownloader sitesDownloader = new NAPSSitesDownloader(args);
 		sitesDownloader.run();
 	}
-	
+
 	public NAPSSitesDownloader(String[] args) {
 		super(args);
 	}
-	
+
 	protected void run() {
 		log.info("Welcome! 🙂");
-		
+
 		try
 		{
 			downloadSiteFile();
 		} catch (Throwable t) {
 			log.error("Unexpected failure.", t);
 		}
-		
+
 		log.info("Goodbye! 🙂");
+		System.exit(0);
 	}
 
 	private void downloadSiteFile() {
 		getOptions().getDownloadPath().toFile().mkdir();
-		
+
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		futures.add(submitTask(new SitesFileDownloadRunner(getThreadID(), getOptions(), getOptions().getDownloadPath())));
 		waitForTaskCompletion(futures);
 	}
-	
+
 	public Class<DownloaderOptions> getOptionsClass(){
 		return DownloaderOptions.class;
 	}
