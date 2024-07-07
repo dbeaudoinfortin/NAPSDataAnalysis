@@ -4,32 +4,46 @@ services:
     container_name: naps-postgres
     restart: unless-stopped
     ports:
-      - 5432:5432
-    env_file:
-      - naps.env
+      - ${DB_HOST_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
+      interval: 30s
+      start_period: 10s
+      start_interval: 2s
     volumes:
-      - naps-postgres:/var/lib/postgresql/data
+      - ${DB_DATA_PATH:-naps-postgres}:/var/lib/postgresql/data
 
   naps-downloader:
+    image: downloader
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
     container_name: naps-downloader
     command: downloader
+    environment:
+      NAPS_DB_USER: ${DB_USER}
+      NAPS_DB_PASSWORD: ${DB_PASSWORD}
     env_file:
       - naps.env
     volumes:
-      - naps-files:/raw
+      - ${NAPS_FILES_PATH:-naps-files}:/raw
 
   naps-loader:
+    image: loader
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
     container_name: naps-loader
     command: loader
     depends_on:
@@ -37,10 +51,13 @@ services:
         condition: service_healthy
       naps-downloader:
         condition: service_completed_successfully
+    environment:
+      NAPS_DB_USER: ${DB_USER}
+      NAPS_DB_PASSWORD: ${DB_PASSWORD}
     env_file:
       - naps.env
     volumes:
-      - naps-files:/raw
+      - ${NAPS_FILES_PATH:-naps-files}:/raw
 
 volumes:
   naps-postgres:
