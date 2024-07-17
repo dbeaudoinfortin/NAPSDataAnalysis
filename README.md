@@ -109,7 +109,7 @@ For more information about the possible command line arguments, see the NAPSSite
 This tool will download all of the NAPS continuous air quality data from the NAPS website and save it to disk in the specified directory. This is optional and only needs to be run if you want to analyze the continuous air quality data. A sub-directory named `ContinuousData` will be automatically created. You can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
-java -cp naps_data.jar com.dbf.naps.data.download.sites.NAPSContinuousDataDownloader -p C:\temp\NAPSData\RawFiles -t 10
+java -cp naps_data.jar com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader -p C:\temp\NAPSData\RawFiles -t 10
 ```
 
 For more information about the possible command line arguments, see the NAPSContinuousDataDownloader section [below](#napscontinuousdatadownloader).
@@ -119,7 +119,7 @@ For more information about the possible command line arguments, see the NAPSCont
 This tool will download all of the NAPS integrated air quality data from the NAPS website and save it to disk in the specified directory. This is optional and only needs to be run if you want to analyze the integrated air quality data. A sub-directory named `IntegratedData` will be automatically created. You can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
-java -cp naps_data.jar com.dbf.naps.data.download.sites.NAPSIntegratedDataDownloader -p C:\temp\NAPSData\RawFiles -t 10
+java -cp naps_data.jar com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader -p C:\temp\NAPSData\RawFiles -t 10
 ```
 
 For more information about the possible command line arguments, see the NAPSIntegratedDataDownloader section [below](#napsintegrateddatadownloader).
