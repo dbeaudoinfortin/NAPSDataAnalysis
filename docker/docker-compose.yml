@@ -59,6 +59,32 @@ services:
     volumes:
       - ${NAPS_FILES_PATH:-naps-files}:/raw
 
+  naps-exporter:
+    image: exporter
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    container_name: naps-exporter
+    command: exporter
+    depends_on:
+      naps-postgres:
+        condition: service_healthy
+      naps-loader:
+        condition: service_completed_successfully
+    environment:
+      NAPS_DB_USER: ${DB_USER}
+      NAPS_DB_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - naps.env
+    profiles:
+      - exporter
+    volumes:
+      - ${NAPS_EXPORTER_PATH}:/exported
+
 volumes:
   naps-postgres:
     name: naps-postgres
