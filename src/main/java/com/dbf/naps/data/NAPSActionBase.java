@@ -70,5 +70,9 @@ public abstract class NAPSActionBase<O extends BaseOptions> {
 		return tasks.stream().map(this::submitTask).collect(Collectors.toList());
 	}
 	
+	protected void end() {
+		threadPool.shutdownNow();
+	}
+	
 	protected abstract void run();
 }

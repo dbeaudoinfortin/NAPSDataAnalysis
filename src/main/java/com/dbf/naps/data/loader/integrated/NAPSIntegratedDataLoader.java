@@ -30,8 +30,11 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "PAH", "_PAH.XLS", "ng/m³"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "HCB", "_HCB.XLS", "ng/m³"));
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "VOC", "_VOC.XLS"));
-		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "VOC", "_VOCS.XLS")); //One file is mis-named :) 
+		
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "VOC", "_VOC.XLS"));  //Match S40203_VOC.XLS
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "VOC", "_VOCS.XLS")); //One file is mis-named :)
+		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "VOC", "_VOCCORRECTEDFILENAME.XLS"));
+		
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "PCDD", "_PCDD.XLSX", "pg/m³"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "PCDD", "_PCDD.XLS", "pg/m³"));
 		mappings.add(new IntegratedRunnerMapping(SampleMetaDataLoaderRunner.class, "PCB", "_PCB.XLS", "pg/m³"));

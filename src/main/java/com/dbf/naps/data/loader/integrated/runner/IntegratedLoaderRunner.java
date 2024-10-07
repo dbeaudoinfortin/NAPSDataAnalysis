@@ -176,7 +176,13 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 			//Only read the site id on the first row since it will not change
 			//Last column is the NAPS ID
 			if(siteID == null) {
-				siteID = getSiteID(sheet.getCellContents(siteIDColumn, row), row);
+				String napsID = sheet.getCellContents(siteIDColumn, row);
+				
+				//Special snowflake
+				if (sheet.getName() != null && sheet.getName().toUpperCase().contains("SHOULD BE 90228")) {
+					napsID = "90228";
+				}
+				siteID = getSiteID(napsID, row);
 			}
 			
 			records.addAll(processRow(date));

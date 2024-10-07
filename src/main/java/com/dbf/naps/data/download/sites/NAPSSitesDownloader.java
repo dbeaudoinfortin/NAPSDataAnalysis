@@ -35,7 +35,7 @@ public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 		}
 
 		log.info("Goodbye! 🙂");
-		System.exit(0);
+		end();
 	}
 
 	private void downloadSiteFile() {

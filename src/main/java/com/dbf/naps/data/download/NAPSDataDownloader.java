@@ -30,7 +30,7 @@ public abstract class NAPSDataDownloader extends NAPSActionBase<YearlyDownloader
 		}
 
 		log.info("Goodbye! 🙂");
-		System.exit(0);
+		end();
 	}
 
 	private void downloadFiles() {

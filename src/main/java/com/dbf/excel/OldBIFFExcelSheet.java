@@ -88,6 +88,15 @@ public class OldBIFFExcelSheet extends RawDataExcelSheet {
 				}
 			}
 		}
+		
+		if(null == sheetName) {
+			//Excel uses the file name as the sheet name when not explicitly set
+			sheetName = excelFile.getName();
+			final int extension = sheetName.lastIndexOf('.');
+			if(extension > 0) {
+				sheetName = sheetName.substring(0, extension);
+			}	
+		}
 	}
 	
 	private void setBOF(RecordInputStream ris) {

@@ -37,7 +37,7 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 		}
 		
 		log.info("Goodbye! 🙂");
-		System.exit(0);
+		end();
 	}
 
 	private void exportData() throws IOException {

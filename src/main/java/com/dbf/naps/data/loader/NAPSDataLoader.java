@@ -33,7 +33,7 @@ public abstract class NAPSDataLoader extends NAPSDBAction<LoaderOptions> {
 		}
 		
 		log.info("Goodbye! 🙂");
-		System.exit(0);
+		end();
 	}
 
 	private void loadFiles() throws IOException {
