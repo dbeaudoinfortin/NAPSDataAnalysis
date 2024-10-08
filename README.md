@@ -59,10 +59,12 @@ I have exported the data 3 different ways:
 
 **Continuous Data**
 
-Since there is significantly more continuous data than integrated data, I have zipped all of the files in a single zip file per directory. The zip files will expand to about 15GB total. I have exported the data 3 different ways:
+Since there is significantly more continuous data than integrated data, I have zipped all of the csv files to compress them. The zip files will expand to about 15GB in total. I have exported the data 3 different ways:
 - [PerPollutant](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerPollutant) - contains data that is grouped into a single file for each pollutant.
 - [PerSite](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerSite) - contains data that is grouped into a single file for each site (station).
 - [PerYear](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerYear) - contains data that is grouped into a single file for each year.
+
+To work around GitHub's file size limit of 100MB, some of the zip files have been created as multi-part archives. You will need to download all of the parts of the archive before you can extract the main zip file. 
 
 # Data Analysis
 
