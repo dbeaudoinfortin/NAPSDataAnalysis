@@ -13,6 +13,6 @@ public abstract class NAPSCSVExporter extends NAPSDataExporter<ExporterOptions> 
 
 	@Override
 	protected String getFileExtension() {
-		return "csv";
+		return ".csv";
 	}
 }

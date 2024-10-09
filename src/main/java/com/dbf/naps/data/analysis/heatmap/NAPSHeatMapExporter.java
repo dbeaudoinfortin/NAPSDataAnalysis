@@ -1,11 +1,34 @@
 package com.dbf.naps.data.analysis.heatmap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dbf.naps.data.exporter.NAPSDataExporter;
 
+import javafx.application.Platform;
+
 public abstract class NAPSHeatMapExporter extends NAPSDataExporter<HeatMapOptions> {
+	
+	private static final Logger log = LoggerFactory.getLogger(NAPSHeatMapExporter.class);
 
 	public NAPSHeatMapExporter(String[] args) {
 		super(args);
+	}
+	
+	@Override
+	protected void run() {
+		log.info("Initializing rendering engine...");
+		Platform.startup(() -> {
+            log.info("Rendering engine initialized.");
+        });
+		
+		try {
+			super.run();
+		} finally {
+			log.info("Shutting down rendering engine...");
+			Platform.exit();
+	        log.info("Rendering engine shut down.");
+		}
 	}
 
 	@Override
@@ -15,6 +38,6 @@ public abstract class NAPSHeatMapExporter extends NAPSDataExporter<HeatMapOption
 
 	@Override
 	protected String getFileExtension() {
-		return "png";
+		return ".png";
 	}
 }
