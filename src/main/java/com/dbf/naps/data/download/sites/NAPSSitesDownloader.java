@@ -46,6 +46,7 @@ public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 		waitForTaskCompletion(futures);
 	}
 
+	@Override
 	public Class<DownloaderOptions> getOptionsClass(){
 		return DownloaderOptions.class;
 	}

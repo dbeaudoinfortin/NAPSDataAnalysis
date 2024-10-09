@@ -71,7 +71,7 @@ public abstract class ExporterRunner extends DBRunner<ExporterOptions> {
 		List<? extends ExportDataRecord> records = null;
 		while (true) {
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-				records = session.getMapper(getDataMapper()).getData(
+				records = session.getMapper(getDataMapper()).getExportData(
 					specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
 					specificPollutant != null ? List.of(specificPollutant) : getConfig().getPollutants(),
 					specificSite != null ? List.of(specificSite) : getConfig().getSites(), offset, MAX_ROWS_PER_QUERY);

@@ -1,20 +1,20 @@
-package com.dbf.naps.data.exporter.continuous;
+package com.dbf.naps.data.analysis.heatmap.continuous;
 
 import java.io.File;
 import java.util.List;
 
+import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
 import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
 import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.exporter.NAPSCSVExporter;
 
-public class NAPSContinuousDataExporter extends NAPSCSVExporter {
+public class NAPSContinuousDataHeatMap extends NAPSHeatMapExporter {
 
-	public NAPSContinuousDataExporter(String[] args) {
+	public NAPSContinuousDataHeatMap(String[] args) {
 		super(args);
 	}
 	
 	public static void main(String[] args) {
-		NAPSContinuousDataExporter dataExporter = new NAPSContinuousDataExporter(args);
+		NAPSContinuousDataHeatMap dataExporter = new NAPSContinuousDataHeatMap(args);
 		dataExporter.run();
 	}
 
@@ -30,6 +30,6 @@ public class NAPSContinuousDataExporter extends NAPSCSVExporter {
 
 	@Override
 	protected Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
-		return new ContinuousExporterRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, specificYear, specificPollutant, specificSite);
-	}
+		return new ContinuousHeatMapRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, specificYear, specificPollutant, specificSite);
+	}	
 }

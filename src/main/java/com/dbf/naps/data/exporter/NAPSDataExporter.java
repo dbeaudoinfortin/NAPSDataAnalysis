@@ -17,7 +17,7 @@ import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
+public abstract class NAPSDataExporter<O extends ExporterOptions> extends NAPSDBAction<O> {
 
 	private static final Logger log = LoggerFactory.getLogger(NAPSDataExporter.class);
 		
@@ -79,7 +79,7 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 	protected List<DataRecordGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,
 			Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite) {
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			return session.getMapper(DataMapper.class).getDataGroups(startYear, endYear, pollutants,
+			return session.getMapper(DataMapper.class).getExportDataGroups(startYear, endYear, pollutants,
 					sites, groupByYear, groupByPollutant, groupBySite, getDataset());
 		}
 	}
@@ -98,15 +98,13 @@ public abstract class NAPSDataExporter extends NAPSDBAction<ExporterOptions> {
 			fileName.append("_");
 			fileName.append(year);
 		}
-		fileName.append(".csv");
+		fileName.append(getFileExtension());
 		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
 	}
 	
 	protected abstract Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite);
-	
-	public Class<ExporterOptions> getOptionsClass(){
-		return ExporterOptions.class;
-	}
 	 
 	protected abstract String getDataset();
+	
+	protected abstract String getFileExtension();
 }

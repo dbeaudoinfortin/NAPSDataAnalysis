@@ -46,6 +46,7 @@ public abstract class NAPSDataDownloader extends NAPSActionBase<YearlyDownloader
 		waitForTaskCompletion(futures);
 	}
 
+	@Override
 	public Class<YearlyDownloaderOptions> getOptionsClass(){
 		return YearlyDownloaderOptions.class;
 	}

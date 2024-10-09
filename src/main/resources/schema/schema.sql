@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS naps.continuous_data
    day smallint NOT NULL,
    hour smallint NOT NULL,
    day_of_week smallint NOT NULL,
+   week_of_year smallint NOT NULL,
    data NUMERIC(8,3) NOT NULL,
    PRIMARY KEY (site_id, pollutant_id, method_id, date_time),
    CONSTRAINT fk_continuous_data_site_id
@@ -76,6 +77,7 @@ CREATE INDEX IF NOT EXISTS idx_continuous_data_year ON naps.continuous_data (yea
 CREATE INDEX IF NOT EXISTS idx_continuous_data_month ON naps.continuous_data (month ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_hour ON naps.continuous_data (hour ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_day_of_week ON naps.continuous_data (day_of_week ASC);
+CREATE INDEX IF NOT EXISTS idx_continuous_data_week_of_year ON naps.continuous_data (week_of_year ASC);
 
 CREATE TABLE IF NOT EXISTS naps.samples
 (
@@ -111,6 +113,7 @@ CREATE TABLE IF NOT EXISTS naps.integrated_data
    month smallint NOT NULL,
    day smallint NOT NULL,
    day_of_week smallint NOT NULL,
+   week_of_year smallint NOT NULL,
    data NUMERIC(8,3) NOT NULL,
    PRIMARY KEY (site_id, pollutant_id, method_id, sample_id, date_time),
    CONSTRAINT fk_integrated_data_site_id
@@ -138,4 +141,5 @@ CREATE INDEX IF NOT EXISTS idx_integrated_data_date_time ON naps.integrated_data
 CREATE INDEX IF NOT EXISTS idx_integrated_data_year ON naps.integrated_data (year ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_month ON naps.integrated_data (month ASC);
 CREATE INDEX IF NOT EXISTS idx_integrated_data_day_of_week ON naps.integrated_data (day_of_week ASC);
+CREATE INDEX IF NOT EXISTS idx_integrated_data_week_of_year ON naps.integrated_data (week_of_year ASC);
 

@@ -32,7 +32,7 @@ public class ExporterOptions extends DBOptions {
 	private boolean overwriteFiles = false;
 	
 	static {
-		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the exported data.");
+		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the data.");
 		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
 		getOptions().addOption("pn","pollutants", true, "Comma-seperated list of pollutant names.");	

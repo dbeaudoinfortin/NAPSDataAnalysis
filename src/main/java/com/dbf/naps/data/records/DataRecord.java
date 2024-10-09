@@ -15,6 +15,7 @@ public abstract class DataRecord {
 	private Integer month;
 	private Integer day;
 	private Integer dayOfWeek;
+	private Integer weekOfYear;
 	private BigDecimal data;
 
 	public DataRecord() {}
@@ -49,6 +50,11 @@ public abstract class DataRecord {
 	    this.dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 	    this.month = calendar.get(Calendar.MONTH) + 1;
 	    this.year = calendar.get(Calendar.YEAR);
+	    this.weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+	    
+	    //Make an adjustment for the last week of December
+	    if(this.weekOfYear == 1 && this.month == 12)
+	    	this.weekOfYear = 53;
 	}
 	
 	public Integer getYear() {
@@ -97,5 +103,13 @@ public abstract class DataRecord {
 
 	public void setMethodId(Integer methodId) {
 		this.methodId = methodId;
+	}
+
+	public Integer getWeekOfYear() {
+		return weekOfYear;
+	}
+
+	public void setWeekOfYear(Integer weekOfYear) {
+		this.weekOfYear = weekOfYear;
 	}	
 }

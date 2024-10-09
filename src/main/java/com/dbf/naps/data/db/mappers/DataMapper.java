@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Select;
 
+import com.dbf.naps.data.analysis.AggregateFunction;
+import com.dbf.naps.data.analysis.AggregationField;
+import com.dbf.naps.data.analysis.heatmap.HeatMapRecord;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.records.ExportDataRecord;
 
@@ -32,7 +35,9 @@ public interface DataMapper {
 			+ " <if test=\"groupByPollutant\"><if test=\"groupByYear\">,</if>p.name</if>"
 			+ " <if test=\"groupBySite\"><if test=\"groupByYear || groupByPollutant\">,</if>s.naps_id</if>"
 			+ "</script>")
-	public List<DataRecordGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants, Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite, String dataset);
+	public List<DataRecordGroup> getExportDataGroups(int startYear, int endYear, Collection<String> pollutants, Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite, String dataset);
 
-	public List<? extends ExportDataRecord> getData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
+	public List<? extends ExportDataRecord> getExportData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
+
+	public List<HeatMapRecord> getHeatMapData(AggregationField x, AggregationField y, AggregateFunction function, Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites);
 }
