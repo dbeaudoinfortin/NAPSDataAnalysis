@@ -7,7 +7,7 @@ import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 
-public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter {
+public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter<IntegratedHeatMapOptions> {
 
 	public NAPSIntegratedDataHeatMap(String[] args) {
 		super(args);
@@ -31,5 +31,10 @@ public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter {
 	@Override
 	protected Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
 		return new IntegratedHeatMapRunner(getThreadID(), getOptions(), getSqlSessionFactory(), dataFile, specificYear, specificPollutant, specificSite);
+	}
+	
+	@Override
+	public Class<IntegratedHeatMapOptions> getOptionsClass(){
+		return IntegratedHeatMapOptions.class;
 	}
 }

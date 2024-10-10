@@ -8,12 +8,14 @@
 
 - [Overview](#overview)
 - [Clean Data Exports](#clean-data-exports)
-- [Data Analysis](#data-analysis)
+- [Data Analysis and Dashboards](#data-analysis-and-dashboards)
 - [Getting Started](#getting-started)
   * [Installing PostgreSQL](#installing-postgresql)
   * [Installing Java](#installing-java)
   * [Downloading the Data](#downloading-the-data)
   * [Loading the Data](#loading-the-data)
+  * [Querying the Data](#querying-the-data)
+  * [Generating Heat Maps](#generating-heat-maps)
   * [Installing Microsoft Power BI](#installing-microsoft-power-bi)
   * [Creating a Report](#creating-a-report)
 - [NAPS Site Tools](#naps-site-tools)
@@ -22,10 +24,12 @@
 - [Continuous Data Tools](#continuous-data-tools)
   * [NAPSContinuousDataDownloader](#napscontinuousdatadownloader)
   * [NAPSContinuousDataLoader](#napscontinuousdataloader)
+  * [NAPSContinuousDataQuery](#napscontinuousdataquery)
   * [NAPSContinuousDataExporter](#napscontinuousdataexporter)
 - [Integrated Data Tools](#integrated-data-tools)
   * [NAPSIntegratedDataDownloader](#napsintegrateddatadownloader)
   * [NAPSIntegratedDataLoader](#napsintegrateddataloader)
+  * [NAPSIntegratedDataQuery](#napsintegrateddataquery)
   * [NAPSIntegratedDataExporter](#napsintegrateddataexporter)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Database Design](#database-design)
@@ -66,7 +70,7 @@ All of the continuous data exports have been zipped to compress them. There is s
 
 To work around GitHub's file size limit of 100MB, some of the zip files have been created as multi-part archives. You will need to download all of the parts of the archive before you can extract the main zip file. 
 
-# Data Analysis
+# Data Analysis and Dashboards
 
 ![Report 2](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/8104f1e2-8c9d-4d86-ac32-284274d2eaed)
 
@@ -78,9 +82,12 @@ In the [/reports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/
 
 I plan to eventually add sample reports for other BI/Data Visualization software that are open source, free, and available on more platforms than just Windows x86-64.
 
+
+(Example heat maps coming soon)
+
 # Getting Started
 
-The following steps will guide you in building a database from scratch and populating it with NAPS data.
+The following steps will guide you in building a database from scratch, populating it with NAPS data, and querying/analyzing the NAPS data.
 
 ## Installing PostgreSQL
 
@@ -160,6 +167,14 @@ java -cp naps_data.jar com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoa
 
 For more information about the possible command line arguments, see the NAPSIntegratedDataLoader section [below](#napsintegrateddataloader).
 
+## Querying the Data
+
+(coming soon)
+
+## Generating Heat Maps
+
+(coming soon)
+
 ## Installing Microsoft Power BI
 
 The desktop version of Microsoft Power BI is a free tool for exploring and visualizing data. You can find it [here](https://go.microsoft.com/fwlink/?LinkId=2240819). Unfortunately, it only supports Windows x86-64 systems. I do plan to eventually make sample reports for other BI/Data Visualization software.
@@ -182,6 +197,8 @@ If all goes well, the model view of your report should look like the following:
 ![image](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/0e7c51a7-d90a-421a-9d11-a12d1d8dfe62)
 
 You can now drag-and-drop columns onto the visualization to start building your report/dashboard. If you would like to view the sample report to see how it was made, you can simply download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
+
+
 
 # NAPS Site Tools
 
@@ -253,6 +270,57 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.continuou
  -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
 
+## NAPSContinuousDataQuery
+
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader)
+
+You can invoke this tool by running the class com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery.
+
+**Command line usage:**
+```
+(TBD)
+```
+
+Say, for example, you are studying the effects of wildfires on air quality in Canada and you want generate a unique table of data for each site and each year. You want those tables to contain each day of summer months between 2018 and 2022 where the average PM2.5 measurement for that day exceeded a threshold of 20, in all sites in Alberta.
+
+You can use the following command line options:
+```
+-provTerr AB
+-months 5,6,7,8,9
+-pollutants PM2.5
+-yearStart 2018
+-yearEnd 2022
+-group1 month
+-group2 day
+-aggregateFunction avg
+-minSampleCount 4
+-valueUpperBound 1000
+-resultLowerBound 20
+-showSampleCount
+-showStdDevSamp
+-filePerSite
+-filePerYear
+```
+
+Here is an explanation of what each option does:
+- `-provTerr AB` limits the results to only sites in Alberta.
+- `-months 5,6,7,8,9` limits the results to only the months of May-September
+- `-pollutants PM2.5` limits the results to only PM2.5 measurements.
+- `-yearStart 2018` will consider all years 2018 and later.
+- `-yearEnd 2022` will consider all years 2022 and earlier.
+- `-group1 month` will group and order the data points first by month of the year, then
+- `-group2 day` will group and order the data points second by day of the month.
+- `-aggregateFunction avg` will average out the all the data points for each day.
+- `-minSampleCount 4` will only include results for days that had at least 4 data points.
+- `-valueUpperBound 1000` will discard any data points with a value greater than 1000.
+- `-resultLowerBound 20` will only include results for day where the average PM2.5 measurement exceeded the threshold of 20.
+- `-showSampleCount` will include a column showing the number of data points.
+- `-showStdDevSamp` will include a column showing sample standard deviation.
+- `-filePerSite` will generate a separate table for each NAPS site, and
+- `-filePerYear` will generate a separate table for each year. 
+
+With these options, the results will include the average of the 24 PM2.5 measurements that were taken each day. It will only include results for days that had at least 4 data points, ensuring the results are statistically significant. Any data point with a value greater than 1000 is considered outliers and will be excluded because, in our hypothetical scenario, they exceed the maximum possible range for PM2.5 for the air quality sensors. A column indicating the number of samples (data points) will be included in the results. Also included is a column indicating the standard deviation, which shows how much the measurements for each day vary. Since a lower bound is specified, all the days where the average PM2.5 measurement was below the threshold of 20 (considered 'Poor' in terms of air quality) will be excluded; only poor air quality days will be included in the results. A separate table of results will be generated for each combination of naps site and year, provided data is available for that combination.
+
 ## NAPSContinuousDataExporter
 
 A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
@@ -315,6 +383,18 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
  -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
  -t,   --threadCount <arg>    Maximum number of parallel threads.
 ```
+
+## NAPSIntegratedDataQuery
+
+This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader)
+
+You can invoke this tool by running the class com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery.
+
+**Command line usage:**
+```
+(TBD)
+```
+
 ## NAPSIntegratedDataExporter
 
 A Java tool that exports the integrated data, previously loaded by the NAPSIntegratedDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.

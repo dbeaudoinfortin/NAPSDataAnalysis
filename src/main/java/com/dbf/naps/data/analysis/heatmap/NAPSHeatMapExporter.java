@@ -7,7 +7,7 @@ import com.dbf.naps.data.exporter.NAPSDataExporter;
 
 import javafx.application.Platform;
 
-public abstract class NAPSHeatMapExporter extends NAPSDataExporter<HeatMapOptions> {
+public abstract class NAPSHeatMapExporter<O extends HeatMapOptions> extends NAPSDataExporter<O> {
 	
 	private static final Logger log = LoggerFactory.getLogger(NAPSHeatMapExporter.class);
 
@@ -29,11 +29,6 @@ public abstract class NAPSHeatMapExporter extends NAPSDataExporter<HeatMapOption
 			Platform.exit();
 	        log.info("Rendering engine shut down.");
 		}
-	}
-
-	@Override
-	public Class<HeatMapOptions> getOptionsClass(){
-		return HeatMapOptions.class;
 	}
 
 	@Override

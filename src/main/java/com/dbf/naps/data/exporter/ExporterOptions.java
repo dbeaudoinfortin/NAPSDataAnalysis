@@ -95,9 +95,9 @@ public class ExporterOptions extends DBOptions {
 			if(sites.isEmpty()) 
 				throw new IllegalArgumentException("Must specify at least one site.");
 			
-			log.info("Will extract the following sites: " + sites);
+			log.info("Using only the following site IDs: " + sites);
 		} else {
-			log.info("Will extract all sites.");
+			log.info("Using all site ID.");
 		}
 	}
 	
@@ -111,9 +111,9 @@ public class ExporterOptions extends DBOptions {
 			if(pollutants.isEmpty()) 
 				throw new IllegalArgumentException("Must specify at least one pollutant.");
 			
-			log.info("Will extract the following pollutants: " + pollutants);
+			log.info("Using only the following pollutants: " + pollutants);
 		} else {
-			log.info("Will extract all pollutants.");
+			log.info("Using all pollutants.");
 		}
 	}
 	

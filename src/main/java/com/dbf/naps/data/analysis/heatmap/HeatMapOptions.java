@@ -2,24 +2,30 @@ package com.dbf.naps.data.analysis.heatmap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.analysis.DataQueryOptions;
 
-public class HeatMapOptions extends DataQueryOptions {
+public abstract class HeatMapOptions extends DataQueryOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(HeatMapOptions.class);
 
-	private Double dataLowerBound;
-	private Double dataUpperBound;
+	private Double colourLowerBound;
+	private Double colourUpperBound;
 	
 	static {
-		getOptions().getOption("dimension1").setDescription("Data field for the heat map X-axis.");
-		getOptions().getOption("dimension2").setDescription("Data field for the heat map Y-axis.");
-		getOptions().addOption("ub","dataUpperBound", true, "Heat map colour upper bound (inclusive).");
-		getOptions().addOption("lb","dataLowerBound", true, "Heat map colour lower bound (inclusive).");
+		Option dim1 = getOptions().getOption("group1");
+		Option dim2 = getOptions().getOption("group2");
+		dim1.setDescription("Data field for the heat map X-axis.");
+		dim2.setDescription("Data field for the heat map Y-axis.");
+		dim1.setRequired(true);
+		dim2.setRequired(true);
+		
+		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
+		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
@@ -36,47 +42,50 @@ public class HeatMapOptions extends DataQueryOptions {
 			throw new IllegalArgumentException(e);
 		}
 		
-		loadDataLowerBound(cmd); //Check me first!
-		loadDataUpperBound(cmd);
+		loadColourLowerBound(cmd); //Check me first!
+		loadColourUpperBound(cmd);
 	}
 	
-	private void loadDataLowerBound(CommandLine cmd) {
-		if(cmd.hasOption("dataLowerBound")) {
-			dataLowerBound = Double.parseDouble(cmd.getOptionValue("dataLowerBound"));
-			if (dataLowerBound < 0) {
-				throw new IllegalArgumentException("Invalid heat map colour lower bound: " + dataLowerBound);
+	private void loadColourLowerBound(CommandLine cmd) {
+		if(cmd.hasOption("colourLowerBound")) {
+			colourLowerBound = Double.parseDouble(cmd.getOptionValue("colourLowerBound"));
+			if (colourLowerBound < 0) {
+				throw new IllegalArgumentException("Invalid heat map colour lower bound: " + colourLowerBound);
 			}
-			log.info("Using heat map colour lower bound: " + dataLowerBound);
+			log.info("Using heat map colour lower bound: " + colourLowerBound);
+		} else {
+			log.info("No explicit lower bound set for the heat map colour. The lower bound will be automatically calculated.");
+		}
+	}
+	
+	private void loadColourUpperBound(CommandLine cmd) {
+		if(cmd.hasOption("colourUpperBound")) {
+			colourUpperBound = Double.parseDouble(cmd.getOptionValue("colourUpperBound"));
+			if (colourLowerBound >= colourUpperBound) {
+				throw new IllegalArgumentException("Invalid heat map colour upper bound: " + colourUpperBound);
+			}
+			log.info("Using heat map colour upper bound: " + colourUpperBound);
 		} else {
 			log.info("No explicit upper bound set for the heat map colour. The upper bound will be automatically calculated.");
 		}
 	}
 	
-	private void loadDataUpperBound(CommandLine cmd) {
-		if(cmd.hasOption("dataUpperBound")) {
-			dataUpperBound = Double.parseDouble(cmd.getOptionValue("dataUpperBound"));
-			if (dataLowerBound >= dataUpperBound) {
-				throw new IllegalArgumentException("Invalid heat map colour upper bound: " + dataUpperBound);
-			}
-			log.info("Using heat map colour upper bound: " + dataUpperBound);
-		} else {
-			log.info("No explicit lower bound set for the heat map colour. The lower bound will be automatically calculated.");
-		}
-	}
+	public boolean allowAggregateFunctionNone() {return false;}
+	public boolean isAggregationMandatory() {return true;}
 
 	public Double getDataLowerBound() {
-		return dataLowerBound;
+		return colourLowerBound;
 	}
 
 	public void setDataLowerBound(Double dataLowerBound) {
-		this.dataLowerBound = dataLowerBound;
+		this.colourLowerBound = dataLowerBound;
 	}
 
 	public Double getDataUpperBound() {
-		return dataUpperBound;
+		return colourUpperBound;
 	}
 
 	public void setDataUpperBound(Double dataUpperBound) {
-		this.dataUpperBound = dataUpperBound;
+		this.colourUpperBound = dataUpperBound;
 	}
 }
