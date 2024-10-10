@@ -1,13 +1,11 @@
 package com.dbf.naps.data.exporter.integrated;
 
 import java.io.File;
-import java.util.List;
 
-import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
+import com.dbf.naps.data.exporter.ExporterOptions;
 import com.dbf.naps.data.exporter.NAPSCSVExporter;
 
-public class NAPSIntegratedDataExporter extends NAPSCSVExporter {
+public class NAPSIntegratedDataExporter extends NAPSCSVExporter<ExporterOptions> {
 	
 	public NAPSIntegratedDataExporter(String[] args) {
 		super(args);
@@ -19,8 +17,8 @@ public class NAPSIntegratedDataExporter extends NAPSCSVExporter {
 	}
 	
 	@Override
-	protected List<Class<?>> getDBMappers() {
-		return List.of(IntegratedDataMapper.class, DataMapper.class);
+	public Class<ExporterOptions> getOptionsClass(){
+		return ExporterOptions.class;
 	}
 
 	@Override

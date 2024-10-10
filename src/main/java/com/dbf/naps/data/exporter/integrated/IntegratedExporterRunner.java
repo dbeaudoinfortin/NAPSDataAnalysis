@@ -8,16 +8,12 @@ import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 import com.dbf.naps.data.exporter.ExporterOptions;
 import com.dbf.naps.data.exporter.ExporterRunner;
 
-public class IntegratedExporterRunner extends ExporterRunner {
+public class IntegratedExporterRunner extends ExporterRunner<ExporterOptions> {
 		
 	public IntegratedExporterRunner(int threadId, ExporterOptions config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
 		super(threadId, config, sqlSessionFactory, dataFile, specificYear, specificPollutant, specificSite);
 	}
 
-	protected String getDataset(){
-		return "Integrated";
-	}
-	
 	@Override
 	protected Class<? extends DataMapper> getDataMapper() {
 		return IntegratedDataMapper.class;

@@ -54,4 +54,16 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 	}
 	
 	public boolean isAggregationMandatory() {return false;}
+
+	public boolean isSampleCount() {
+		return sampleCount;
+	}
+
+	public boolean isStdDevPop() {
+		return stdDevPop;
+	}
+
+	public boolean isStdDevSmp() {
+		return stdDevSmp;
+	}
 }

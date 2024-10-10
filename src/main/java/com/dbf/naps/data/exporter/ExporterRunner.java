@@ -16,81 +16,62 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.db.DBRunner;
+import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.ExportDataRecord;
 
-public abstract class ExporterRunner extends DBRunner<ExporterOptions> {
+public abstract class ExporterRunner<O extends ExporterOptions> extends FileRunner<O> {
 	
 	private static final int MAX_ROWS_PER_QUERY = 1_000_000;
 	
 	private static final Logger log = LoggerFactory.getLogger(ExporterRunner.class);
 	
-	private File dataFile;
-	private Integer specificYear;
-	private String specificPollutant;
-	private Integer specificSite;
-	
 	//Note: SimpleDateFormat is not thread safe, must not be static
 	private final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		
-	public ExporterRunner(int threadId, ExporterOptions config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
-		super(threadId, config, sqlSessionFactory);
-		this.dataFile = dataFile;
-		this.specificYear = specificYear;
-		this.specificPollutant = specificPollutant;
-		this.specificSite = specificSite;
+	public ExporterRunner(int threadId, O config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
+		super(threadId, config, sqlSessionFactory, dataFile, specificYear, specificPollutant, specificSite);
 	}
 	
 	@Override
 	public void run() {
-		
 		try {
-			log.info(getThreadId() + ":: Starting export of CSV file " + dataFile + ".");
+			checkFile();
+			
+			log.info(getThreadId() + ":: Starting export of CSV file " + getDataFile() + ".");
 			exportData();
-			log.info(getThreadId() + ":: Completed export of CSV file " + dataFile + ".");
+			log.info(getThreadId() + ":: Completed export of CSV file " + getDataFile() + ".");
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR exporting to CSV file " + dataFile + ".", t);
+			 log.error(getThreadId() + ":: ERROR exporting to CSV file " + getDataFile() + ".", t);
 			return;
 		 }
 	}
 
-	public void exportData() {		
-		if(dataFile.isDirectory()) {
-			throw new IllegalArgumentException("File path is a directory: " + dataFile);
-		} else if (dataFile.isFile()) {
-			if(getConfig().isOverwriteFiles()) {
-				log.warn(getThreadId() + ":: Deleting existing file " + dataFile + ".");
-				dataFile.delete();
-			} else {
-				throw new IllegalArgumentException("Cannot export to path \"" + dataFile +"\". The file already exists and the overwrite flag is set to false.");
-			}
-		}
-		
+	public void exportData() {
 		int offset = 0;
 		List<? extends ExportDataRecord> records = null;
 		while (true) {
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				records = session.getMapper(getDataMapper()).getExportData(
-					specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-					specificPollutant != null ? List.of(specificPollutant) : getConfig().getPollutants(),
-					specificSite != null ? List.of(specificSite) : getConfig().getSites(), offset, MAX_ROWS_PER_QUERY);
+					getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
+					getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
+					getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(), offset, MAX_ROWS_PER_QUERY);
 			}
 			
 			if(records.isEmpty()) {
-				if (offset == 0) log.info(getThreadId() + ":: No records found for " + dataFile + ". Skipping file.");
+				if (offset == 0) log.info(getThreadId() + ":: No records found for " + getDataFile() + ". Skipping file.");
 				return;
 			}
 		
 			try {
 				writeToCSV(records, offset == 0);
 			} catch (IOException e) {
-				throw new IllegalArgumentException("Failed to write to CSV file " + dataFile, e);
+				throw new IllegalArgumentException("Failed to write to CSV file " + getDataFile(), e);
 			}
 			
 			if(records.size() < MAX_ROWS_PER_QUERY) {
 				//Assume no more data
-				log.info(getThreadId() + ":: No more records found for " + dataFile + ".");
+				log.info(getThreadId() + ":: No more records found for " + getDataFile() + ".");
 				return;
 			}
 			offset += MAX_ROWS_PER_QUERY;
@@ -99,14 +80,14 @@ public abstract class ExporterRunner extends DBRunner<ExporterOptions> {
 	}
 	
 	private void writeToCSV(List<? extends ExportDataRecord> records, boolean printHeader) throws IOException {
-		log.info(getThreadId() + ":: Writing " + records.size() + " record(s) for " + dataFile + ".");
+		log.info(getThreadId() + ":: Writing " + records.size() + " record(s) for " + getDataFile() + ".");
 		CSVFormat format = CSVFormat.EXCEL
 			.builder()
 			.setTrim(false)
 			.setHeader(records.get(0).getHeader())
 			.setSkipHeaderRecord(!printHeader)
 			.build();
-		try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
+		try(BufferedWriter writer = Files.newBufferedWriter(getDataFile().toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 			writer.write('\ufeff'); //Manually print the UTF-8 BOM
 			try(CSVPrinter printer = new CSVPrinter(writer, format)){
 				for(ExportDataRecord record : records) {
@@ -117,6 +98,4 @@ public abstract class ExporterRunner extends DBRunner<ExporterOptions> {
 	}
 	
 	protected abstract Class<? extends DataMapper> getDataMapper();
-	
-	protected abstract String getDataset();
 }

@@ -80,8 +80,10 @@ public abstract class NAPSDataExporter<O extends ExporterOptions> extends NAPSDB
 	protected List<DataRecordGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,
 			Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite) {
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			return session.getMapper(DataMapper.class).getExportDataGroups(startYear, endYear, pollutants,
-					sites, groupByYear, groupByPollutant, groupBySite, getDataset());
+			return session.getMapper(DataMapper.class).getExportDataGroups(startYear, endYear, pollutants, sites, //Per-file filters
+					groupByYear, groupByPollutant, groupBySite, //Grouping
+					null, null, null, null, null, null, null,	//Filtering
+					getDataset());
 		}
 	}
 	

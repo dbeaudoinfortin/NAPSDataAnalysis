@@ -1,8 +1,11 @@
 package com.dbf.naps.data.analysis.heatmap;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.exporter.NAPSDataExporter;
 
 import javafx.application.Platform;
@@ -34,5 +37,10 @@ public abstract class NAPSHeatMapExporter<O extends HeatMapOptions> extends NAPS
 	@Override
 	protected String getFileExtension() {
 		return ".png";
+	}
+	
+	@Override
+	protected List<Class<?>> getDBMappers() {
+		return List.of(DataMapper.class);
 	}
 }

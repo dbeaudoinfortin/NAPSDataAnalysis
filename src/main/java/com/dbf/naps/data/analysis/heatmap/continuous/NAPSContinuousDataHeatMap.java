@@ -1,11 +1,7 @@
 package com.dbf.naps.data.analysis.heatmap.continuous;
 
 import java.io.File;
-import java.util.List;
-
 import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
-import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
-import com.dbf.naps.data.db.mappers.DataMapper;
 
 public class NAPSContinuousDataHeatMap extends NAPSHeatMapExporter<ContinuousHeatMapOptions> {
 
@@ -16,11 +12,6 @@ public class NAPSContinuousDataHeatMap extends NAPSHeatMapExporter<ContinuousHea
 	public static void main(String[] args) {
 		NAPSContinuousDataHeatMap dataExporter = new NAPSContinuousDataHeatMap(args);
 		dataExporter.run();
-	}
-
-	@Override
-	protected List<Class<?>> getDBMappers() {
-		return List.of(ContinuousDataMapper.class, DataMapper.class);
 	}
 	
 	@Override

@@ -5,8 +5,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import com.dbf.naps.data.analysis.heatmap.HeatMapOptions;
 import com.dbf.naps.data.analysis.heatmap.HeatMapRunner;
-import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 
 public class IntegratedHeatMapRunner extends HeatMapRunner {
 		
@@ -16,10 +14,5 @@ public class IntegratedHeatMapRunner extends HeatMapRunner {
 
 	protected String getDataset(){
 		return "Integrated";
-	}
-	
-	@Override
-	protected Class<? extends DataMapper> getDataMapper() {
-		return IntegratedDataMapper.class;
 	}
 }

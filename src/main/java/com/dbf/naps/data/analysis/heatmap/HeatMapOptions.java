@@ -16,6 +16,8 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private Double colourLowerBound;
 	private Double colourUpperBound;
 	
+	private boolean includeCSV = true; //TODO Implement this
+	
 	static {
 		Option dim1 = getOptions().getOption("group1");
 		Option dim2 = getOptions().getOption("group2");
@@ -87,5 +89,9 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 
 	public void setDataUpperBound(Double dataUpperBound) {
 		this.colourUpperBound = dataUpperBound;
+	}
+
+	public boolean isIncludeCSV() {
+		return includeCSV;
 	}
 }

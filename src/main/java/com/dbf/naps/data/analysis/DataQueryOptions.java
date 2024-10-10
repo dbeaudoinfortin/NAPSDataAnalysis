@@ -21,7 +21,7 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private static final Logger log = LoggerFactory.getLogger(DataQueryOptions.class);
 
 	private AggregateFunction aggregateFunction = AggregateFunction.AVG;
-	private final List<AggregationField> dimensions = new ArrayList<AggregationField>();
+	private final List<AggregationField> fields = new ArrayList<AggregationField>();
 	
 	private final Set<Integer> months = new HashSet<Integer>();
 	private final Set<Integer> days = new HashSet<Integer>();
@@ -30,6 +30,11 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private String siteName;
 	private String cityName;
 	
+	public Integer getMinSampleCount() {
+		return minSampleCount;
+	}
+
+	private Integer		minSampleCount;
 	private BigDecimal	valueUpperBound;
 	private BigDecimal	valueLowerBound;
 	private Double		resultUpperBound;
@@ -81,6 +86,27 @@ public abstract class DataQueryOptions extends ExporterOptions {
 		loadValueUpperBound(cmd);
 		loadResultLowerBound(cmd); //Check me first!
 		loadResultUpperBound(cmd);
+		
+		loadMinSampleCount(cmd); //Check me last
+	}
+	
+	private void loadMinSampleCount(CommandLine cmd) {
+		if(cmd.hasOption("minSampleCount")) {
+			if(aggregateFunction.equals(AggregateFunction.NONE)) {
+				throw new IllegalArgumentException("Minimum sample count cannot be used when the aggregate function is set to 'NONE'.");
+			}
+			if(aggregateFunction.equals(AggregateFunction.COUNT) && (resultLowerBound != null)) {
+				throw new IllegalArgumentException("Minimum sample count is redundant since the aggregate function is set to 'COUNT' and the post-aggregated result lower bound is set.");
+			}
+			
+			minSampleCount = Integer.parseInt(cmd.getOptionValue("minSampleCount"));
+			if (minSampleCount < 2) {
+				throw new IllegalArgumentException("Invalid minimum sample count: " + minSampleCount + ". Must be at least 2.");
+			}
+			log.info("Using a minimum sample count of " + minSampleCount + ".");
+		} else {
+			log.info("Not using minimum sample count.");
+		}
 	}
 	
 	private void loadValueLowerBound(CommandLine cmd) {
@@ -109,6 +135,10 @@ public abstract class DataQueryOptions extends ExporterOptions {
 
 	private void loadResultLowerBound(CommandLine cmd) {
 		if(cmd.hasOption("resultLowerBound")) {
+			if(aggregateFunction.equals(AggregateFunction.NONE)) {
+				throw new IllegalArgumentException("Post-aggregated result lower bound cannot be used when the aggregate function is set to 'NONE'.");
+			}
+			
 			resultLowerBound = Double.parseDouble(cmd.getOptionValue("resultLowerBound"));
 			if (resultLowerBound < 0) {
 				throw new IllegalArgumentException("Invalid post-aggregated result lower bound: " + resultLowerBound);
@@ -121,6 +151,10 @@ public abstract class DataQueryOptions extends ExporterOptions {
 
 	private void loadResultUpperBound(CommandLine cmd) {
 		if(cmd.hasOption("resultUpperBound")) {
+			if(aggregateFunction.equals(AggregateFunction.NONE)) {
+				throw new IllegalArgumentException("Post-aggregated result upper bound cannot be used when the aggregate function is set to 'NONE'.");
+			}
+			
 			resultUpperBound = Double.parseDouble(cmd.getOptionValue("resultUpperBound"));
 			if (resultLowerBound >= resultUpperBound) {
 				throw new IllegalArgumentException("Invalid post-aggregated result upper bound: " + resultUpperBound);
@@ -228,12 +262,12 @@ public abstract class DataQueryOptions extends ExporterOptions {
 				log.info("Cannot use 'HOUR' as a data field for group " + dimIndex + ".");
 			}
 			
-			dimensions.add(dimIndex-1, aggregationField);
+			fields.add(dimIndex-1, aggregationField);
 			log.info("Using data field " + aggregationField + " for group " + dimIndex + ".");
 		} else if(mandatory) {
 			throw new IllegalArgumentException("Missing data field for group " + dimIndex + ". Use the -g" + dimIndex + " argument.");
 		} else {
-			dimensions.add(null);
+			fields.add(null);
 		}
 	}
 	
@@ -249,10 +283,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			if(aggregateFunction.equals(AggregateFunction.NONE)) {
 				if(!allowAggregateFunctionNone())
 					throw new IllegalArgumentException("Aggregate function cannot be set to 'NONE' for this report.");
-				if(dimensions.size() > 0)
+				if(fields.size() > 0)
 					throw new IllegalArgumentException("Aggregate function cannot be set to 'NONE' when grouping is used. Remove the -g[1-5] arguments.");
-			} else if(dimensions.size() <1) {
-				throw new IllegalArgumentException("Aggregate functions require the use of at least one grouping. Use the -g[1-5] arguments to specify a grouping.");
 			}
 
 			log.info("Using aggregate function " + aggregateFunction);
@@ -275,8 +307,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 		this.aggregateFunction = aggregateFunction;
 	}
 	
-	public List<AggregationField> getDimensions() {
-		return dimensions;
+	public List<AggregationField> getFields() {
+		return fields;
 	}
 
 	public Set<Integer> getMonths() {

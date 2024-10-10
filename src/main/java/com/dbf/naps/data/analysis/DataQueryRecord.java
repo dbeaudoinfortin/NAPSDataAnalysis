@@ -10,6 +10,10 @@ public class DataQueryRecord {
 	private Object field_5;
 	private BigDecimal value;
 	
+	private Integer sampleCount;
+	private Double stdDevPop;
+	private Double stdDevSmp;
+	
 	public DataQueryRecord() {}
 
 	public BigDecimal getValue() {
@@ -57,5 +61,29 @@ public class DataQueryRecord {
 
 	public void setField_5(Object field_5) {
 		this.field_5 = field_5;
+	}
+
+	public Integer getSampleCount() {
+		return sampleCount;
+	}
+
+	public void setSampleCount(Integer sampleCount) {
+		this.sampleCount = sampleCount;
+	}
+
+	public Double getStdDevPop() {
+		return stdDevPop;
+	}
+
+	public void setStdDevPop(Double stdDevPop) {
+		this.stdDevPop = stdDevPop;
+	}
+
+	public Double getStdDevSmp() {
+		return stdDevSmp;
+	}
+
+	public void setStdDevSmp(Double stdDevSmp) {
+		this.stdDevSmp = stdDevSmp;
 	}
 }

@@ -5,8 +5,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import com.dbf.naps.data.analysis.heatmap.HeatMapOptions;
 import com.dbf.naps.data.analysis.heatmap.HeatMapRunner;
-import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
-import com.dbf.naps.data.db.mappers.DataMapper;
 
 public class ContinuousHeatMapRunner extends HeatMapRunner {
 		
@@ -16,10 +14,5 @@ public class ContinuousHeatMapRunner extends HeatMapRunner {
 
 	protected String getDataset(){
 		return "Continuous";
-	}
-
-	@Override
-	protected Class<? extends DataMapper> getDataMapper() {
-		return ContinuousDataMapper.class;
 	}
 }

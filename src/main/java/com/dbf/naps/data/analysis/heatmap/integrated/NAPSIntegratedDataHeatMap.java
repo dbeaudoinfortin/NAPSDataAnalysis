@@ -1,11 +1,7 @@
 package com.dbf.naps.data.analysis.heatmap.integrated;
 
 import java.io.File;
-import java.util.List;
-
 import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
-import com.dbf.naps.data.db.mappers.DataMapper;
-import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 
 public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter<IntegratedHeatMapOptions> {
 
@@ -16,11 +12,6 @@ public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter<IntegratedHea
 	public static void main(String[] args) {
 		NAPSIntegratedDataHeatMap dataExporter = new NAPSIntegratedDataHeatMap(args);
 		dataExporter.run();
-	}
-
-	@Override
-	protected List<Class<?>> getDBMappers() {
-		return List.of(IntegratedDataMapper.class, DataMapper.class);
 	}
 	
 	@Override

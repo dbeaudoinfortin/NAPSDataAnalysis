@@ -1,13 +1,11 @@
 package com.dbf.naps.data.exporter.continuous;
 
 import java.io.File;
-import java.util.List;
 
-import com.dbf.naps.data.db.mappers.ContinuousDataMapper;
-import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.exporter.ExporterOptions;
 import com.dbf.naps.data.exporter.NAPSCSVExporter;
 
-public class NAPSContinuousDataExporter extends NAPSCSVExporter {
+public class NAPSContinuousDataExporter extends NAPSCSVExporter<ExporterOptions> {
 
 	public NAPSContinuousDataExporter(String[] args) {
 		super(args);
@@ -17,12 +15,12 @@ public class NAPSContinuousDataExporter extends NAPSCSVExporter {
 		NAPSContinuousDataExporter dataExporter = new NAPSContinuousDataExporter(args);
 		dataExporter.run();
 	}
-
-	@Override
-	protected List<Class<?>> getDBMappers() {
-		return List.of(ContinuousDataMapper.class, DataMapper.class);
-	}
 	
+	@Override
+	public Class<ExporterOptions> getOptionsClass(){
+		return ExporterOptions.class;
+	}
+
 	@Override
 	protected String getDataset() {
 		return "Continuous";
