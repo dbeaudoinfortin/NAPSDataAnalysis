@@ -6,6 +6,7 @@ public enum AggregationField {
 	DAY,
 	HOUR,
 	DAY_OF_WEEK,
+	DAY_OF_YEAR,
 	WEEK_OF_YEAR,
 	NAPS_ID,
 	POLLUTANT,

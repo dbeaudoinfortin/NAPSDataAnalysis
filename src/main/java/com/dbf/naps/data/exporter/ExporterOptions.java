@@ -36,7 +36,7 @@ public class ExporterOptions extends DBOptions {
 		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
 		getOptions().addOption("pn","pollutants", true, "Comma-seperated list of pollutant names.");	
-		getOptions().addOption("sid","sites", true, "Comma-seperated list of site IDs.");	
+		getOptions().addOption("sid","sites", true, "Comma-seperated list of site IDs.");
 		getOptions().addOption("fy","filePerYear", false, "Create a seperate file for each year.");
 		getOptions().addOption("fp","filePerPollutant", false, "Create a seperate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a seperate file for each site.");
@@ -184,14 +184,6 @@ public class ExporterOptions extends DBOptions {
 
 	public boolean isFilePerSite() {
 		return filePerSite;
-	}
-
-	public void setYearStart(int yearStart) {
-		this.yearStart = yearStart;
-	}
-
-	public void setYearEnd(int yearEnd) {
-		this.yearEnd = yearEnd;
 	}
 	
 	public boolean isOverwriteFiles() {

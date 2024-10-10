@@ -5,5 +5,6 @@ public enum AggregateFunction {
 	MIN,
 	MAX,
 	COUNT,
-	SUM
+	SUM,
+	NONE
 }

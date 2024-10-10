@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 import com.dbf.naps.data.analysis.AggregateFunction;
 import com.dbf.naps.data.analysis.AggregationField;
-import com.dbf.naps.data.analysis.heatmap.HeatMapRecord;
+import com.dbf.naps.data.analysis.DataQueryRecord;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.records.ExportDataRecord;
 
@@ -39,5 +39,5 @@ public interface DataMapper {
 
 	public List<? extends ExportDataRecord> getExportData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
 
-	public List<HeatMapRecord> getHeatMapData(AggregationField x, AggregationField y, AggregateFunction function, Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites);
+	public List<DataQueryRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, Collection<Integer> months, String siteName, String cityName, Collection<String> provTerr);
 }

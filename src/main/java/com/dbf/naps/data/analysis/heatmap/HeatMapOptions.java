@@ -6,22 +6,20 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.analysis.AggregateFunction;
-import com.dbf.naps.data.analysis.AggregationField;
-import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.analysis.DataQueryOptions;
 
-public class HeatMapOptions extends ExporterOptions {
+public class HeatMapOptions extends DataQueryOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(HeatMapOptions.class);
 
-	private AggregateFunction aggregateFunction = AggregateFunction.AVG;
-	private AggregationField  xField;
-	private AggregationField  yField;
+	private Double dataLowerBound;
+	private Double dataUpperBound;
 	
 	static {
-		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function.");
-		getOptions().addRequiredOption("x","xDataField", true, "Data field for the X-axis.");
-		getOptions().addRequiredOption("y","yDataField", true, "Data field for the Y-axis.");
+		getOptions().getOption("dimension1").setDescription("Data field for the heat map X-axis.");
+		getOptions().getOption("dimension2").setDescription("Data field for the heat map Y-axis.");
+		getOptions().addOption("ub","dataUpperBound", true, "Heat map colour upper bound (inclusive).");
+		getOptions().addOption("lb","dataLowerBound", true, "Heat map colour lower bound (inclusive).");
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
@@ -38,68 +36,47 @@ public class HeatMapOptions extends ExporterOptions {
 			throw new IllegalArgumentException(e);
 		}
 		
-		loadAggregateFunction(cmd);
-		loadAggregationField(cmd, "x");
-		loadAggregationField(cmd, "y"); 
+		loadDataLowerBound(cmd); //Check me first!
+		loadDataUpperBound(cmd);
 	}
 	
-	private void loadAggregationField(CommandLine cmd, String axis) {
-		final String field = axis + "DataField";
-		AggregationField aggregationField = null;
-		
-		String rawValue = cmd.getOptionValue(field);
-		try {
-			aggregationField = AggregationField.valueOf(rawValue.toUpperCase()); 
-			
-		} catch(Exception e) {
-			throw new IllegalArgumentException("Invalid data field for the " + axis.toUpperCase() + "-axis: " + rawValue);
-		}
-		
-		log.info("Using " + axis.toUpperCase() + "-axis data field " + aggregationField);
-		
-		if(axis.equals("x")) {
-			xField = aggregationField; 
-		}else { 
-			yField = aggregationField;
-		}
-	}
-	
-	private void loadAggregateFunction(CommandLine cmd) {
-		if(cmd.hasOption("aggregateFunction")) {
-			String rawValue = cmd.getOptionValue("aggregateFunction");
-			try {
-				aggregateFunction = AggregateFunction.valueOf(rawValue.toUpperCase()); 
-			} catch(Exception e) {
-				throw new IllegalArgumentException("Invalid aggregation function option: " + rawValue);
+	private void loadDataLowerBound(CommandLine cmd) {
+		if(cmd.hasOption("dataLowerBound")) {
+			dataLowerBound = Double.parseDouble(cmd.getOptionValue("dataLowerBound"));
+			if (dataLowerBound < 0) {
+				throw new IllegalArgumentException("Invalid heat map colour lower bound: " + dataLowerBound);
 			}
-			log.info("Using aggregate function " + aggregateFunction);
+			log.info("Using heat map colour lower bound: " + dataLowerBound);
 		} else {
-			log.info("Using default aggregate function: " + aggregateFunction);
+			log.info("No explicit upper bound set for the heat map colour. The upper bound will be automatically calculated.");
+		}
+	}
+	
+	private void loadDataUpperBound(CommandLine cmd) {
+		if(cmd.hasOption("dataUpperBound")) {
+			dataUpperBound = Double.parseDouble(cmd.getOptionValue("dataUpperBound"));
+			if (dataLowerBound >= dataUpperBound) {
+				throw new IllegalArgumentException("Invalid heat map colour upper bound: " + dataUpperBound);
+			}
+			log.info("Using heat map colour upper bound: " + dataUpperBound);
+		} else {
+			log.info("No explicit lower bound set for the heat map colour. The lower bound will be automatically calculated.");
 		}
 	}
 
-	public AggregateFunction getAggregateFunction() {
-		return aggregateFunction;
+	public Double getDataLowerBound() {
+		return dataLowerBound;
 	}
 
-	public AggregationField getXField() {
-		return xField;
+	public void setDataLowerBound(Double dataLowerBound) {
+		this.dataLowerBound = dataLowerBound;
 	}
 
-	public AggregationField getYField() {
-		return yField;
+	public Double getDataUpperBound() {
+		return dataUpperBound;
 	}
 
-	public void setAggregateFunction(AggregateFunction aggregateFunction) {
-		this.aggregateFunction = aggregateFunction;
+	public void setDataUpperBound(Double dataUpperBound) {
+		this.dataUpperBound = dataUpperBound;
 	}
-
-	public void setXField(AggregationField xField) {
-		this.xField = xField;
-	}
-
-	public void setYField(AggregationField yField) {
-		this.yField = yField;
-	}
-
 }

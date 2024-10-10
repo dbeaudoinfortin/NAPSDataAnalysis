@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.analysis.AggregationField;
+import com.dbf.naps.data.analysis.DataQueryRecord;
 import com.dbf.naps.data.db.DBRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 
@@ -65,11 +66,10 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 			}
 		}
 		
-		List<HeatMapRecord> records;
+		List<DataQueryRecord> records;
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			records = session.getMapper(getDataMapper()).getHeatMapData(
-				getConfig().getXField(),
-				getConfig().getYField(),
+			records = session.getMapper(getDataMapper()).getQueryData(
+				getConfig().getDimensions(),
 				getConfig().getAggregateFunction(),
 				specificYear != null ? List.of(specificYear) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
 				specificPollutant != null ? List.of(specificPollutant) : getConfig().getPollutants(),
@@ -88,11 +88,11 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 		log.info("Rendering complete for " + dataFile + ".");
 	}
 	
-	private void renderHeatMap(List<HeatMapRecord> records) {
+	private void renderHeatMap(List<DataQueryRecord> records) {
 		
 		//Determine the bounds of the X & Y dimension
-		AxisDimensions<?> xDimensions = determineAxisDimensions(getConfig().getXField(), records, true);
-		AxisDimensions<?> yDimensions = determineAxisDimensions(getConfig().getYField(), records, false);
+		AxisDimensions<?> xDimensions = determineAxisDimensions(getConfig().getDimensions().get(0), records, true);
+		AxisDimensions<?> yDimensions = determineAxisDimensions(getConfig().getDimensions().get(1), records, false);
 		
 		//Determine the bounds of the data values
 		BigDecimal minValue = records.get(0).getValue();
@@ -100,7 +100,7 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 		
 		//Convert the data to a format that the rendering library can use
 		List<MatrixChartItem> matrixData = new ArrayList<MatrixChartItem>(records.size());
-		for (HeatMapRecord record: records) {
+		for (DataQueryRecord record: records) {
 			int x = xDimensions.isDistinct() ? xDimensions.getDistinctEntries().get(record.getX()) : (int) record.getX();
 			int y = yDimensions.isDistinct() ? yDimensions.getDistinctEntries().get(record.getY()) : (int) record.getY();
 			matrixData.add(new MatrixChartItem(x-1, y-1, record.getValue().doubleValue()));
@@ -121,12 +121,14 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 	}
 
 	
-	private <T> AxisDimensions<?> determineAxisDimensions(AggregationField field, List<HeatMapRecord> records, boolean xField) {
+	private <T> AxisDimensions<?> determineAxisDimensions(AggregationField field, List<DataQueryRecord> records, boolean xField) {
 		switch (field) {
 		case DAY:
 			return new AxisDimensions<Integer>(1, 31, 31, Integer.class);
 		case DAY_OF_WEEK:
 			return new AxisDimensions<Integer>(1, 7, 7, Integer.class);
+		case DAY_OF_YEAR:
+			return new AxisDimensions<Integer>(1, 366, 366, Integer.class);
 		case HOUR:
 			return new AxisDimensions<Integer>(1, 24, 24, Integer.class);
 		case MONTH:
@@ -138,7 +140,7 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 			int minYear = (int) (xField? records.get(0).getX() : records.get(0).getY());
 			int maxYear = minYear;
 			int distinctYearCount = 0;
-			for (HeatMapRecord record: records) {
+			for (DataQueryRecord record: records) {
 				int year = (int) (xField? record.getX() : record.getY());
 				if(year < minYear) minYear = year;
 				if(year > maxYear) maxYear = year;
@@ -151,7 +153,7 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 		case NAPS_ID:
 			Map<Integer, Integer> distinctIDs = new HashMap<Integer, Integer>(records.size());
 			int distinctIDCount = 0;
-			for (HeatMapRecord record: records) {
+			for (DataQueryRecord record: records) {
 				Integer value = (Integer)(xField? record.getX() : record.getY());
 				if(!distinctIDs.containsKey(value)) {
 					distinctIDs.put(value, distinctIDCount++);
@@ -165,7 +167,7 @@ public abstract class HeatMapRunner extends DBRunner<HeatMapOptions> {
 		default:
 			Map<String, Integer> distinctStrings = new HashMap<String, Integer>(records.size());
 			int distinctStringCount = 0;
-			for (HeatMapRecord record: records) {
+			for (DataQueryRecord record: records) {
 				String value = (xField? record.getX() : record.getY()).toString();
 				if(!distinctStrings.containsKey(value)) {
 					distinctStrings.put(value, distinctStringCount++);

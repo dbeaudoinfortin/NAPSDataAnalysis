@@ -1,4 +1,4 @@
-package com.dbf.naps.data.analysis.integrated;
+package com.dbf.naps.data.analysis.heatmap.integrated;
 
 import java.io.File;
 import org.apache.ibatis.session.SqlSessionFactory;
