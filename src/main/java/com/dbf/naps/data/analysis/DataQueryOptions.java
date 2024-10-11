@@ -25,8 +25,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private AggregateFunction aggregateFunction = AggregateFunction.AVG;
 	private final List<AggregationField> fields = new ArrayList<AggregationField>();
 	
-	private final Set<Integer> months = new HashSet<Integer>();
-	private final Set<Integer> days = new HashSet<Integer>();
+	private final Set<Integer>  months = new HashSet<Integer>();
+	private final Set<Integer>  days = new HashSet<Integer>();
 	private final Set<ProvTerr> provTerr = new HashSet<ProvTerr>();
 	
 	private String siteName;

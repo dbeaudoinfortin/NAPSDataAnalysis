@@ -63,7 +63,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		
 		log.info("Rendering complete for " + dataFile + ".");
 		
-		if (getConfig().isIncludeCSV()) {
+		if (getConfig().isGenerateCSV()) {
 			File csvFile = new File(dataFile.getParent(), dataFile.getName().replace("png", "csv"));
 			super.writeToFile(records, csvFile);
 		}

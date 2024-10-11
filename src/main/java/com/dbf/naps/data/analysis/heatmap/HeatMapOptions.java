@@ -16,7 +16,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private Double colourLowerBound;
 	private Double colourUpperBound;
 	
-	private boolean includeCSV = true; //TODO Implement this
+	private boolean generateCSV = false;
 	
 	static {
 		Option dim1 = getOptions().getOption("group1");
@@ -28,6 +28,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		
 		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
+		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
@@ -46,6 +47,12 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		
 		loadColourLowerBound(cmd); //Check me first!
 		loadColourUpperBound(cmd);
+		loadGenerateCSV(cmd);
+	}
+	
+	private void loadGenerateCSV(CommandLine cmd) {
+		generateCSV = cmd.hasOption("generateCSV");
+		log.info("Generate CSV file flag is set to " + generateCSV);
 	}
 	
 	private void loadColourLowerBound(CommandLine cmd) {
@@ -91,7 +98,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		this.colourUpperBound = dataUpperBound;
 	}
 
-	public boolean isIncludeCSV() {
-		return includeCSV;
+	public boolean isGenerateCSV() {
+		return generateCSV;
 	}
 }
