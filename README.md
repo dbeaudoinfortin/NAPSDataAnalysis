@@ -321,6 +321,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Notes:**
 - Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
+- (TBD - additional rules & restrictions)
 
 
 **Example Query:**
@@ -368,8 +369,9 @@ The complete command line command is the following:
 ```
  java -cp naps_data.jar com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery -p C:\temp\NAPSData\Queries -t 5 -provTerr AB -months 5,6,7,8,9 -pollutants PM2.5 -yearStart 2018 -yearEnd 2022 -group1 month -group2 day -aggregateFunction avg -minSampleCount 4 -valueUpperBound 1000 -resultLowerBound 20 -showSampleCount -showStdDevSamp -filePerSite -filePerYear
 ```
+The above example generated 224 tables of data, each saved in its own CSV file. The table for Redwater, Alberta contains only the poor air quality days and shows that nearly the entire month of August 2018 had poor air quality due to smoke from [B.C. wildfires](https://www.cbc.ca/news/canada/edmonton/smoke-from-b-c-wildfires-prompts-air-quality-advisories-across-alberta-1.4777625). 
 
-
+![image](https://github.com/user-attachments/assets/9e888c4d-524d-4e81-91d9-f97a3cfa74af)
 
 ## NAPSContinuousDataExporter
 
