@@ -2,9 +2,11 @@ package com.dbf.naps.data.analysis;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -41,12 +43,13 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private Double		resultLowerBound;
 	
 	static {
-		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function.");
+		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
+				+ Arrays.stream(AggregateFunction.values()).map(f->f.name()).collect(Collectors.joining(", ")) + ").");
 		getOptions().addRequiredOption("g1","group1", true, "Data field for level 1 grouping.");
 		getOptions().addOption("g2","group2", true, "Data field for optional level 2 grouping.");
-		getOptions().addOption("m","months", true, "Comma-seperated list of months of the year, starting at 1 for January.");
-		getOptions().addOption("d","days", true, "Comma-seperated list of days of the month.");
-		getOptions().addOption("pt","provTerr", true, "Comma-seperated list of 2-digit province & territory codes.");
+		getOptions().addOption("m","months", true, "Comma-separated list of months of the year, starting at 1 for January.");
+		getOptions().addOption("d","days", true, "Comma-separated list of days of the month.");
+		getOptions().addOption("pt","provTerr", true, "Comma-separated list of 2-digit province & territory codes.");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
 		getOptions().addOption("scm","minSampleCount", true, "Minimum sample count (number of samples or data points) in order to be included in the result set.");
@@ -124,8 +127,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private void loadValueUpperBound(CommandLine cmd) {
 		if(cmd.hasOption("valueUpperBound")) {
 			valueUpperBound = new BigDecimal(cmd.getOptionValue("valueUpperBound"));
-			if (valueLowerBound.compareTo(valueUpperBound) >= 0) {
-				throw new IllegalArgumentException("Invalid pre-aggregated raw value upper bound: " + valueUpperBound);
+			if (valueLowerBound != null && valueLowerBound.compareTo(valueUpperBound) >= 0) {
+				throw new IllegalArgumentException("Invalid pre-aggregated raw value upper bound: " + valueUpperBound + ". The upper bound must be greater than the lower bound.");
 			}
 			log.info("Using pre-aggregated raw value upper bound: " + valueUpperBound);
 		} else {
@@ -156,8 +159,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			}
 			
 			resultUpperBound = Double.parseDouble(cmd.getOptionValue("resultUpperBound"));
-			if (resultLowerBound >= resultUpperBound) {
-				throw new IllegalArgumentException("Invalid post-aggregated result upper bound: " + resultUpperBound);
+			if (resultLowerBound != null && resultLowerBound >= resultUpperBound) {
+				throw new IllegalArgumentException("Invalid post-aggregated result upper bound: " + resultUpperBound + ". The upper bound must be greater than the lower bound.");
 			}
 			log.info("Using post-aggregated result upper bound: " + resultUpperBound);
 		} else {
@@ -252,6 +255,13 @@ public abstract class DataQueryOptions extends ExporterOptions {
 		AggregationField aggregationField = null;
 		
 		if(cmd.hasOption(field)) {
+			
+			//Need to check for and prevent gaps in the fields.
+			//For example, -g1 and -g3 are specified but -g2 is not
+			if((dimIndex > 1) && fields.size() < (dimIndex-1)) {
+				throw new IllegalArgumentException("Missing data field for group " + (dimIndex-1) + ". Use the -g" + dimIndex + " argument.");
+			}
+				
 			String rawValue = cmd.getOptionValue(field);
 			try {
 				aggregationField = AggregationField.valueOf(rawValue.toUpperCase()); 
@@ -266,9 +276,7 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			log.info("Using data field " + aggregationField + " for group " + dimIndex + ".");
 		} else if(mandatory) {
 			throw new IllegalArgumentException("Missing data field for group " + dimIndex + ". Use the -g" + dimIndex + " argument.");
-		} else {
-			fields.add(null);
-		}
+		} 
 	}
 	
 	private void loadAggregateFunction(CommandLine cmd) {

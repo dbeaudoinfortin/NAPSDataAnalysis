@@ -42,7 +42,7 @@ public class DownloaderOptions extends BaseOptions {
 	
 	private void loadOverwriteFiles(CommandLine cmd) {
 		overwriteFiles = cmd.hasOption("overwriteFiles");
-		log.info("Overwrite existing files flag set to: " + overwriteFiles);
+		log.info("Overwrite existing files flag is set to " + overwriteFiles);
 	}
 
 	private void loadDownloadPath(CommandLine cmd) {

@@ -40,6 +40,15 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 				//Continuous vs. Integrated
 				getDataset());
 	}
+	
+	@Override
+	public List<String> buildCSVHeader() {
+		List<String> headerStrings = super.buildCSVHeader();
+		if(getConfig().isSampleCount()) headerStrings.add("SAMPLE COUNT");
+		if(getConfig().isStdDevPop()) headerStrings.add("POPULATION STANDARD DEVIATION");
+		if(getConfig().isStdDevSmp()) headerStrings.add("SAMPLE STANDARD DEVIATION");
+		return headerStrings;
+	}
 
 	@Override
 	protected String getDataset() {

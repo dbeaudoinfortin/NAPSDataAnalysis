@@ -35,8 +35,8 @@ public class ExporterOptions extends DBOptions {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the data.");
 		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
-		getOptions().addOption("pn","pollutants", true, "Comma-seperated list of pollutant names.");	
-		getOptions().addOption("sid","sites", true, "Comma-seperated list of site IDs.");
+		getOptions().addOption("pn","pollutants", true, "Comma-separated list of pollutant names.");	
+		getOptions().addOption("sid","sites", true, "Comma-separated list of site IDs.");
 		getOptions().addOption("fy","filePerYear", false, "Create a seperate file for each year.");
 		getOptions().addOption("fp","filePerPollutant", false, "Create a seperate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a seperate file for each site.");
@@ -77,7 +77,7 @@ public class ExporterOptions extends DBOptions {
 	
 	private void loadOverwriteFiles(CommandLine cmd) {
 		overwriteFiles = cmd.hasOption("overwriteFiles");
-		log.info("Overwrite existing files flag set to: " + overwriteFiles);
+		log.info("Overwrite existing files flag is set to " + overwriteFiles);
 	}
 	
 	private void loadSites(CommandLine cmd) {
@@ -97,7 +97,7 @@ public class ExporterOptions extends DBOptions {
 			
 			log.info("Using only the following site IDs: " + sites);
 		} else {
-			log.info("Using all site ID.");
+			log.info("Using all site IDs.");
 		}
 	}
 	

@@ -1,9 +1,9 @@
 package com.dbf.naps.data.analysis.heatmap.integrated;
 
 import java.io.File;
-import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
+import com.dbf.naps.data.analysis.heatmap.NAPSHeatMap;
 
-public class NAPSIntegratedDataHeatMap extends NAPSHeatMapExporter<IntegratedHeatMapOptions> {
+public class NAPSIntegratedDataHeatMap extends NAPSHeatMap<IntegratedHeatMapOptions> {
 
 	public NAPSIntegratedDataHeatMap(String[] args) {
 		super(args);

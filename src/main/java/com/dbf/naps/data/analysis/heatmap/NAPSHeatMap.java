@@ -10,11 +10,11 @@ import com.dbf.naps.data.exporter.NAPSDataExporter;
 
 import javafx.application.Platform;
 
-public abstract class NAPSHeatMapExporter<O extends HeatMapOptions> extends NAPSDataExporter<O> {
+public abstract class NAPSHeatMap<O extends HeatMapOptions> extends NAPSDataExporter<O> {
 	
-	private static final Logger log = LoggerFactory.getLogger(NAPSHeatMapExporter.class);
+	private static final Logger log = LoggerFactory.getLogger(NAPSHeatMap.class);
 
-	public NAPSHeatMapExporter(String[] args) {
+	public NAPSHeatMap(String[] args) {
 		super(args);
 	}
 	

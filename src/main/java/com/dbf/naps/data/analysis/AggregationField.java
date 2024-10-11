@@ -11,6 +11,5 @@ public enum AggregationField {
 	NAPS_ID,
 	POLLUTANT,
 	PROVINCE_TERRITORY,
-	URBANIZATION
-	
+	URBANIZATION	
 }

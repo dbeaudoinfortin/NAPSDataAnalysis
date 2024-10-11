@@ -1,9 +1,9 @@
 package com.dbf.naps.data.analysis.heatmap.continuous;
 
 import java.io.File;
-import com.dbf.naps.data.analysis.heatmap.NAPSHeatMapExporter;
+import com.dbf.naps.data.analysis.heatmap.NAPSHeatMap;
 
-public class NAPSContinuousDataHeatMap extends NAPSHeatMapExporter<ContinuousHeatMapOptions> {
+public class NAPSContinuousDataHeatMap extends NAPSHeatMap<ContinuousHeatMapOptions> {
 
 	public NAPSContinuousDataHeatMap(String[] args) {
 		super(args);

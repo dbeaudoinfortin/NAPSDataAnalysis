@@ -53,6 +53,7 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 		log.info("Will" + (stdDevSmp ? "" : " not") +  " include sample standard deviation in the result set.");
 	}
 	
+	public boolean allowAggregateFunctionNone() {return true;}
 	public boolean isAggregationMandatory() {return false;}
 
 	public boolean isSampleCount() {

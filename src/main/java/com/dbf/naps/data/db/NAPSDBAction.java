@@ -66,10 +66,13 @@ public abstract class NAPSDBAction<O extends DBOptions> extends NAPSActionBase<O
 	
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 		
+		log.info("Crerating schema, if needed.");
 		try (Reader reader = Resources.getResourceAsReader(NAPSDBAction.class.getClassLoader(),"schema/schema.sql")) {
 			ScriptRunner scriptRunner = new ScriptRunner(dbDataSource.getConnection());
+			scriptRunner.setLogWriter(null); //Don't print out the script contents
 			scriptRunner.runScript(reader);
 		}
+		log.info("Schema creration complete.");
 	}
 	
 	protected abstract List<Class<?>> getDBMappers();

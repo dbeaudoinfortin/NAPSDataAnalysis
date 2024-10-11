@@ -208,7 +208,7 @@ The following tools are used for downloading a list of NAPS sites and loading th
 
 A Java tool that downloads a single file containing all of the sites (sampling stations) for the NAPS program. This is the simplest tool in the toolbox and is only included for sake of completeness. The file is downloaded from [here](https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FProgramInformation-InformationProgramme%2FStationsNAPS-StationsSNPA.csv) to the specified directory.
 
-You can invoke this tool by running the class com.dbf.naps.data.download.sites.NAPSSitesDownloader. Note that the threadCount argument is meaningless since there is only one file to download.
+You can invoke this tool by running the class `com.dbf.naps.data.download.sites.NAPSSitesDownloader`. Note that the threadCount argument is meaningless since there is only one file to download.
 
 **Command line usage:**
 ```
@@ -221,7 +221,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.sites.N
 
 A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. This tool looks for a single file named "sites.csv" in the provided directory. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 789 rows of data (as of October 2024) in the sites table of your database. 
 
-You can invoke this tool by running the class com.dbf.naps.data.loader.sites.NAPSSitesLoader. Note that the threadCount argument is meaningless since there is only one file to process.
+You can invoke this tool by running the class `com.dbf.naps.data.loader.sites.NAPSSitesLoader`. Note that the threadCount argument is meaningless since there is only one file to process.
 
 **Command line usage:**
 ```
@@ -242,7 +242,7 @@ The following tools are used for downloading continuous air quality data, loadin
 
 A Java tool that will download all of the hourly continuous data for the provided years into the provided directory. All file names are unique and all files are downloaded into a single directory. Files are downloaded from [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/Data-Donnees/).
 
-You can invoke this tool by running the class com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader.
+You can invoke this tool by running the class `com.dbf.naps.data.download.continuous.NAPSContinuousDataDownloader`.
 
 **Command line usage:**
 ```
@@ -257,7 +257,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.continu
 
 A Java tool that loads all of the raw continuous data, previously downloaded by the NAPSContinuousDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of October 2024) in the continuous_data table of your database.
 
-You can invoke this tool by running the class com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader.
+You can invoke this tool by running the class `com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader`.
 
 **Command line usage:**
 ```
@@ -272,18 +272,61 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.continuou
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader)
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader).
 
-You can invoke this tool by running the class com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery.
+You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
 **Command line usage:**
 ```
-(TBD)
+ -a,	--aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,	--cityName <arg>           City name, partial match.
+ -d,	--days <arg>               Comma-separated list of days of the month.
+ -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -fp,	--filePerPollutant         Create a separate file for each pollutant.
+ -fs,	--filePerSite              Create a separate file for each site.
+ -fy,	--filePerYear              Create a separate file for each year.
+ -g1,	--group1 <arg>             Data field for level 1 grouping.
+ -g2,	--group2 <arg>             Data field for optional level 2 grouping.
+ -g3,	--group3 <arg>             Data field for optional level 3 grouping
+ -g4,	--group4 <arg>             Data field for optional level 4 grouping
+ -g5,	--group5 <arg>             Data field for optional level 5 grouping
+ -m,	--months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,	--overwriteFiles           Replace existing files.
+ -p,	--dataPath <arg>           Local path to save the data.
+ -pn,	--pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,	--provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+                                     threshold will be filtered out of the result set after aggregation.
+ -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+                                     this threshold will be filtered out of the result set after aggregation.
+ -sc,	--showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+                                     result set.
+ -sid,	--sites <arg>              Comma-separated list of site IDs.
+ -sn,	--siteName <arg>           NAPS site (station) name, partial match.
+ -stdDevPop,	--showStdDevPop    Include the population standard deviation in the result set.
+ -stdDevSmp,	--showStdDevSamp   Include the sample standard deviation in the result set.
+ -t,	--threadCount <arg>        Maximum number of parallel threads.
+ -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+                                     threshold will be filtered out before aggregation.
+ -vub,--valueUpperBound <arg>      Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+                                     this threshold will be filtered out before aggregation.
+ -ye,--yearEnd <arg>               End year (inclusive).
+ -ys,--yearStart <arg>             Start year (inclusive).
 ```
 
+**Notes:**
+- Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
+
+
+**Example Query:**
 Say, for example, you are studying the effects of wildfires on air quality in Canada and you want generate a unique table of data for each site and each year. You want those tables to contain each day of summer months between 2018 and 2022 where the average PM2.5 measurement for that day exceeded a threshold of 20, in all sites in Alberta.
 
-You can use the following command line options:
+In addition to the obligatory -dataPath option, you can add the following command line options:
 ```
 -provTerr AB
 -months 5,6,7,8,9
@@ -321,11 +364,18 @@ Here is an explanation of what each option does:
 
 With these options, the results will include the average of the 24 PM2.5 measurements that were taken each day. It will only include results for days that had at least 4 data points, ensuring the results are statistically significant. Any data point with a value greater than 1000 is considered outliers and will be excluded because, in our hypothetical scenario, they exceed the maximum possible range for PM2.5 for the air quality sensors. A column indicating the number of samples (data points) will be included in the results. Also included is a column indicating the standard deviation, which shows how much the measurements for each day vary. Since a lower bound is specified, all the days where the average PM2.5 measurement was below the threshold of 20 (considered 'Poor' in terms of air quality) will be excluded; only poor air quality days will be included in the results. A separate table of results will be generated for each combination of naps site and year, provided data is available for that combination.
 
+The complete command line command is the following:
+```
+ java -cp naps_data.jar com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery -p C:\temp\NAPSData\Queries -t 5 -provTerr AB -months 5,6,7,8,9 -pollutants PM2.5 -yearStart 2018 -yearEnd 2022 -group1 month -group2 day -aggregateFunction avg -minSampleCount 4 -valueUpperBound 1000 -resultLowerBound 20 -showSampleCount -showStdDevSamp -filePerSite -filePerYear
+```
+
+
+
 ## NAPSContinuousDataExporter
 
 A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
 
-You can invoke this tool by running the class com.dbf.naps.data.exporter.continuous.NAPSContinuousDataExporter.
+You can invoke this tool by running the class `com.dbf.naps.data.exporter.continuous.NAPSContinuousDataExporter`.
 
 **Command line usage:**
 ```
@@ -335,13 +385,13 @@ You can invoke this tool by running the class com.dbf.naps.data.exporter.continu
  -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
  -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
  -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
- -fp,--filePerPollutant   Create a seperate file for each pollutant.
- -fs,--filePerSite        Create a seperate file for each site.
- -fy,--filePerYear        Create a seperate file for each year.
+ -fp,--filePerPollutant   Create a separate file for each pollutant.
+ -fs,--filePerSite        Create a separate file for each site.
+ -fy,--filePerYear        Create a separate file for each year.
  -o,--overwriteFiles      Replace existing files.
  -p,--dataPath <arg>      Local path to save the exported data.
- -pn,--pollutants <arg>   Comma-seperated list of pollutant names.
- -sid,--sites <arg>       Comma-seperated list of site IDs.
+ -pn,--pollutants <arg>   Comma-separated list of pollutant names.
+ -sid,--sites <arg>       Comma-separated list of site IDs.
  -ye,--yearEnd <arg>      End year (inclusive).
  -ys,--yearStart <arg>    Start year (inclusive).
 ```
@@ -354,7 +404,7 @@ The following tools are used for downloading integrated air quality data, loadin
 
 A Java tool that will download all of the integrated data for the provided years into the provided directory. Since many of the file names of the files conflict, each year will be downloaded into its own sub-directory. Files are downloaded from [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/Data-Donnees/). 
 
-You can invoke this tool by running the class com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader.
+You can invoke this tool by running the class `com.dbf.naps.data.download.integrated.NAPSIntegratedDataDownloader`.
 
 **Command line usage:**
 ```
@@ -369,7 +419,7 @@ You can invoke this tool by running the class com.dbf.naps.data.download.integra
 
 A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 14 million rows of data (as of October 2024) in the integrated_data table of your database.
 
-You can invoke this tool by running the class com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader.
+You can invoke this tool by running the class `com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader`.
 
 **NOTE:** The NAPSSitesLoader must be run first in order to populate the naps.sites table with site (station) definitions prior to loading the integrated data! 
 
@@ -386,20 +436,60 @@ You can invoke this tool by running the class com.dbf.naps.data.loader.integrate
 
 ## NAPSIntegratedDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader)
+This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader). It functions the same as the [NAPSContinuousDataQuery](#napsContinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
 
-You can invoke this tool by running the class com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery.
+You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery`.
 
 **Command line usage:**
 ```
-(TBD)
+ -a,	--aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,	--cityName <arg>           City name, partial match.
+ -d,	--days <arg>               Comma-separated list of days of the month.
+ -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -fp,	--filePerPollutant         Create a separate file for each pollutant.
+ -fs,	--filePerSite              Create a separate file for each site.
+ -fy,	--filePerYear              Create a separate file for each year.
+ -g1,	--group1 <arg>             Data field for level 1 grouping.
+ -g2,	--group2 <arg>             Data field for optional level 2 grouping.
+ -g3,	--group3 <arg>             Data field for optional level 3 grouping
+ -g4,	--group4 <arg>             Data field for optional level 4 grouping
+ -g5,	--group5 <arg>             Data field for optional level 5 grouping
+ -m,	--months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,	--overwriteFiles           Replace existing files.
+ -p,	--dataPath <arg>           Local path to save the data.
+ -pn,	--pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,	--provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+                                     threshold will be filtered out of the result set after aggregation.
+ -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+                                     this threshold will be filtered out of the result set after aggregation.
+ -sc,	--showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+                                     result set.
+ -sid,	--sites <arg>              Comma-separated list of site IDs.
+ -sn,	--siteName <arg>           NAPS site (station) name, partial match.
+ -stdDevPop,	--showStdDevPop    Include the population standard deviation in the result set.
+ -stdDevSmp,	--showStdDevSamp   Include the sample standard deviation in the result set.
+ -t,	--threadCount <arg>        Maximum number of parallel threads.
+ -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+                                     threshold will be filtered out before aggregation.
+ -vub,--valueUpperBound <arg>      Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+                                     this threshold will be filtered out before aggregation.
+ -ye,--yearEnd <arg>               End year (inclusive).
+ -ys,--yearStart <arg>             Start year (inclusive).
 ```
+
+Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
 
 ## NAPSIntegratedDataExporter
 
 A Java tool that exports the integrated data, previously loaded by the NAPSIntegratedDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
 
-You can invoke this tool by running the class com.dbf.naps.data.exporter.integrated.NAPSIntegratedDataExporter.
+You can invoke this tool by running the class `com.dbf.naps.data.exporter.integrated.NAPSIntegratedDataExporter`.
 
 **Command line usage:**
 ```
@@ -409,13 +499,13 @@ You can invoke this tool by running the class com.dbf.naps.data.exporter.integra
  -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
  -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
  -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
- -fp,--filePerPollutant   Create a seperate file for each pollutant.
- -fs,--filePerSite        Create a seperate file for each site.
- -fy,--filePerYear        Create a seperate file for each year.
+ -fp,--filePerPollutant   Create a separate file for each pollutant.
+ -fs,--filePerSite        Create a separate file for each site.
+ -fy,--filePerYear        Create a separate file for each year.
  -o,--overwriteFiles      Replace existing files.
  -p,--dataPath <arg>      Local path to save the exported data.
- -pn,--pollutants <arg>   Comma-seperated list of pollutant names.
- -sid,--sites <arg>       Comma-seperated list of site IDs.
+ -pn,--pollutants <arg>   Comma-separated list of pollutant names.
+ -sid,--sites <arg>       Comma-separated list of site IDs.
  -ye,--yearEnd <arg>      End year (inclusive).
  -ys,--yearStart <arg>    Start year (inclusive).
 ```
