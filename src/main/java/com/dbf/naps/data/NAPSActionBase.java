@@ -35,7 +35,13 @@ public abstract class NAPSActionBase<O extends BaseOptions> {
 			//This sure isn't elegant
 			return getOptionsClass().getConstructor(String[].class).newInstance((Object)args);
 		} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			log.error("Error reading command line options: ", e);
+			if(e instanceof IllegalArgumentException) {
+				log.error("Error reading command line options: " + e.getMessage());
+			} else if(e.getCause() != null && e.getCause() instanceof IllegalArgumentException) {
+				log.error("Error reading command line options: " + e.getCause().getMessage());
+			} else {
+				log.error("Error reading command line options: ", e);
+			}
 			log.info("Command line usage:\n" + O.printOptions());
 			System.exit(0);
 			return null;

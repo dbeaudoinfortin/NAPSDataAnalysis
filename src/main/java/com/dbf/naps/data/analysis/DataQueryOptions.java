@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 
@@ -45,7 +46,7 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	static {
 		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
 				+ Arrays.stream(AggregateFunction.values()).map(f->f.name()).collect(Collectors.joining(", ")) + ").");
-		getOptions().addRequiredOption("g1","group1", true, "Data field for level 1 grouping.");
+		getOptions().addOption("g1","group1", true, "Data field for level 1 grouping.");
 		getOptions().addOption("g2","group2", true, "Data field for optional level 2 grouping.");
 		getOptions().addOption("m","months", true, "Comma-separated list of months of the year, starting at 1 for January.");
 		getOptions().addOption("d","days", true, "Comma-separated list of days of the month.");
@@ -223,7 +224,21 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			for(String month : cmd.getOptionValue("months").split(",")) {
 				month = month.trim();
 				if (month.isEmpty()) continue;
-				months.add(Integer.parseInt(month));
+				
+				//Try doing a lookup to convert the long form into the integer
+				Integer monthInt = MonthMapping.getMonth(month);
+				if (null == monthInt) {
+					try {
+						monthInt =  Integer.parseInt(month);
+					} catch (Exception e){
+						throw new IllegalArgumentException("Invalid month: " + month);
+					}
+					
+					if (monthInt < 1 || monthInt > 12) {
+						throw new IllegalArgumentException("Invalid month: " + month + ". Must be between 1 and 12 (inclusive).");
+					}
+				}
+				months.add(monthInt);
 			}
 			if(months.isEmpty()) 
 				throw new IllegalArgumentException("Must specify at least one month.");
@@ -239,7 +254,16 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			for(String day : cmd.getOptionValue("days").split(",")) {
 				day = day.trim();
 				if (day.isEmpty()) continue;
-				days.add(Integer.parseInt(day));
+				int dayInt;
+				try {
+					dayInt = Integer.parseInt(day); 
+				} catch (Exception e){
+					throw new IllegalArgumentException("Invalid day: " + day);
+				}
+				if (dayInt < 1 || dayInt > 31) {
+					throw new IllegalArgumentException("Invalid day: " + day + ". Must be between 1 and 31 (inclusive).");
+				}
+				days.add(dayInt);
 			}
 			if(days.isEmpty()) 
 				throw new IllegalArgumentException("Must specify at least one day of the month.");
@@ -276,7 +300,9 @@ public abstract class DataQueryOptions extends ExporterOptions {
 			log.info("Using data field " + aggregationField + " for group " + dimIndex + ".");
 		} else if(mandatory) {
 			throw new IllegalArgumentException("Missing data field for group " + dimIndex + ". Use the -g" + dimIndex + " argument.");
-		} 
+		} else {
+			log.info("No aggregation field " + aggregationField + " for group " + dimIndex + ".");
+		}
 	}
 	
 	private void loadAggregateFunction(CommandLine cmd) {

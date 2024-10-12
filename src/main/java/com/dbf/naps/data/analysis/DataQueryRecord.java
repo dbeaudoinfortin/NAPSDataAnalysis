@@ -23,7 +23,7 @@ public class DataQueryRecord {
 	
 	public void printToCSV(CSVPrinter printer, int fieldCount) throws IOException {
 		List<Object> values = new ArrayList<Object>(9);
-		values.add(field_0);
+		if(fieldCount > 0) values.add(field_0);
 		if(fieldCount > 1) values.add(field_1);
 		if(fieldCount > 2) values.add(field_2);
 		if(fieldCount > 3) values.add(field_3);

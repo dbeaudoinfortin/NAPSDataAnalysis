@@ -272,7 +272,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.continuo
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is group by one or more field (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is group by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
@@ -319,9 +319,19 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -ys,--yearStart <arg>             Start year (inclusive).
 ```
 
-**Notes:**
-- Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
-- (TBD - additional rules & restrictions)
+**Aggregation Rules:**
+- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
+- The possible values for `group1` through `group5` are `YEAR,MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT,p PROVINCE_TERRITORY, URBANIZATION`.
+- The aggregation function cannot be set to 'NONE' when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to 'NONE' if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample measurements).
+- The minimum sample count option cannot be used when the aggregate function is set to `NONE` since the sample count will always be 1.
+- Post-aggregated bounds (both upper and lower) cannot be used when the aggregate function is set to 'NONE'.
+- A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. It would not make sense to average data points measured in µg/m³ with those measured in ppb.
+- Both the population standard deviation and the sample standard deviation require the use of at least one grouping field. Otherwise, the sample count will always be 1 and it's not possible to calculate the standard deviation of a single data point.
+
+**Filtering Rules:**
+- The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
+- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (1,2,3, etc.).
+- Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 
 
 **Example Query:**

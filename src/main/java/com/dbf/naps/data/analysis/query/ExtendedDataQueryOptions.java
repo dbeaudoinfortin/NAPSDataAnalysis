@@ -43,13 +43,30 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 		loadAggregationField(cmd, 4, false);
 		loadAggregationField(cmd, 5, false);
 		
+		loadStdDevPop(cmd);
+		loadStdDevSmp(cmd);
+		
 		sampleCount = cmd.hasOption("showSampleCount");
 		log.info("Will" + (sampleCount ? "" : " not") +  " include sample count in the result set.");
-		
-		stdDevPop = cmd.hasOption("showStdDevPop");
+	}
+	
+	private void loadStdDevPop(CommandLine cmd) {
+		if(cmd.hasOption("showStdDevPop")) {
+			if(this.getFields().size() < 1) {
+				throw new IllegalArgumentException("Population standard deviation requires at least one grouping field. Use the -g1 argument.");
+			}
+			stdDevPop = true;
+		}
 		log.info("Will" + (stdDevPop ? "" : " not") +  " include population standard deviation in the result set.");
-		
-		stdDevSmp = cmd.hasOption("showStdDevSamp");
+	}
+	
+	private void loadStdDevSmp(CommandLine cmd) {
+		if(cmd.hasOption("showStdDevSamp")) {
+			if(this.getFields().size() < 1) {
+				throw new IllegalArgumentException("Sample standard deviation requires at least one grouping field. Use the -g1 argument.");
+			}
+			stdDevPop = true;
+		}
 		log.info("Will" + (stdDevSmp ? "" : " not") +  " include sample standard deviation in the result set.");
 	}
 	
