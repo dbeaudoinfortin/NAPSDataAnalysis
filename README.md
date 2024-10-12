@@ -272,7 +272,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.continuo
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader).
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is group by one or more field (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
@@ -308,8 +308,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      result set.
  -sid,	--sites <arg>              Comma-separated list of site IDs.
  -sn,	--siteName <arg>           NAPS site (station) name, partial match.
- -stdDevPop,	--showStdDevPop    Include the population standard deviation in the result set.
- -stdDevSmp,	--showStdDevSamp   Include the sample standard deviation in the result set.
+ -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
+ -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
  -t,	--threadCount <arg>        Maximum number of parallel threads.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -325,9 +325,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 
 **Example Query:**
+
 Say, for example, you are studying the effects of wildfires on air quality in Canada and you want generate a unique table of data for each site and each year. You want those tables to contain each day of summer months between 2018 and 2022 where the average PM2.5 measurement for that day exceeded a threshold of 20, in all sites in Alberta.
 
-In addition to the obligatory -dataPath option, you can add the following command line options:
+In addition to the obligatory `-dataPath` option, you can add the following command line options:
 ```
 -provTerr AB
 -months 5,6,7,8,9
@@ -474,8 +475,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      result set.
  -sid,	--sites <arg>              Comma-separated list of site IDs.
  -sn,	--siteName <arg>           NAPS site (station) name, partial match.
- -stdDevPop,	--showStdDevPop    Include the population standard deviation in the result set.
- -stdDevSmp,	--showStdDevSamp   Include the sample standard deviation in the result set.
+ -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
+ -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
  -t,	--threadCount <arg>        Maximum number of parallel threads.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -485,7 +486,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -ys,--yearStart <arg>             Start year (inclusive).
 ```
 
-Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
+Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`. 
+
+All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsContinuousdataloader) apply.
 
 ## NAPSIntegratedDataExporter
 
