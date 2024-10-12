@@ -2,7 +2,6 @@ package com.dbf.naps.data.download.options;
 
 import java.time.Year;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ public class YearlyDownloaderOptions extends DownloaderOptions {
 	private void loadFromArgs(String[] args) throws IllegalArgumentException {
 		CommandLine cmd = null;
 		try {
-			cmd = (new DefaultParser()).parse(getOptions(), args);
+			cmd = getParser().parse(getOptions(), args);
 		}
 		catch(ParseException e) {
 			throw new IllegalArgumentException(e);

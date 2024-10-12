@@ -107,8 +107,8 @@ public interface DataMapper {
 			+ "<if test=\"function.name() == 'NONE'\">d.data</if>"
 			+ "as value"
 			+ "<if test=\"sampleCount\">, "
-				+ "<if test=\"fields != null &amp;&amp; !fields.isEmpty()\">count(d.data)</if>"
-				+ "<if test=\"fields == null || fields.isEmpty()\">1</if>"
+				+ "<if test=\"function.name() != 'NONE'\">count(d.data)</if>"
+				+ "<if test=\"function.name() == 'NONE'\">1</if>"
 			+ " as sampleCount</if>"
 			+ "<if test=\"stdDevPop\">, stddev_pop(d.data) as stdDevPop</if>"
 			+ "<if test=\"stdDevSmp\">, stddev_samp(d.data) as stdDevSmp</if>"
@@ -155,7 +155,7 @@ public interface DataMapper {
 				+ "<foreach collection='fields' item='field' index='index' open='' separator = ',' close=''>field_${index}</foreach>"
 				+ "</if>"
 				+ "<if test=\"fields == null || fields.isEmpty()\">"
-				+ "d.data desc"
+				+ "value desc"
 				+ "</if>"
 			+ "</script>")
 	public List<DataQueryRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, 		//Grouping

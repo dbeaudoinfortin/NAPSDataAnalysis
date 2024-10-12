@@ -1,11 +1,11 @@
 package com.dbf.naps.data.analysis.query;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.analysis.AggregateFunction;
 import com.dbf.naps.data.analysis.DataQueryOptions;
 
 public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
@@ -33,7 +33,7 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 	private void loadFromArgs(String[] args) throws IllegalArgumentException {
 		CommandLine cmd = null;
 		try {
-			cmd = (new DefaultParser()).parse(getOptions(), args);
+			cmd = getParser().parse(getOptions(), args);
 		}
 		catch(ParseException e) {
 			throw new IllegalArgumentException(e);
@@ -52,8 +52,8 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 	
 	private void loadStdDevPop(CommandLine cmd) {
 		if(cmd.hasOption("showStdDevPop")) {
-			if(this.getFields().size() < 1) {
-				throw new IllegalArgumentException("Population standard deviation requires at least one grouping field. Use the -g1 argument.");
+			if(getAggregateFunction().equals(AggregateFunction.NONE)) {
+				throw new IllegalArgumentException("Population standard deviation requires the use of an aggregation function. Use the -a argument.");
 			}
 			stdDevPop = true;
 		}
@@ -62,10 +62,10 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 	
 	private void loadStdDevSmp(CommandLine cmd) {
 		if(cmd.hasOption("showStdDevSamp")) {
-			if(this.getFields().size() < 1) {
-				throw new IllegalArgumentException("Sample standard deviation requires at least one grouping field. Use the -g1 argument.");
+			if(getAggregateFunction().equals(AggregateFunction.NONE)) {
+				throw new IllegalArgumentException("Sample standard deviation requires the use of an aggregation function. Use the -a argument.");
 			}
-			stdDevPop = true;
+			stdDevSmp = true;
 		}
 		log.info("Will" + (stdDevSmp ? "" : " not") +  " include sample standard deviation in the result set.");
 	}

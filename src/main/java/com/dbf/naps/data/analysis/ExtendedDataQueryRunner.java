@@ -1,9 +1,11 @@
 package com.dbf.naps.data.analysis;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import com.dbf.naps.data.analysis.query.ExtendedDataQueryOptions;
@@ -39,6 +41,11 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 				getConfig().getResultUpperBound(), getConfig().getResultLowerBound(), getConfig().getMinSampleCount(),
 				//Continuous vs. Integrated
 				getDataset());
+	}
+	
+	@Override
+	public void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
+		record.printToCSV(printer, getConfig().getFields().size(), getConfig().isSampleCount(), getConfig().isStdDevPop(), getConfig().isStdDevSmp());
 	}
 	
 	@Override

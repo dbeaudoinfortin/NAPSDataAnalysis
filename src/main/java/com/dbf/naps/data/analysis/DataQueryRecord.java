@@ -22,6 +22,10 @@ public class DataQueryRecord {
 	public DataQueryRecord() {}
 	
 	public void printToCSV(CSVPrinter printer, int fieldCount) throws IOException {
+		printToCSV(printer, fieldCount, false, false, false);
+	}
+	
+	public void printToCSV(CSVPrinter printer, int fieldCount, boolean hasSampleCount, boolean hasStdDevPop, boolean hasStdDevSmp) throws IOException {
 		List<Object> values = new ArrayList<Object>(9);
 		if(fieldCount > 0) values.add(field_0);
 		if(fieldCount > 1) values.add(field_1);
@@ -29,9 +33,9 @@ public class DataQueryRecord {
 		if(fieldCount > 3) values.add(field_3);
 		if(fieldCount > 4) values.add(field_4);
 		values.add(value);
-		if(null != sampleCount) values.add(sampleCount);
-		if(null != stdDevPop) values.add(stdDevPop);
-		if(null != stdDevSmp) values.add(stdDevSmp);
+		if(hasSampleCount) values.add(sampleCount);
+		if(hasStdDevPop) values.add(stdDevPop);
+		if(hasStdDevSmp) values.add(stdDevSmp);
 		printer.printRecord(values.toArray());
 	}
 

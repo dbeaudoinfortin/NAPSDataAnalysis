@@ -32,10 +32,6 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	
 	private String siteName;
 	private String cityName;
-	
-	public Integer getMinSampleCount() {
-		return minSampleCount;
-	}
 
 	private Integer		minSampleCount;
 	private BigDecimal	valueUpperBound;
@@ -250,7 +246,7 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	}
 	
 	private void loadDays(CommandLine cmd) {
-		if(cmd.hasOption("day")) {
+		if(cmd.hasOption("days")) {
 			for(String day : cmd.getOptionValue("days").split(",")) {
 				day = day.trim();
 				if (day.isEmpty()) continue;
@@ -301,7 +297,7 @@ public abstract class DataQueryOptions extends ExporterOptions {
 		} else if(mandatory) {
 			throw new IllegalArgumentException("Missing data field for group " + dimIndex + ". Use the -g" + dimIndex + " argument.");
 		} else {
-			log.info("No aggregation field " + aggregationField + " for group " + dimIndex + ".");
+			log.info("No aggregation field for group " + dimIndex + ".");
 		}
 	}
 	
@@ -379,5 +375,9 @@ public abstract class DataQueryOptions extends ExporterOptions {
 
 	public Double getResultLowerBound() {
 		return resultLowerBound;
+	}
+	
+	public Integer getMinSampleCount() {
+		return minSampleCount;
 	}
 }

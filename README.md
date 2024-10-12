@@ -215,6 +215,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.sites.
  -o,  --overwriteFiles       Replace the existing file.
  -p,  --downloadPath <arg>   Local path for downloaded files.
  -t,  --threadCount <arg>    Maximum number of parallel threads.
+ -v,  --verbose              Make logging more verbose.
 ```
 
 ## NAPSSitesLoader
@@ -232,6 +233,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.sites.NA
  -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
  -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
  -t,   --threadCount <arg>    Maximum number of parallel threads.
+ -v,   --verbose              Make logging more verbose.
 ```
 
 # Continuous Data Tools
@@ -249,6 +251,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.contin
  -o,  --overwriteFiles       Replace existing files.
  -p,  --downloadPath <arg>   Local path for downloaded files.
  -t,  --threadCount <arg>    Maximum number of parallel threads.
+ -v,  --verbose                    Make logging more verbose.
  -ye, --yearEnd <arg>        End year (inclusive).
  -ys, --yearStart <arg>      Start year (inclusive).
 ```
@@ -268,11 +271,12 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.continuo
  -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
  -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
  -t,   --threadCount <arg>    Maximum number of parallel threads.
+ -v,   --verbose              Make logging more verbose.
 ```
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is group by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is grouped by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
@@ -311,28 +315,29 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
  -t,	--threadCount <arg>        Maximum number of parallel threads.
+ -v,    --verbose                  Make logging more verbose.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
- -vub,--valueUpperBound <arg>      Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+ -vub,  --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
- -ye,--yearEnd <arg>               End year (inclusive).
- -ys,--yearStart <arg>             Start year (inclusive).
+ -ye,   --yearEnd <arg>            End year (inclusive).
+ -ys,   --yearStart <arg>          Start year (inclusive).
 ```
 
 **Aggregation Rules:**
 - The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
-- The possible values for `group1` through `group5` are `YEAR,MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT,p PROVINCE_TERRITORY, URBANIZATION`.
-- The aggregation function cannot be set to 'NONE' when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to 'NONE' if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample measurements).
+- The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
+- The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
+- The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
 - The minimum sample count option cannot be used when the aggregate function is set to `NONE` since the sample count will always be 1.
-- Post-aggregated bounds (both upper and lower) cannot be used when the aggregate function is set to 'NONE'.
-- A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. It would not make sense to average data points measured in µg/m³ with those measured in ppb.
-- Both the population standard deviation and the sample standard deviation require the use of at least one grouping field. Otherwise, the sample count will always be 1 and it's not possible to calculate the standard deviation of a single data point.
+- Post-aggregated bounds (both upper and lower) cannot be used when the aggregate function is set to `NONE`.
+- Both the population standard deviation and the sample standard deviation cannot be used when the aggregate function is set to `NONE`.
+- A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
 
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
-- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (1,2,3, etc.).
+- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
-
 
 **Example Query:**
 
@@ -392,21 +397,22 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.contin
 
 **Command line usage:**
 ```
- -t,--threadCount <arg>   Maximum number of parallel threads.
- -dbh,--dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
- -dbn,--dbName <arg>      Database name for the PostgreSQL database. Default: naps
- -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
- -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
- -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
- -fp,--filePerPollutant   Create a separate file for each pollutant.
- -fs,--filePerSite        Create a separate file for each site.
- -fy,--filePerYear        Create a separate file for each year.
- -o,--overwriteFiles      Replace existing files.
- -p,--dataPath <arg>      Local path to save the exported data.
- -pn,--pollutants <arg>   Comma-separated list of pollutant names.
- -sid,--sites <arg>       Comma-separated list of site IDs.
- -ye,--yearEnd <arg>      End year (inclusive).
- -ys,--yearStart <arg>    Start year (inclusive).
+ -t,   --threadCount <arg> Maximum number of parallel threads.
+ -dbh, --dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>      Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>      Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>      Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fp,  --filePerPollutant  Create a separate file for each pollutant.
+ -fs,  --filePerSite       Create a separate file for each site.
+ -fy,  --filePerYear       Create a separate file for each year.
+ -o,   --overwriteFiles    Replace existing files.
+ -p,   --dataPath <arg>    Local path to save the exported data.
+ -pn,  --pollutants <arg>  Comma-separated list of pollutant names.
+ -sid, --sites <arg>       Comma-separated list of site IDs.
+ -v,   --verbose           Make logging more verbose.
+ -ye,  --yearEnd <arg>     End year (inclusive).
+ -ys,  --yearStart <arg>   Start year (inclusive).
 ```
 
 # Integrated Data Tools
@@ -424,6 +430,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.integr
  -o,  --overwriteFiles       Replace existing files.
  -p,  --downloadPath <arg>   Local path for downloaded files.
  -t,  --threadCount <arg>    Maximum number of parallel threads.
+ -v,  --verbose              Make logging more verbose.
  -ye, --yearEnd <arg>        End year (inclusive).
  -ys, --yearStart <arg>      Start year (inclusive).
 ```
@@ -445,6 +452,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.integrat
  -dbu, --dbUser <arg>         Database user name for the PostgreSQL database. Default: postgres
  -dbp, --dbPass <arg>         Database password for the PostgreSQL database. Default: password
  -t,   --threadCount <arg>    Maximum number of parallel threads.
+ -v,   --verbose              Make logging more verbose.
 ```
 
 ## NAPSIntegratedDataQuery
@@ -488,12 +496,13 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
  -t,	--threadCount <arg>        Maximum number of parallel threads.
+ -v,    --verbose                  Make logging more verbose.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
- -vub,--valueUpperBound <arg>      Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+ -vub,  --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
- -ye,--yearEnd <arg>               End year (inclusive).
- -ys,--yearStart <arg>             Start year (inclusive).
+ -ye,   --yearEnd <arg>            End year (inclusive).
+ -ys,   --yearStart <arg>          Start year (inclusive).
 ```
 
 Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`. 
@@ -508,21 +517,22 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.integr
 
 **Command line usage:**
 ```
- -t,--threadCount <arg>   Maximum number of parallel threads.
- -dbh,--dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
- -dbn,--dbName <arg>      Database name for the PostgreSQL database. Default: naps
- -dbp,--dbPass <arg>      Database password for the PostgreSQL database. Default: password
- -dbt,--dbPort <arg>      Port for the PostgreSQL database. Default: 5432
- -dbu,--dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
- -fp,--filePerPollutant   Create a separate file for each pollutant.
- -fs,--filePerSite        Create a separate file for each site.
- -fy,--filePerYear        Create a separate file for each year.
- -o,--overwriteFiles      Replace existing files.
- -p,--dataPath <arg>      Local path to save the exported data.
- -pn,--pollutants <arg>   Comma-separated list of pollutant names.
- -sid,--sites <arg>       Comma-separated list of site IDs.
- -ye,--yearEnd <arg>      End year (inclusive).
- -ys,--yearStart <arg>    Start year (inclusive).
+ -t,--threadCount <arg>    Maximum number of parallel threads.
+ -dbh, --dbHost <arg>      Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>      Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>      Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>      Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fp,  --filePerPollutant  Create a separate file for each pollutant.
+ -fs,  --filePerSite       Create a separate file for each site.
+ -fy,  --filePerYear       Create a separate file for each year.
+ -o,   --overwriteFiles    Replace existing files.
+ -p,   --dataPath <arg>    Local path to save the exported data.
+ -pn,  --pollutants <arg>  Comma-separated list of pollutant names.
+ -sid, --sites <arg>       Comma-separated list of site IDs.
+ -v,   --verbose           Make logging more verbose.
+ -ye,  --yearEnd <arg>     End year (inclusive).
+ -ys,  --yearStart <arg>   Start year (inclusive).
 ```
 
 # How To Run Individual Tools

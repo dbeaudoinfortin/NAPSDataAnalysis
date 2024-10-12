@@ -117,19 +117,23 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		CSVFormat format = CSVFormat.EXCEL
 				.builder()
 				.setTrim(false)
-				.setHeader(buildCSVHeader().toArray(new String[headers.size()]))
+				.setHeader(headers.toArray(new String[headers.size()]))
 				.setSkipHeaderRecord(false)
 				.build();
 			try(BufferedWriter writer = Files.newBufferedWriter(getDataFile().toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 				writer.write('\ufeff'); //Manually print the UTF-8 BOM
 				try(CSVPrinter printer = new CSVPrinter(writer, format)){
 					for(DataQueryRecord record : records) {
-						record.printToCSV(printer, getConfig().getFields().size());
+						printRecordToCSV(record, printer);
 					}
 				}
 			}
 			
 		log.info(getThreadId() + ":: Completed writing to file " + dataFile + ".");
+	}
+	
+	public void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
+		record.printToCSV(printer, getConfig().getFields().size());
 	}
 	
 	public List<String> buildCSVHeader() {
