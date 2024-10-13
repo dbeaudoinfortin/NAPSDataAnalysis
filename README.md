@@ -34,7 +34,7 @@
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Database Design](#database-design)
 - [Known Issues](#known-issues)
-- [Developer Notes](#develope-rnotes)
+- [Developer Notes](#developer-notes)
 - [Legal Stuff](#legal-stuff)
 
 # Overview
