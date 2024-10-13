@@ -558,7 +558,7 @@ This repository makes use of GitHub's built-in issue tracker. You can view all o
 
 # Developer Notes
 
-- Requires Java 17
+- Requires Java 21 or later.
 - Tested with PostgreSQL 16.3. The database should be created with the UTF-8 characterset in order to support accented characters.
 - If you want to build the jar from the source code you will need [Apache Maven](https://maven.apache.org/).
 - Other than the sample reports, everything in this toolbox should be multi-platform (supporting Windows, Linux, MacOS, etc.) and multi-architecture (supporting x86 and ARM). However, I am only one person and I have only developed and tested the code on Windows 11 x64.
