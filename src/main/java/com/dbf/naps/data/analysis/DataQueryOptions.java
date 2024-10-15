@@ -39,6 +39,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private Double		resultUpperBound;
 	private Double		resultLowerBound;
 	
+	//TODO: add the ability to set a custom filename. Per year, per site, etc. should append to the end (minus the extension)
+	
 	static {
 		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
 				+ Arrays.stream(AggregateFunction.values()).map(f->f.name()).collect(Collectors.joining(", ")) + ").");

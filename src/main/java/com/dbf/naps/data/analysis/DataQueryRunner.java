@@ -120,7 +120,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				.setHeader(headers.toArray(new String[headers.size()]))
 				.setSkipHeaderRecord(false)
 				.build();
-			try(BufferedWriter writer = Files.newBufferedWriter(getDataFile().toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
+			try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 				writer.write('\ufeff'); //Manually print the UTF-8 BOM
 				try(CSVPrinter printer = new CSVPrinter(writer, format)){
 					for(DataQueryRecord record : records) {

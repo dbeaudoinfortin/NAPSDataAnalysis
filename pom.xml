@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>NAPSData</groupId>
   <artifactId>naps_data</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <name>NAPS Data Downloader</name>
   <build>
 	 <finalName>${project.artifactId}</finalName>
@@ -111,17 +111,6 @@
 	    <artifactId>gson</artifactId>
 	    <version>2.10.1</version>
 	</dependency>
-	<dependency>
-	    <groupId>eu.hansolo.fx</groupId>
-	    <artifactId>charts</artifactId>
-	    <version>21.0.21</version>
-	</dependency>
-	
-	<dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>23</version>
-    </dependency>
   </dependencies>
   <distributionManagement>
     <repository>

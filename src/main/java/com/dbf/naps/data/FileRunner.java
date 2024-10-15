@@ -26,6 +26,10 @@ public abstract class FileRunner<O extends ExporterOptions> extends DBRunner<O> 
 	}
 	
 	public void checkFile() {
+		checkFile(dataFile);
+	}
+	
+	public void checkFile(File dataFile) {
 		if(dataFile.isDirectory()) {
 			throw new IllegalArgumentException("File path is a directory: " + dataFile);
 		} else if (dataFile.isFile()) {
