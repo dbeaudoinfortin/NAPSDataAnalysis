@@ -18,6 +18,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private boolean generateCSV = false;
 	
 	static {
+		//The parent class' static initialiser will be called first.
 		Option dim1 = getOptions().getOption("group1");
 		Option dim2 = getOptions().getOption("group2");
 		dim1.setDescription("Data field for the heat map X-axis.");

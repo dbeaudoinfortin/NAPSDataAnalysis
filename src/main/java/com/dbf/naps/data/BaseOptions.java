@@ -45,7 +45,7 @@ public abstract class BaseOptions {
 	}
 	
 	private void loadVerbose(CommandLine cmd) {
-		if(cmd.hasOption("threadCount")) {
+		if(cmd.hasOption("verbose")) {
 			//Need to get the logback root logger and change it to DEBUG
 	        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 	        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
