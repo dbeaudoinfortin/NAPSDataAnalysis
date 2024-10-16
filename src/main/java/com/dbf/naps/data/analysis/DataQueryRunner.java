@@ -76,7 +76,11 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					//Continuous vs. Integrated
 					getDataset());
 				
-				if(allUnits.size() > 1) {
+				if(allUnits.size() == 0) {
+					log.info(getThreadId() + ":: No data records found for " + getDataFile() + ". Skipping file.");
+					return Collections.emptyList();
+				}
+				else if(allUnits.size() > 1) {
 					log.warn(getThreadId() + ":: WARNING: Cannot aggregate data with mixed units. Make sure all the selected pollutants are measured using the same units.");
 					return Collections.emptyList();
 				}

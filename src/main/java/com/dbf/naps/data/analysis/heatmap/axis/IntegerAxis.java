@@ -4,17 +4,20 @@ import java.util.Collection;
 
 public class IntegerAxis extends Axis<Integer> {
 
-	public IntegerAxis() {}
-	
-	public IntegerAxis(int count) {
-		super(count);
+	public IntegerAxis(String title) {
+		super(title);
 	}
 	
-	public IntegerAxis(Collection<Integer> entries){
-		super(entries);
+	public IntegerAxis(String title, int count) {
+		super(title, count);
+	}
+	
+	public IntegerAxis(String title, Collection<Integer> entries){
+		super(title, entries);
 	}
 
-	public IntegerAxis(int min, int max) {
+	public IntegerAxis(String title, int min, int max) {
+		super(title);
 		int count = 0;
 		for(int i = min; i <= max; i++ ) {
 			final String label = "" + i;

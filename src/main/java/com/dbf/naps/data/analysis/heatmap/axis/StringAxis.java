@@ -4,16 +4,16 @@ import java.util.Collection;
 
 public class StringAxis extends Axis<String> {
 
-	public StringAxis(int count) {
-		super(count);
+	public StringAxis(String title, int count) {
+		super(title, count);
 	}
 	
-	public StringAxis(Collection<String> entries){
-		super(entries);
+	public StringAxis(String title, Collection<String> entries){
+		super(title, entries);
 	}
 	
-	public StringAxis(String... strings) {
-		super(strings.length);
+	public StringAxis(String title, String... strings) {
+		super(title, strings.length);
 		for(int i = 0; i < strings.length; i++ ) {
 			entryLabels.put(strings[i], strings[i]);
 			entryIndices.put(strings[i], i);

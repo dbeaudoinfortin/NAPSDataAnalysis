@@ -5,20 +5,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Axis<T> {
+	
+	private final String title;
 	protected int count;
 	protected final Map<T, String> entryLabels = new HashMap<T, String>();
 	protected final Map<T, Integer> entryIndices = new HashMap<T, Integer>();
 	protected final Map<String, Integer> labelIndices = new HashMap<String, Integer>();
 	
-	public Axis(){}
+	public Axis(String title){
+		this.title = title;
+	}
 	
-	public Axis(Collection<T> entries){
+	public Axis(String title, Collection<T> entries){
+		this.title = title;
 		for(T entry : entries) {
 			addEntry(entry, entry.toString());
 		}
 	}
 	
-	public Axis(int count){
+	public Axis(String title, int count){
+		this.title = title;
 		this.count = count;
 	}
 	
@@ -48,5 +54,9 @@ public abstract class Axis<T> {
 		entryIndices.put(entry, count);
 		labelIndices.put(label, count);
 		count++;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }
