@@ -38,9 +38,11 @@
 - [Legal Stuff](#legal-stuff)
 
 # Overview
-Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, schema importer and visualization. 
+Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, importer, analysis, visualization toolbox. 
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
+
+I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization tool](#napscontinuousdataheatmap) to generate pretty graphs, and a couple example [BI dashboards](#data-analysis-and-dashboards) to get you started with BI tools. 
 
 All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
 
