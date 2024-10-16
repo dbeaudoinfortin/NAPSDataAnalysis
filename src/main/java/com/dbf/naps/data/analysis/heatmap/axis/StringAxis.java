@@ -1,9 +1,15 @@
 package com.dbf.naps.data.analysis.heatmap.axis;
 
+import java.util.Collection;
+
 public class StringAxis extends Axis<String> {
 
 	public StringAxis(int count) {
 		super(count);
+	}
+	
+	public StringAxis(Collection<String> entries){
+		super(entries);
 	}
 	
 	public StringAxis(String... strings) {

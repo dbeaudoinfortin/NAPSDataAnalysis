@@ -5,11 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.utilities.Utils;
 
 public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRunner<O> {
 	
@@ -51,19 +51,22 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	private List<DataQueryRecord> queryData() {
 		log.info(getThreadId() + ":: Starting data query for file " + getDataFile() + ".");
 		List<DataQueryRecord> records;
+		String queryUnits;
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 			
 			//Only allow mixing unit if we are not aggregating data or we are grouping by pollutant
+			//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
+			//However, in practise the units are consistent for all of the pollutants.
 			if(!getConfig().getAggregateFunction().equals(AggregateFunction.COUNT) && !getConfig().getAggregateFunction().equals(AggregateFunction.NONE) 
 					&& getConfig().getFields().stream().filter(f->f.equals(AggregationField.POLLUTANT)).count() == 0) {
 				
-				//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
-				//However, in practise the units are consistent for all of the pollutants.
-				List<String> units = session.getMapper(DataMapper.class).getDistinctUnits(
+				Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+				Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+				Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+				
+				List<String> allUnits = session.getMapper(DataMapper.class).getDistinctUnits(
 					//Per-file filters
-					getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-					getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
-					getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(),
+					years, pollutants, sites,
 					//Basic filters
 					getConfig().getMonths(),getConfig().getDays(),
 					getConfig().getSiteName(), getConfig().getCityName(),
@@ -73,9 +76,11 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					//Continuous vs. Integrated
 					getDataset());
 				
-				if(units.size() > 1) {
-					
+				if(allUnits.size() > 1) {
+					log.warn(getThreadId() + ":: WARNING: Cannot aggregate data with mixed units. Make sure all the selected pollutants are measured using the same units.");
+					return Collections.emptyList();
 				}
+				queryUnits = allUnits.get(0);
 			}
 			
 			records = runQuery(session);
@@ -89,13 +94,16 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	}
 	
 	public List<DataQueryRecord> runQuery(SqlSession session){
+		
+		Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+		Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+		Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+		
 		return session.getMapper(DataMapper.class).getQueryData(
 				//Grouping	
 				getConfig().getFields(), getConfig().getAggregateFunction(),
 				//Per-file filters
-				getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-				getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
-				getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(),
+				years, pollutants, sites,
 				//Basic filters
 				getConfig().getMonths(),getConfig().getDays(),
 				getConfig().getSiteName(), getConfig().getCityName(),

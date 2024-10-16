@@ -18,6 +18,7 @@ import com.dbf.excel.ExcelSheet;
 import com.dbf.excel.ExcelSheetFactory;
 import com.dbf.naps.data.db.mappers.IntegratedDataMapper;
 import com.dbf.naps.data.db.mappers.SampleMapper;
+import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.Headers;
@@ -338,12 +339,11 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
     		log.warn(getThreadId() + ":: Bad data on row " + row + " for column " + columnHeader + " (" + cellValue + ") in file " + getRawFile() + ".");
     		return null;
     	}
-    
+
     	IntegratedDataRecord record = new IntegratedDataRecord();
 		record.setDatetime(date);
 		record.setSiteId(siteID);
     	record.setPollutantId(getPollutantID(columnHeader));
-    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(), getUnits()));
 
     	//Ignore empty cells, but not zeros
     	if(!"N.M.".equals(cellValue)) {
@@ -360,6 +360,16 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	    	}
     	}
     	
+    	//We want to standardise on µg/m³, otherwise we won't be able to aggregate data for reporting
+    	String units = getUnits();
+    	if("ng/m³".equals(units)) {
+    		//It's normal for the data to be null here. It means there was no measurement
+    		if(record.getData() != null) {
+    			record.setData(record.getData().divide(Constants.bigDecimal1000));
+    		}
+    		units = "µg/m³";
+    	}
+    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(), units));
         return record;
 	}
 	

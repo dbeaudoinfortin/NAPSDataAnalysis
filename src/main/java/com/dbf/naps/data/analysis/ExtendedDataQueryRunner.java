@@ -2,14 +2,14 @@ package com.dbf.naps.data.analysis;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
-
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import com.dbf.naps.data.analysis.query.ExtendedDataQueryOptions;
 import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.utilities.Utils;
 
 public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOptions> {
 	
@@ -22,13 +22,16 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 	
 	@Override
 	public List<DataQueryRecord> runQuery(SqlSession session){
+		
+		Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+		Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+		Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+		
 		return session.getMapper(DataMapper.class).getQueryData(
 				//Grouping	
 				getConfig().getFields(), getConfig().getAggregateFunction(),
 				//Per-file filters
-				getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-				getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
-				getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(),
+				years, pollutants,sites,
 				//Basic filters
 				getConfig().getMonths(),getConfig().getDays(),
 				getConfig().getSiteName(), getConfig().getCityName(),

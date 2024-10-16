@@ -1,11 +1,17 @@
 package com.dbf.naps.data.analysis.heatmap.axis;
 
+import java.util.Collection;
+
 public class IntegerAxis extends Axis<Integer> {
 
 	public IntegerAxis() {}
 	
 	public IntegerAxis(int count) {
 		super(count);
+	}
+	
+	public IntegerAxis(Collection<Integer> entries){
+		super(entries);
 	}
 
 	public IntegerAxis(int min, int max) {

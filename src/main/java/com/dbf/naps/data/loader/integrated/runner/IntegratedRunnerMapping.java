@@ -6,7 +6,7 @@ public class IntegratedRunnerMapping {
 
 	private Class<? extends IntegratedLoaderRunner> runnerClass;
 	private String fileType;
-	private String units = "ug/m³";
+	private String units = "µg/m³";
 	private String fileNameMatch;
 	private Pattern fileNamePattern;
 	

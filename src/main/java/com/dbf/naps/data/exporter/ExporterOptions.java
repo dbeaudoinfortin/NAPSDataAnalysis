@@ -13,14 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.DBOptions;
+import com.dbf.naps.data.globals.Constants;
 
 public class ExporterOptions extends DBOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(ExporterOptions.class);
 
 	private Path dataPath;
-	private int yearStart = 1974;
-	private int yearEnd   = Year.now().getValue();
+	private int yearStart = Constants.DATASET_YEAR_START;
+	private int yearEnd   = Constants.DATASET_YEAR_END;
 	
 	private final Set<String>  pollutants = new HashSet<String>();
 	private final Set<Integer> sites = new HashSet<Integer>();

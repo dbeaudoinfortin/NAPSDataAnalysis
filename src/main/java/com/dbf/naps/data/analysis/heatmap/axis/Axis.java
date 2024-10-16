@@ -1,5 +1,6 @@
 package com.dbf.naps.data.analysis.heatmap.axis;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,12 @@ public abstract class Axis<T> {
 	protected final Map<String, Integer> labelIndices = new HashMap<String, Integer>();
 	
 	public Axis(){}
+	
+	public Axis(Collection<T> entries){
+		for(T entry : entries) {
+			addEntry(entry, entry.toString());
+		}
+	}
 	
 	public Axis(int count){
 		this.count = count;

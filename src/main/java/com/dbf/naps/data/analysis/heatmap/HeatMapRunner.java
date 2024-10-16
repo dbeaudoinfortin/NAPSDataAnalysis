@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.imageio.ImageIO;
 
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -238,22 +241,16 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			
 		case YEAR:
 		case NAPS_ID:
-			IntegerAxis iAxis = new IntegerAxis();
-			for (DataQueryRecord record: records) {
-				int year = (int) (index==0 ? record.getField_0() : record.getField_1());	
-				iAxis.addEntry(year, "" + year);
-			}
-			return iAxis;
+			Set<Integer> sortedInts = new TreeSet<Integer>(); //Need to order the entries
+			records.stream().forEach(r->sortedInts.add((Integer) (index==0 ? r.getField_0() : r.getField_1())));
+			return new IntegerAxis(sortedInts);
 		case POLLUTANT:
 		case PROVINCE_TERRITORY:
 		case URBANIZATION:
 		default:
-			StringAxis sAxis = new StringAxis();
-			for (DataQueryRecord record: records) {
-				String value = (index==0 ? record.getField_0() : record.getField_1()).toString();	
-				sAxis.addEntry(value, value);
-			}
-			return sAxis;
+			Set<String> sortedStrings = new TreeSet<String>(); //Need to order the entries
+			records.stream().forEach(r->sortedStrings.add((String) (index==0 ? r.getField_0() : r.getField_1())));
+			return new StringAxis(sortedStrings);
 		}
 	}
 	
