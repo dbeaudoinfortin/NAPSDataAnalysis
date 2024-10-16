@@ -315,7 +315,19 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		case PROVINCE_TERRITORY:
 			return new StringAxis("Province/Territory", sortAxisEntries(records, index));
 		case URBANIZATION:
-			return new StringAxis("Urbanization", sortAxisEntries(records, index));
+			StringAxis sAxis =  new StringAxis("Urbanization");
+			sAxis.addEntry("LU", "Large Urban");
+			sAxis.addEntry("MU", "Medium Urban");
+			sAxis.addEntry("SU", "Small Urban");
+			sAxis.addEntry("NU", "Rural");
+			return sAxis;
+		case SITE_TYPE:
+			StringAxis stAxis =  new StringAxis("Site Type");
+			stAxis.addEntry("PE", "General Population");
+			stAxis.addEntry("RB", "Regional Backgrounds");
+			stAxis.addEntry("T",  "Transportation");
+			stAxis.addEntry("PS", "Point source");
+			return stAxis;
 		default:
 			return null;
 		}

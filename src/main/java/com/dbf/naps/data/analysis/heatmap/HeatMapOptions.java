@@ -19,8 +19,8 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	
 	static {
 		//The parent class' static initialiser will be called first.
-		Option dim1 = getOptions().getOption("group1");
-		Option dim2 = getOptions().getOption("group2");
+		Option dim1 = getOptions().getOption("group1"); //TODO: Also call it X for short, xAxis for long
+		Option dim2 = getOptions().getOption("group2"); //TODO: Also call it Y for short, YAxis for long
 		dim1.setDescription("Data field for the heat map X-axis.");
 		dim2.setDescription("Data field for the heat map Y-axis.");
 		dim1.setRequired(true);

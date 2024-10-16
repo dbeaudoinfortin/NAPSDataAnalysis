@@ -96,6 +96,7 @@ public interface DataMapper {
 				+ "<if test=\"field.name() == 'POLLUTANT'\">p.name</if>"
 				+ "<if test=\"field.name() == 'PROVINCE_TERRITORY'\">s.prov_terr</if>"
 				+ "<if test=\"field.name() == 'URBANIZATION'\">s.urbanization</if>"
+				+ "<if test=\"field.name() == 'SITE_TYPE'\">s.site_type</if>"
 				+ "</if>"
 				+ "as field_${index}"
 			+"</foreach>"
