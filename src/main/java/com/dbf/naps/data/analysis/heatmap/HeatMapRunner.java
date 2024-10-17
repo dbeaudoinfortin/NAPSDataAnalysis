@@ -27,6 +27,8 @@ import com.dbf.naps.data.analysis.DataQueryRunner;
 import com.dbf.naps.data.analysis.heatmap.axis.Axis;
 import com.dbf.naps.data.analysis.heatmap.axis.IntegerAxis;
 import com.dbf.naps.data.analysis.heatmap.axis.StringAxis;
+import com.dbf.naps.data.globals.DayOfWeekMapping;
+import com.dbf.naps.data.globals.MonthMapping;
 
 public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	
@@ -69,7 +71,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	}
 	
 	@Override
-	public void writeToFile(List<DataQueryRecord> records, File dataFile) throws IOException {
+	public void writeToFile(List<DataQueryRecord> records, String queryUnits, String title, File dataFile) throws IOException {
 		
 		log.info("Analyzing heatmap data for " + dataFile + "...");
 		//Determine the bounds of the X & Y dimension
@@ -88,17 +90,17 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		log.info("Analysis complete for " + dataFile + ".");
 
 		log.info("Rendering heatmap graphics for " + dataFile + "...");
-		renderHeatMap(dataFile, records, xDimension, yDimension, dMinValue, dMaxValue);
+		renderHeatMap(dataFile, records, xDimension, yDimension, dMinValue, dMaxValue, title);
 		log.info("Rendering complete for " + dataFile + ".");
 		
 		if (getConfig().isGenerateCSV()) {
 			File csvFile = new File(dataFile.getParent(), dataFile.getName().replace("png", "csv"));
 			this.checkFile(csvFile);
-			super.writeToFile(records, csvFile);
+			super.writeToFile(records, queryUnits, title, csvFile);
 		}
 	}
 	
-	private static void renderHeatMap(File dataFile, List<DataQueryRecord> records, Axis<?> xAxis, Axis<?> yAxis, double minValue, double maxValue) throws IOException{		
+	private static void renderHeatMap(File dataFile, List<DataQueryRecord> records, Axis<?> xAxis, Axis<?> yAxis, double minValue, double maxValue, String title) throws IOException{		
 		//Render all of the X & Y labels first so we can determine the maximum size
 		final Entry<Integer, Integer> xAxisLabelSizes = getMaxLabelSize(xAxis);
 		final int yAxisLabelWidth  = getMaxLabelSize(yAxis).getKey();
@@ -266,68 +268,57 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     }
 	
 	private <T> Axis<?> determineAxisDimensions(List<DataQueryRecord> records, int index) {
+		String prettyName = getConfig().getFields().get(index).getPrettyName();
+		
 		switch (getConfig().getFields().get(index)) {
 		case DAY:
-			return new IntegerAxis("Day of the Month", 1, 31);
+			return new IntegerAxis(prettyName, 1, 31);
 			
 		case DAY_OF_YEAR:
-			return new IntegerAxis("Day of the Year", 1, 366);
+			return new IntegerAxis(prettyName, 1, 366);
 			
 		case HOUR:
-			return new IntegerAxis("Hour", 1, 24);
+			return new IntegerAxis(prettyName, 1, 24);
 			
 		case WEEK_OF_YEAR:
-			return new IntegerAxis("Week of the Year", 1, 53);
+			return new IntegerAxis(prettyName, 1, 53);
 			
 		case DAY_OF_WEEK:
-			IntegerAxis dowAxis =  new IntegerAxis("Day of the Week");
-			dowAxis.addEntry(1, "Sunday");
-			dowAxis.addEntry(2, "Monday");
-			dowAxis.addEntry(3, "Tuesday");
-			dowAxis.addEntry(4, "Wednesday");
-			dowAxis.addEntry(5, "Thursday");
-			dowAxis.addEntry(6, "Friday");
-			dowAxis.addEntry(7, "Saturday");
+			IntegerAxis dowAxis =  new IntegerAxis(prettyName);
+			for(int day = 1; day < 8; day++) {
+				dowAxis.addEntry(day, DayOfWeekMapping.getDayOfWeek(day));
+			}
 			return dowAxis;
 			
 		case MONTH:
-			IntegerAxis mAxis =  new IntegerAxis("Month");
-			mAxis.addEntry(1, "January");
-			mAxis.addEntry(2, "February");
-			mAxis.addEntry(3, "March");
-			mAxis.addEntry(4, "April");
-			mAxis.addEntry(5, "May");
-			mAxis.addEntry(6, "June");
-			mAxis.addEntry(7, "July");
-			mAxis.addEntry(8, "August");
-			mAxis.addEntry(9, "September");
-			mAxis.addEntry(10, "October");
-			mAxis.addEntry(11, "November");
-			mAxis.addEntry(12, "December");
+			IntegerAxis mAxis =  new IntegerAxis(prettyName);
+			for(int month = 1; month < 13; month++) {
+				mAxis.addEntry(month, MonthMapping.getMonth(month));
+			}
 			return mAxis;
 			
-		case YEAR:
-			return new IntegerAxis("Year", sortAxisEntries(records, index));
-		case NAPS_ID:
-			return new IntegerAxis("NAPS Site ID", sortAxisEntries(records, index));
-		case POLLUTANT:
-			return new StringAxis("Pollutant", sortAxisEntries(records, index));
-		case PROVINCE_TERRITORY:
-			return new StringAxis("Province/Territory", sortAxisEntries(records, index));
 		case URBANIZATION:
-			StringAxis sAxis =  new StringAxis("Urbanization");
+			StringAxis sAxis =  new StringAxis(prettyName);
 			sAxis.addEntry("LU", "Large Urban");
 			sAxis.addEntry("MU", "Medium Urban");
 			sAxis.addEntry("SU", "Small Urban");
 			sAxis.addEntry("NU", "Rural");
 			return sAxis;
+			
 		case SITE_TYPE:
-			StringAxis stAxis =  new StringAxis("Site Type");
+			StringAxis stAxis =  new StringAxis(prettyName);
 			stAxis.addEntry("PE", "General Population");
 			stAxis.addEntry("RB", "Regional Backgrounds");
 			stAxis.addEntry("T",  "Transportation");
 			stAxis.addEntry("PS", "Point source");
 			return stAxis;
+			
+		case YEAR:
+		case NAPS_ID:
+			return new IntegerAxis(prettyName, sortAxisEntries(records, index));
+		case POLLUTANT:
+		case PROVINCE_TERRITORY:
+			return new StringAxis(prettyName, sortAxisEntries(records, index));
 		default:
 			return null;
 		}

@@ -1,11 +1,15 @@
 package com.dbf.naps.data.globals;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProvinceTerritoryMapping {
 	
-	private static final Map<String, ProvTerr> provTerrMap = new HashMap<String, ProvTerr>();
+	private static final Map<String, ProvTerr> provTerrMap = new HashMap<String, ProvTerr>(13);
+	
+	private static final Map<ProvTerr, String> prettyMap = new HashMap<ProvTerr, String>(13);
 
     static {
         provTerrMap.put("NEWFOUNDLAND AND LABRADOR", ProvTerr.NL);
@@ -21,6 +25,20 @@ public class ProvinceTerritoryMapping {
         provTerrMap.put("YUKON", ProvTerr.YT);
         provTerrMap.put("NORTHWEST TERRITORIES", ProvTerr.NT);
         provTerrMap.put("NUNAVUT", ProvTerr.NU);
+        
+        prettyMap.put(ProvTerr.NL, "Newfoundland and Labrador");
+        prettyMap.put(ProvTerr.PE, "Prince Edward Island");
+        prettyMap.put(ProvTerr.NS, "Nova Scotia");
+        prettyMap.put(ProvTerr.NB, "New Brunswick");
+        prettyMap.put(ProvTerr.QC, "Quebec");
+        prettyMap.put(ProvTerr.ON, "Ontario");
+        prettyMap.put(ProvTerr.MB, "Manitoba");
+        prettyMap.put(ProvTerr.SK, "Saskatchewan");
+        prettyMap.put(ProvTerr.AB, "Alberta");
+        prettyMap.put(ProvTerr.BC, "British Columbia");
+        prettyMap.put(ProvTerr.YT, "Yukon");
+        prettyMap.put(ProvTerr.NT, "Northwest Territories");
+        prettyMap.put(ProvTerr.NU, "Nunavut");
     }
 
     public static String getCode(String name) {
@@ -32,4 +50,12 @@ public class ProvinceTerritoryMapping {
     public static ProvTerr getProvTerr(String name) {
     	return provTerrMap.get(name.toUpperCase());
     }
+    
+    public static String getProvTerr(ProvTerr prov) {
+    	return prettyMap.get(prov);
+    }
+    
+    public static List<String> getProvTerrStrings(Collection<ProvTerr> provs) {
+    	return provs.stream().map(prov->getProvTerr(prov)).sorted().toList();
+    }   
 }
