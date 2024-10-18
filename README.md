@@ -351,7 +351,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.continuo
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is grouped by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). It will output a CSV file containing a table of data based on the query rules that you provide. This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is grouped by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
@@ -401,6 +401,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Aggregation Rules:**
 - The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
+- The default aggregation function, if not specified, is `AVG`.
 - The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
 - The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
@@ -413,6 +414,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
+
+**Other Notes:**
+- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide.  
 
 **Example Query:**
 
@@ -466,14 +470,14 @@ The above example generated 224 tables of data, each saved in its own CSV file. 
 
 ## NAPSContinuousHeatMap
 
-A Java tool that generates highly customizable heat map diagram for the visualization of NAPS continuous data.
+A Java tool that generates highly customizable heat map diagram for the visualization of NAPS continuous data. These heat maps are saved in high resolution PNG format.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatmap.continuous.NAPSContinuousDataHeatMap`.
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
- -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-6 (inclusive).
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM).
+ -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-8 (inclusive).
  -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
  -cn,  --cityName <arg>           City name, partial match.
  -csv, --generateCSV              Generate a corresponding CSV file containing the raw data for each heat map.
@@ -484,9 +488,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
  -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
  -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
- -fp,  --filePerPollutant         Create a seperate file for each pollutant.
- -fs,  --filePerSite              Create a seperate file for each site.
- -fy,  --filePerYear              Create a seperate file for each year.
+ -fp,  --filePerPollutant         Create a separate file for each pollutant.
+ -fs,  --filePerSite              Create a separate file for each site.
+ -fy,  --filePerYear              Create a separate file for each year.
  -g1,  --group1 <arg>             Data field for the heat map X-axis.
  -g2,  --group2 <arg>             Data field for the heat map Y-axis.
  -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
@@ -512,22 +516,32 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -ys,  --yearStart <arg>          Start year (inclusive).
 ```
 **Colour Palettes:**
-6 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
-- 1 - A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
-- 2 - A 12 step gradient from blue to red with less saturation than the first colour palette.
-- 3 - A simplified 5 step gradient from blue to red.
-- 4 - A two colour gradient from blue to red, with purple mixed in-between.
-- 5 - A 5 step colour blind friendly gradient of greenish-yellow to dark orange.
-- 6 - A 2 step grey-scale gradient that should be used for non-colour screen/print-outs. 
+8 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
+1. A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
+2. A 12 step gradient from blue to red with less saturation than the first colour palette.
+3. A simplified 5 step gradient from blue to red.
+4. A two colour gradient from blue to red, with purple mixed in-between.
+5. A 5 step colour blind friendly gradient of greenish-yellow to dark orange.
+6. A 3 step black-red-orange gradient, similar to black-body radiation, up to approximately 1300 degrees kelvin.
+7. Same as number 6 but two more steps are added to extend the scale up to approximately 6500k degrees kelvin.
+8. A 2 step grey-scale gradient that should be used for non-colour screen/print-outs.
+The default colour palette, if not specified, is number 1. 
+
+![Continuous_By Day of the Month and Month_C1](https://github.com/user-attachments/assets/c55ced9a-36af-4006-b47e-40b2ce04bc60)
+![Continuous_By Day of the Month and Month_C2](https://github.com/user-attachments/assets/5ca35e2f-d8e8-46b7-b2ef-95e335128480)
+![Continuous_By Day of the Month and Month_C3](https://github.com/user-attachments/assets/8485348e-c686-4cfd-81f7-35c6d4a4471e)
+![Continuous_By Day of the Month and Month_C4](https://github.com/user-attachments/assets/051332ef-fb9d-465c-b832-e2f2f5a417e1)
+![Continuous_By Day of the Month and Month_C5](https://github.com/user-attachments/assets/523a4438-bb37-4236-af18-d5885a4770a7)
+![Continuous_By Day of the Month and Month_C6](https://github.com/user-attachments/assets/1085aec3-b82f-42e3-af67-72df9c5af137)
+![Continuous_By Day of the Month and Month_C7](https://github.com/user-attachments/assets/fc17e80b-846b-4998-af25-766da3bc09ac)
+![Continuous_By Day of the Month and Month_C8](https://github.com/user-attachments/assets/a9f9100e-dfbe-4a39-8dce-1da1bd0e222f)
 
 **Aggregation Rules:**
-- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
-- The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
-- The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
-- The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
-- The minimum sample count option cannot be used when the aggregate function is set to `NONE` since the sample count will always be 1.
-- Post-aggregated bounds (both upper and lower) cannot be used when the aggregate function is set to `NONE`.
-- Both the population standard deviation and the sample standard deviation cannot be used when the aggregate function is set to `NONE`.
+- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM`).
+- The use of an aggregation function is mandatory to generate the heat map.
+- The default aggregation function, if not specified, is `AVG`.
+- Both the `group1` and `group2` options are mandatory since they represent the x-axis and y-axis of the chart, respectively. 
+- The possible values for `group1` and `group2` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
 
 **Filtering Rules:**
@@ -536,7 +550,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - 
 **Notes:**
-- 
+- The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
+- The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically. 
+- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide.
 
 ## NAPSContinuousDataExporter
 
@@ -606,7 +622,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.integrat
 
 ## NAPSIntegratedDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader). It functions the same as the [NAPSContinuousDataQuery](#napsContinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
+This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader).  It will output a CSV file containing a table of data based on the query rules that you provide. It functions the same as the [NAPSContinuousDataQuery](#napsContinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery`.
 
