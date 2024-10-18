@@ -44,10 +44,25 @@ public class HeatMapGradient {
 			Color.decode("#fc7f00")  //Darker Orange
 	};
 	
-	private static final Color[] GREY = new Color[] {
+	private static final Color[] BLACK_RED_ORANGE_GRADIENT = new Color[] {
+			Color.decode("#000000"), //Black
+			Color.decode("#8e060a"), //Red
+			Color.decode("#fda32b")  //Orange
+	};
+	
+	private static final Color[] WHITE_HOT_GRADIENT = new Color[] {
+			Color.decode("#000000"), //Black
+			Color.decode("#8e060a"), //Red
+			Color.decode("#fda32b"), //Orange
+			Color.decode("#FFCF9F"), //Light Orange
+			Color.decode("#FEF9FF")  //Whitish-blue
+	};
+	
+	private static final Color[] GREY_GRADIENT = new Color[] {
 			Color.decode("#E3E3E3"), //Grey
 			Color.decode("#000000"), //Black
 	};
+	
 	
 	private static final List<Color[]> GRADIENTS = new ArrayList<Color[]>();
 	
@@ -56,7 +71,9 @@ public class HeatMapGradient {
 		GRADIENTS.add(BASIC_GRADIENT);
 		GRADIENTS.add(TWO_COLOUR_GRADIENT);
 		GRADIENTS.add(COLOUR_BLIND_GRADIENT);
-		GRADIENTS.add(GREY);
+		GRADIENTS.add(BLACK_RED_ORANGE_GRADIENT);
+		GRADIENTS.add(WHITE_HOT_GRADIENT);
+		GRADIENTS.add(GREY_GRADIENT);
 	}
 	
 	public static int getGradientCount() {

@@ -17,6 +17,7 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 	private boolean stdDevSmp = false;
 	
 	static {
+		//TODO: Support more than one aggregation in this query mode. For example, I want average, min, and max
 		getOptions().addOption("g3","group3", true, "Data field for optional level 3 grouping");
 		getOptions().addOption("g4","group4", true, "Data field for optional level 4 grouping");
 		getOptions().addOption("g5","group5", true, "Data field for optional level 5 grouping");

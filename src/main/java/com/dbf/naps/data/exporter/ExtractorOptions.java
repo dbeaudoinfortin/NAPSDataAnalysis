@@ -37,9 +37,9 @@ public class ExtractorOptions extends DBOptions {
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
 		getOptions().addOption("pn","pollutants", true, "Comma-separated list of pollutant names.");	
 		getOptions().addOption("sid","sites", true, "Comma-separated list of site IDs.");
-		getOptions().addOption("fy","filePerYear", false, "Create a seperate file for each year.");
-		getOptions().addOption("fp","filePerPollutant", false, "Create a seperate file for each pollutant.");
-		getOptions().addOption("fs","filePerSite", false, "Create a seperate file for each site.");
+		getOptions().addOption("fy","filePerYear", false, "Create a separate file for each year.");
+		getOptions().addOption("fp","filePerPollutant", false, "Create a separate file for each pollutant.");
+		getOptions().addOption("fs","filePerSite", false, "Create a separate file for each site.");
 		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
 	}
 
