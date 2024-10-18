@@ -517,6 +517,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 ```
 
 **Colour Palettes:**
+
 8 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
 1. A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
 2. A 12 step gradient from blue to red with less saturation than the first colour palette.
