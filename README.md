@@ -81,7 +81,7 @@ To work around GitHub's file size limit of 100MB, some of the zip files have bee
 
 The NAPS Data Analysis Toolbox provides powerful tools for the analysis of Canadian air quality data. The dynamic query tools for both the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data allow you to run highly customized queries to aggregate or simply retrieve the data in the way that you need it, in a single command.
 
-The dynamic query tools have support for several types of aggregation functions, multiple levels of grouping, filtering on many dimensions (site ids, site name, pollutants, days of the week, days of the month, months, years, provinces/territories, city name, site type, site urbanization), standard deviation functions, sample counts, minimum sample counts (to optionally ensure a statistically significant number of data points), lower and upper bounds for data point (to optionally exclude outliers) and post-aggregation lower and upper bounds (to eliminate results out side the scope of interest). I'm planning to add even more functionality in the future.
+The dynamic query tools have support for several types of aggregation functions, multiple levels of grouping, filtering on many dimensions (site IDs, site name, pollutants, days of the week, days of the month, months, years, provinces/territories, city name, site type, site urbanization), standard deviation functions, sample counts, minimum sample counts (to optionally ensure a statistically significant number of data points), lower and upper bounds for data point (to optionally exclude outliers) and post-aggregation lower and upper bounds (to eliminate results outside the scope of interest). I'm planning to add even more functionality in the future.
 
 Say, for example, you want to know how many times the hourly reading for carbon monoxide exceeded the national standard of 13ppm across all of Canada for the years between 1974 and 2022:
 
@@ -93,30 +93,32 @@ The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams f
 
 ![Avg_CO_By Day of the Year and Year](https://github.com/user-attachments/assets/c252ea64-4493-49aa-8295-33709243a8ce)
 
-From this diagram alone there are some trends that immediately stand out, such as
+From this diagram alone there are some trends that immediately stand out, such as:
 - the significant improvement to air quality over the years,
 - the higher concentrations of CO in winter months,
 - the reduction of CO on weekends (the apparent diagonal lines),
 - the reduction of CO on holidays, such as Christmas and New Year's day,
 - the larger number of outlier reading in 2016.
 
-We can change the X-Axis to get a view of what is happening on the weekends compared to the weekdays:
+We can change the x-axis to get a view of what is happening on the weekends compared to the weekdays:
 
 ![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
 
-Note that this second heat map uses a different colour palette that better suits the data. Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2, using a third colour palette:
+(Note that this second heat map uses a different colour palette that better suits the data.)
+
+Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2, using a third colour palette:
 
 ![Avg_SO2_By Day of the Year and Year](https://github.com/user-attachments/assets/721cf42e-cd32-42b7-ab47-9f0538856cea)
 
-And here are 2 heat maps for lead that, average and maximum concentrations, respectively, that show a large reduction in air pollution with the ban on leaded gasoline in 1990:
+And here are two heat maps for lead, showing the average and maximum concentrations, respectively. This makes it easy to see the large reduction in air pollution starting with the ban on leaded gasoline in 1990:
 
 ![Avg_Lead_By Month and Year](https://github.com/user-attachments/assets/9660ba50-52bf-4b9b-ba17-7fcde5766e34)
 
 ![Max_Lead_By Month and Year](https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3)
 
-(The provices of Ontario & Quebec were only chosen to demostrate the ability to filter by province/territory.)
+(The provinces of Ontario & Quebec were only chosen to demonstrate the ability to filter by province/territory.)
 
-The queries used to generate these heat maps are fully dynamic and there are several colour pallettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outlyers from shifting the entire sclae. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table with all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
+The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
 
 # Dashboards
 
@@ -132,7 +134,7 @@ I plan to eventually add sample reports for other BI/Data Visualization software
 
 # Getting Started
 
-The following steps will guide you in building a database from scratch, populating it with NAPS data, and querying/analyzing the NAPS data.
+The following steps will guide you in building a database from scratch, populating it with NAPS data, and querying/analysing the NAPS data.
 
 ## Installing PostgreSQL
 
@@ -184,7 +186,7 @@ There are three separate tools included in this tool box that are used to parse 
 
 **NAPSSitesLoader**
 
-This tool will load all of the NAPS site definitions into the database. This must be run before running the NAPSIntegratedDataLoader. Assuming using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+This tool will load all of the NAPS site definitions into the database. This must be run before running the NAPSIntegratedDataLoader. Assuming you are using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.loader.sites.NAPSSitesLoader -p C:\temp\NAPSData\RawFiles -t 10
@@ -194,7 +196,7 @@ For more information about the possible command line arguments, see the NAPSSite
 
 **NAPSContinuousDataLoader**
 
-This tool will load all of the NAPS continuous air quality data into the database. This is optional and only needs to be run if you want to analyze the continuous air quality data. Assuming using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+This tool will load all of the NAPS continuous air quality data into the database. This is optional and only needs to be run if you want to analyze the continuous air quality data. Assuming you are using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles\ContinuousData -t 10
@@ -204,7 +206,7 @@ For more information about the possible command line arguments, see the NAPSCont
 
 **NAPSIntegratedDataLoader**
 
-This tool will load all of the NAPS integrated air quality data into the database. This is optional and only needs to be run if you want to analyze the integrated air quality data. This must be run after all of the NAPS site definitions have been loaded into the database using NAPSSitesLoader (see above). Assuming using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+This tool will load all of the NAPS integrated air quality data into the database. This is optional and only needs to be run if you want to analyze the integrated air quality data. This must be run after all of the NAPS site definitions have been loaded into the database using NAPSSitesLoader (see above). Assuming you are using all default database connection parameters, you can run the tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader -p C:\temp\NAPSData\RawFiles\IntegratedData -t 10
@@ -216,37 +218,37 @@ For more information about the possible command line arguments, see the NAPSInte
 
 At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to query the data to retrieve what you need for your own analysis.
 
-Assuming using all default database connection parameters, you can run the continuous query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+Assuming you are using all default database connection parameters, you can run the continuous query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery -p C:\temp\NAPSData\queries\continuous -pollutants CO -group1 year -yearStart 1974 -yearEnd 2022 -aggregateFunction count -valueLowerBound 13
 ```
 
-Likwise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+Likewise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery -p C:\temp\NAPSData\queries\integrated -pollutants 3-Methyloctane -group1 day_of_week -aggregateFunction avg -showSampleCount
 ```
 
-These are just example queries, you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousDataQuery section](#napscontinuousdataquery) or the [NAPSIntegratedDataQuery section](#napsintegrateddataquery) below.
+These are just example queries; you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousDataQuery section](#napscontinuousdataquery) or the [NAPSIntegratedDataQuery section](#napsintegrateddataquery) below.
 
 ## Generating Heat Maps
 
 At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to generate heat map diagrams to visualize the data as part of your own analysis.
 
-Assuming using all default database connection parameters, you can run the continuous heat map tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+Assuming you are using all default database connection parameters, you can run the continuous heat map tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.analysis.heatmap.continuous.NAPSContinuousDataHeatMap -p C:\temp\NAPSData\heatmaps\continuous -aggregateFunction avg -group1 day_of_year -group2 year -pollutants SO2 -generateCSV -colourGradient 3
 ```
 
-Likwise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+Likewise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
 ```
 java -cp naps_data.jar com.dbf.naps.data.analysis.heatmap.integrated.NAPSIntegratedDataHeatMap -p C:\temp\NAPSData\heatmaps\integrated -aggregateFunction max -group1 month -group2 year -pollutants Lead -provTerr ON,QC -generateCSV -colourGradient 2
 ```
 
-These are just example heat maps, you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousHeatMap section](#napscontinuousheatmap) or the [NAPSIntegratedHeatMap section](#napsintegratedheatmap) below.
+These are just example heat maps; you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousHeatMap section](#napscontinuousheatmap) or the [NAPSIntegratedHeatMap section](#napsintegratedheatmap) below.
 
 ## Installing Microsoft Power BI
 
@@ -355,51 +357,51 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,	--aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
- -cn,	--cityName <arg>           City name, partial match.
- -d,	--days <arg>               Comma-separated list of days of the month.
+ -a,	  --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,	 --cityName <arg>           City name, partial match.
+ -d,	  --days <arg>               Comma-separated list of days of the month.
  -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
  -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
  -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
  -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
  -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
- -fp,	--filePerPollutant         Create a separate file for each pollutant.
- -fs,	--filePerSite              Create a separate file for each site.
- -fy,	--filePerYear              Create a separate file for each year.
- -g1,	--group1 <arg>             Data field for level 1 grouping.
- -g2,	--group2 <arg>             Data field for optional level 2 grouping.
- -g3,	--group3 <arg>             Data field for optional level 3 grouping
- -g4,	--group4 <arg>             Data field for optional level 4 grouping
- -g5,	--group5 <arg>             Data field for optional level 5 grouping
- -m,	--months <arg>             Comma-separated list of months of the year, starting at 1 for January.
- -o,	--overwriteFiles           Replace existing files.
- -p,	--dataPath <arg>           Local path to save the data.
- -pn,	--pollutants <arg>         Comma-separated list of pollutant names.
- -pt,	--provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -fp,	 --filePerPollutant         Create a separate file for each pollutant.
+ -fs,	 --filePerSite              Create a separate file for each site.
+ -fy,	 --filePerYear              Create a separate file for each year.
+ -g1,	 --group1 <arg>             Data field for level 1 grouping.
+ -g2,	 --group2 <arg>             Data field for optional level 2 grouping.
+ -g3,	 --group3 <arg>             Data field for optional level 3 grouping
+ -g4,	 --group4 <arg>             Data field for optional level 4 grouping
+ -g5,	 --group5 <arg>             Data field for optional level 5 grouping
+ -m,	  --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,	  --overwriteFiles           Replace existing files.
+ -p,	  --dataPath <arg>           Local path to save the data.
+ -pn,	 --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,	 --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
  -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
- -sc,	--showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -sc,	 --showSampleCount          Include the sample count (number of samples or data points) in the result set.
  -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
                                      result set.
  -sid,	--sites <arg>              Comma-separated list of site IDs.
- -sn,	--siteName <arg>           NAPS site (station) name, partial match.
+ -sn,	 --siteName <arg>           NAPS site (station) name, partial match.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
- -t,	--threadCount <arg>        Maximum number of parallel threads.
- -v,    --verbose                  Make logging more verbose.
+ -t,	  --threadCount <arg>        Maximum number of parallel threads.
+ -v,   --verbose                  Make logging more verbose.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
- -vub,  --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+ -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
- -ye,   --yearEnd <arg>            End year (inclusive).
- -ys,   --yearStart <arg>          Start year (inclusive).
+ -ye,  --yearEnd <arg>            End year (inclusive).
+ -ys,  --yearStart <arg>          Start year (inclusive).
 ```
 
 **Aggregation Rules:**
 - The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
-- The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`.
+- The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
 - The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
 - The minimum sample count option cannot be used when the aggregate function is set to `NONE` since the sample count will always be 1.
@@ -466,7 +468,75 @@ The above example generated 224 tables of data, each saved in its own CSV file. 
 
 A Java tool that generates highly customizable heat map diagram for the visualization of NAPS continuous data.
 
+You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatmap.continuous.NAPSContinuousDataHeatMap`.
 
+**Command line usage:**
+```
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-6 (inclusive).
+ -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
+ -cn,  --cityName <arg>           City name, partial match.
+ -csv, --generateCSV              Generate a corresponding CSV file containing the raw data for each heat map.
+ -cub, --colourUpperBound <arg>   Heat map colour upper bound (inclusive).
+ -d,   --days <arg>               Comma-separated list of days of the month.
+ -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -fp,  --filePerPollutant         Create a seperate file for each pollutant.
+ -fs,  --filePerSite              Create a seperate file for each site.
+ -fy,  --filePerYear              Create a seperate file for each year.
+ -g1,  --group1 <arg>             Data field for the heat map X-axis.
+ -g2,  --group2 <arg>             Data field for the heat map Y-axis.
+ -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,   --overwriteFiles           Replace existing files.
+ -p,   --dataPath <arg>           Local path to save the data.
+ -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+                                     threshold will be filtered out of the result set after aggregation.
+ -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+                                     this threshold will be filtered out of the result set after aggregation.
+ -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+                                     result set.
+ -sid, --sites <arg>              Comma-separated list of site IDs.
+ -sn,  --siteName <arg>           NAPS site (station) name, partial match.
+ -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -v,   --verbose                  Make logging more verbose.
+ -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+                                     threshold will be filtered out before aggregation.
+ -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+                                     this threshold will be filtered out before aggregation.
+ -ye,  --yearEnd <arg>            End year (inclusive).
+ -ys,  --yearStart <arg>          Start year (inclusive).
+```
+**Colour Palettes:**
+6 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
+- 1 - A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
+- 2 - A 12 step gradient from blue to red with less saturation than the first colour palette.
+- 3 - A simplified 5 step gradient from blue to red.
+- 4 - A two colour gradient from blue to red, with purple mixed in-between.
+- 5 - A 5 step colour blind friendly gradient of greenish-yellow to dark orange.
+- 6 - A 2 step grey-scale gradient that should be used for non-colour screen/print-outs. 
+
+**Aggregation Rules:**
+- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
+- The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
+- The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
+- The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
+- The minimum sample count option cannot be used when the aggregate function is set to `NONE` since the sample count will always be 1.
+- Post-aggregated bounds (both upper and lower) cannot be used when the aggregate function is set to `NONE`.
+- Both the population standard deviation and the sample standard deviation cannot be used when the aggregate function is set to `NONE`.
+- A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
+
+**Filtering Rules:**
+- The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
+- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`).
+- Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
+- 
+**Notes:**
+- 
 
 ## NAPSContinuousDataExporter
 
@@ -542,49 +612,49 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,	--aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
- -cn,	--cityName <arg>           City name, partial match.
- -d,	--days <arg>               Comma-separated list of days of the month.
+ -a,	  --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,	 --cityName <arg>           City name, partial match.
+ -d,	  --days <arg>               Comma-separated list of days of the month.
  -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
  -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
  -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
  -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
  -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
- -fp,	--filePerPollutant         Create a separate file for each pollutant.
- -fs,	--filePerSite              Create a separate file for each site.
- -fy,	--filePerYear              Create a separate file for each year.
- -g1,	--group1 <arg>             Data field for level 1 grouping.
- -g2,	--group2 <arg>             Data field for optional level 2 grouping.
- -g3,	--group3 <arg>             Data field for optional level 3 grouping
- -g4,	--group4 <arg>             Data field for optional level 4 grouping
- -g5,	--group5 <arg>             Data field for optional level 5 grouping
- -m,	--months <arg>             Comma-separated list of months of the year, starting at 1 for January.
- -o,	--overwriteFiles           Replace existing files.
- -p,	--dataPath <arg>           Local path to save the data.
- -pn,	--pollutants <arg>         Comma-separated list of pollutant names.
- -pt,	--provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -fp,	 --filePerPollutant         Create a separate file for each pollutant.
+ -fs,	 --filePerSite              Create a separate file for each site.
+ -fy,	 --filePerYear              Create a separate file for each year.
+ -g1,	 --group1 <arg>             Data field for level 1 grouping.
+ -g2,	 --group2 <arg>             Data field for optional level 2 grouping.
+ -g3,	 --group3 <arg>             Data field for optional level 3 grouping
+ -g4,	 --group4 <arg>             Data field for optional level 4 grouping
+ -g5,	 --group5 <arg>             Data field for optional level 5 grouping
+ -m,	  --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,	  --overwriteFiles           Replace existing files.
+ -p,	  --dataPath <arg>           Local path to save the data.
+ -pn,	 --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,	 --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
  -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
- -sc,	--showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -sc,	 --showSampleCount          Include the sample count (number of samples or data points) in the result set.
  -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
                                      result set.
  -sid,	--sites <arg>              Comma-separated list of site IDs.
- -sn,	--siteName <arg>           NAPS site (station) name, partial match.
+ -sn,	 --siteName <arg>           NAPS site (station) name, partial match.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
- -t,	--threadCount <arg>        Maximum number of parallel threads.
- -v,    --verbose                  Make logging more verbose.
+ -t,	  --threadCount <arg>        Maximum number of parallel threads.
+ -v,   --verbose                  Make logging more verbose.
  -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
- -vub,  --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+ -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
- -ye,   --yearEnd <arg>            End year (inclusive).
- -ys,   --yearStart <arg>          Start year (inclusive).
+ -ye,  --yearEnd <arg>            End year (inclusive).
+ -ys,  --yearStart <arg>          Start year (inclusive).
 ```
 
-Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`. 
+Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
 
 All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsContinuousdataloader) apply.
 
