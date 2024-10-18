@@ -1,8 +1,8 @@
 package com.dbf.naps.data.analysis.query.continuous;
 
-import com.dbf.naps.data.analysis.query.NAPSDataQuery;
+import com.dbf.naps.data.analysis.query.NAPSExtendedDataQuery;
 
-public class NAPSContinuousDataQuery extends NAPSDataQuery<ContinuousDataQueryOptions> {
+public class NAPSContinuousDataQuery extends NAPSExtendedDataQuery<ContinuousDataQueryOptions> {
 
 	public NAPSContinuousDataQuery(String[] args) {
 		super(args);

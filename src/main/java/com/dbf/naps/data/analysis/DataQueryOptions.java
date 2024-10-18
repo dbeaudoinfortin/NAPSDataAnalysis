@@ -14,12 +14,12 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.exporter.ExtractorOptions;
 import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 
-public abstract class DataQueryOptions extends ExporterOptions {
+public abstract class DataQueryOptions extends ExtractorOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DataQueryOptions.class);
 
@@ -40,7 +40,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private Double		resultUpperBound;
 	private Double		resultLowerBound;
 	
-	//TODO: add the ability to set a custom filename. Per year, per site, etc. should append to the end (minus the extension)
+	private String fileName;//TODO: add the ability to set a custom filename. Per year, per site, etc. should append to the end (minus the extension)
+	private String title; //TODO: add the ability to set a custom title.
 	
 	static {
 		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
@@ -386,5 +387,13 @@ public abstract class DataQueryOptions extends ExporterOptions {
 
 	public Set<Integer> getDaysOfWeek() {
 		return daysOfWeek;
+	}
+	
+	public String getFileName() {
+		return fileName;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }

@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import com.dbf.naps.data.db.DBOptions;
 import com.dbf.naps.data.globals.Constants;
 
-public class ExporterOptions extends DBOptions {
+public class ExtractorOptions extends DBOptions {
 
-	private static final Logger log = LoggerFactory.getLogger(ExporterOptions.class);
+	private static final Logger log = LoggerFactory.getLogger(ExtractorOptions.class);
 
 	private Path dataPath;
 	private int yearStart = Constants.DATASET_YEAR_START;
@@ -43,7 +43,7 @@ public class ExporterOptions extends DBOptions {
 		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
 	}
 
-	public ExporterOptions(String[] args) throws IllegalArgumentException {
+	public ExtractorOptions(String[] args) throws IllegalArgumentException {
 		super(args);
 		loadFromArgs(args);
 	}

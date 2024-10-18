@@ -19,7 +19,7 @@ public class DayOfWeekMapping {
     }
 
     public static String getDayOfWeek(int day) {
-    	return daysOfWeek.get(day);
+    	return daysOfWeek.get(day-1);
     }
     
     public static List<String> getDayOfWeekStrings(Collection<Integer> days) {

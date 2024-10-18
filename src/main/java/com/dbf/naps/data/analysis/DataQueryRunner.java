@@ -168,7 +168,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			break;
 		}
 		
-		if(!getConfig().getAggregateFunction().equals(AggregateFunction.NONE)) {
+		if(!getConfig().getAggregateFunction().equals(AggregateFunction.NONE) && !getConfig().getAggregateFunction().equals(AggregateFunction.COUNT)) {
 			title.append(" (");
 			title.append(units);
 			title.append(")");

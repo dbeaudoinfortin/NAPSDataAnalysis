@@ -19,7 +19,7 @@ import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.ExportDataRecord;
 import com.dbf.naps.data.utilities.Utils;
 
-public abstract class ExporterRunner<O extends ExporterOptions> extends FileRunner<O> {
+public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRunner<O> {
 	
 	private static final int MAX_ROWS_PER_QUERY = 1_000_000;
 	

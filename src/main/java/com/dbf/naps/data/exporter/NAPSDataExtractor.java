@@ -17,11 +17,11 @@ import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 
-public abstract class NAPSDataExporter<O extends ExporterOptions> extends NAPSDBAction<O> {
+public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPSDBAction<O> {
 
-	private static final Logger log = LoggerFactory.getLogger(NAPSDataExporter.class);
+	private static final Logger log = LoggerFactory.getLogger(NAPSDataExtractor.class);
 		
-	public NAPSDataExporter(String[] args) {
+	public NAPSDataExtractor(String[] args) {
 		super(args);
 	}
 	
@@ -88,7 +88,19 @@ public abstract class NAPSDataExporter<O extends ExporterOptions> extends NAPSDB
 	}
 	
 	private void processFile(List<Future<?>> futures, Integer year, String pollutant, Integer site) {
-		StringBuilder fileName = new StringBuilder(getDataset());
+		String fileName = getBaseFilename(year, pollutant, site) + getFileExtension();
+		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
+	}
+	
+	private String getBaseFilename(Integer year, String pollutant, Integer site) {
+		StringBuilder fileName = new StringBuilder();
+		appendFilename(fileName, year, pollutant, site);
+		return fileName.toString();
+	}
+	
+	protected void appendFilename(StringBuilder fileName, Integer year, String pollutant, Integer site) {
+		fileName.append(getDataset());
+		
 		if(null != pollutant) {
 			fileName.append("_");
 			fileName.append(pollutant);
@@ -101,8 +113,11 @@ public abstract class NAPSDataExporter<O extends ExporterOptions> extends NAPSDB
 			fileName.append("_");
 			fileName.append(year);
 		}
-		fileName.append(getFileExtension());
-		futures.add(submitTask(processFile(getOptions().getDataPath().resolve(DataCleaner.sanatizeFileName(fileName.toString())).toFile(), year, pollutant, site)));	
+	}
+	
+	@Override
+	protected List<Class<?>> getDBMappers() {
+		return List.of(DataMapper.class);
 	}
 	
 	protected abstract Runnable processFile(File dataFile, Integer specificYear, String specificPollutant, Integer specificSite);

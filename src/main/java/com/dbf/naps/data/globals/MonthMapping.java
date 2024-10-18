@@ -44,7 +44,7 @@ public class MonthMapping {
     }
     
     public static String getMonth(int month) {
-    	return months.get(month);
+    	return months.get(month-1);
     }
     
     public static List<String> getMonthStrings(Collection<Integer> months) {

@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.DBRunner;
-import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.exporter.ExtractorOptions;
 
-public abstract class FileRunner<O extends ExporterOptions> extends DBRunner<O> {
+public abstract class FileRunner<O extends ExtractorOptions> extends DBRunner<O> {
 	
 	private static final Logger log = LoggerFactory.getLogger(FileRunner.class);
 	

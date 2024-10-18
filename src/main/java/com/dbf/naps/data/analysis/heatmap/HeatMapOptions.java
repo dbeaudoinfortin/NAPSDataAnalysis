@@ -14,13 +14,14 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 
 	private Double colourLowerBound;
 	private Double colourUpperBound;
+	private int colourGradient = 1;
 	
 	private boolean generateCSV = false;
 	
 	static {
 		//The parent class' static initialiser will be called first.
-		Option dim1 = getOptions().getOption("group1"); //TODO: Also call it X for short, xAxis for long
-		Option dim2 = getOptions().getOption("group2"); //TODO: Also call it Y for short, YAxis for long
+		Option dim1 = getOptions().getOption("group1");
+		Option dim2 = getOptions().getOption("group2");
 		dim1.setDescription("Data field for the heat map X-axis.");
 		dim2.setDescription("Data field for the heat map Y-axis.");
 		dim1.setRequired(true);
@@ -28,6 +29,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		
 		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
+		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + HeatMapGradient.getGradientCount() + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
 	}
 
@@ -48,6 +50,19 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		loadColourLowerBound(cmd); //Check me first!
 		loadColourUpperBound(cmd);
 		loadGenerateCSV(cmd);
+		loadGradient(cmd);
+	}
+	
+	private void loadGradient(CommandLine cmd) {
+		if(cmd.hasOption("colourGradient")) {
+			colourGradient = Integer.parseInt(cmd.getOptionValue("colourGradient"));
+			if (colourGradient < 1 || colourGradient > HeatMapGradient.getGradientCount()) {
+				throw new IllegalArgumentException("Heat map colour gradient : " + colourGradient + ". Must be between 1 and " + HeatMapGradient.getGradientCount() + " (inclusive).");
+			}
+			log.info("Using heat map colour gradient " + colourGradient + ".");
+		} else {
+			log.info("Using the default heat map colour gradient " + colourGradient + ".");
+		}
 	}
 	
 	private void loadGenerateCSV(CommandLine cmd) {
@@ -82,23 +97,19 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	public boolean allowAggregateFunctionNone() {return false;}
 	public boolean isAggregationMandatory() {return true;}
 
-	public Double getDataLowerBound() {
+	public boolean isGenerateCSV() {
+		return generateCSV;
+	}
+
+	public Double getColourLowerBound() {
 		return colourLowerBound;
 	}
 
-	public void setDataLowerBound(Double dataLowerBound) {
-		this.colourLowerBound = dataLowerBound;
-	}
-
-	public Double getDataUpperBound() {
+	public Double getColourUpperBound() {
 		return colourUpperBound;
 	}
 
-	public void setDataUpperBound(Double dataUpperBound) {
-		this.colourUpperBound = dataUpperBound;
-	}
-
-	public boolean isGenerateCSV() {
-		return generateCSV;
+	public int getColourGradient() {
+		return colourGradient;
 	}
 }
