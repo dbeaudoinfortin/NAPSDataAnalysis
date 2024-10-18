@@ -8,7 +8,8 @@
 
 - [Overview](#overview)
 - [Clean Data Exports](#clean-data-exports)
-- [Data Analysis and Dashboards](#data-analysis-and-dashboards)
+- [Data Analysis](#data-analysis)
+- [Dashboards](#dashboards)
 - [Getting Started](#getting-started)
   * [Installing PostgreSQL](#installing-postgresql)
   * [Installing Java](#installing-java)
@@ -25,11 +26,13 @@
   * [NAPSContinuousDataDownloader](#napscontinuousdatadownloader)
   * [NAPSContinuousDataLoader](#napscontinuousdataloader)
   * [NAPSContinuousDataQuery](#napscontinuousdataquery)
+  * [NAPSContinuousHeatMap](#napscontinuousheatmap)
   * [NAPSContinuousDataExporter](#napscontinuousdataexporter)
 - [Integrated Data Tools](#integrated-data-tools)
   * [NAPSIntegratedDataDownloader](#napsintegrateddatadownloader)
   * [NAPSIntegratedDataLoader](#napsintegrateddataloader)
   * [NAPSIntegratedDataQuery](#napsintegrateddataquery)
+  * [NAPSIntegratedHeatMap](#napsintegratedheatmap)
   * [NAPSIntegratedDataExporter](#napsintegrateddataexporter)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Database Design](#database-design)
@@ -42,7 +45,7 @@ Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data do
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
 
-I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization tool](#napscontinuousdataheatmap) to generate pretty graphs, and a couple example [BI dashboards](#data-analysis-and-dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
+I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization](#data-analysis) [tool](#napscontinuousheatmap) to generate pretty graphs, and a couple example [BI dashboards](#dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
 
 All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
 
@@ -72,7 +75,50 @@ All of the continuous data exports have been zipped to compress them. There is s
 
 To work around GitHub's file size limit of 100MB, some of the zip files have been created as multi-part archives. You will need to download all of the parts of the archive before you can extract the main zip file. 
 
-# Data Analysis and Dashboards
+# Data Analysis
+
+**Dynamic Queries**
+
+The NAPS Data Analysis Toolbox provides powerful tools for the analysis of Canadian air quality data. The dynamic query tools for both the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data allow you to run highly customized queries to aggregate or simply retrieve the data in the way that you need it, in a single command.
+
+The dynamic query tools have support for several types of aggregation functions, multiple levels of grouping, filtering on many dimensions (site ids, site name, pollutants, days of the week, days of the month, months, years, provinces/territories, city name, site type, site urbanization), standard deviation functions, sample counts, minimum sample counts (to optionally ensure a statistically significant number of data points), lower and upper bounds for data point (to optionally exclude outliers) and post-aggregation lower and upper bounds (to eliminate results out side the scope of interest). I'm planning to add even more functionality in the future.
+
+Say, for example, you want to know how many times the hourly reading for carbon monoxide exceeded the national standard of 13ppm across all of Canada for the years between 1974 and 2022:
+
+![image](https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065)
+
+**Heat Map Diagrams**
+
+The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams for both the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) data. These heat maps are highly customizable can be generated in a single command. They make it much easier to spot trends in the data. For example, here is the entire history carbon monoxide readings for the entire history of NAPS data, for all of Canada,  aggregated into a single heat map diagram.
+
+![Avg_CO_By Day of the Year and Year](https://github.com/user-attachments/assets/c252ea64-4493-49aa-8295-33709243a8ce)
+
+From this diagram alone there are some trends that immediately stand out, such as
+- the significant improvement to air quality over the years,
+- the higher concentrations of CO in winter months,
+- the reduction of CO on weekends (the apparent diagonal lines),
+- the reduction of CO on holidays, such as Christmas and New Year's day,
+- the larger number of outlier reading in 2016.
+
+We can change the X-Axis to get a view of what is happening on the weekends compared to the weekdays:
+
+![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
+
+Note that this second heat map uses a different colour palette that better suits the data. Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2:
+
+![Avg_SO2_By Day of the Year and Year](https://github.com/user-attachments/assets/721cf42e-cd32-42b7-ab47-9f0538856cea)
+
+And here are 2 heat maps for lead that, average and maximum concentrations, respectively, that show a large reduction in air pollution with the ban on leaded gasoline in 1990:
+
+![Avg_Lead_By Month and Year](https://github.com/user-attachments/assets/9660ba50-52bf-4b9b-ba17-7fcde5766e34)
+
+![Max_Lead_By Month and Year](https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3)
+
+The queries used to generate these heat maps are fully dynamic and there are several colour pallettes to choose from. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table with all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
+
+# Dashboards
+
+In the [/reports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/reports) directory you will find a sample Microsoft Power BI report. This report is example of  how a BI tool can be used for visualizing the NAPS data. This report is designed to be used in conjunction with the database schema built and populated by the tools in this tool box. For information on how to set-up your database and connect to it using Power BI, check out the [Getting Started](#getting-started) section below.
 
 ![Report 2](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/8104f1e2-8c9d-4d86-ac32-284274d2eaed)
 
@@ -80,12 +126,7 @@ To work around GitHub's file size limit of 100MB, some of the zip files have bee
 
 ![Report 3](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/7869abff-c45e-4b16-892f-663dff79862f)
 
-In the [/reports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/reports) directory you will find a sample Microsoft Power BI report. This report is example of  how a BI tool can be used for visualizing the NAPS data. This report is designed to be used in conjunction with the database schema built and populated by the tools in this tool box. For information on how to set-up your database and connect to it using Power BI, check out the [Getting Started](#getting-started) section below.
-
 I plan to eventually add sample reports for other BI/Data Visualization software that are open source, free, and available on more platforms than just Windows x86-64.
-
-
-(Example heat maps coming soon)
 
 # Getting Started
 
