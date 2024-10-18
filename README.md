@@ -470,7 +470,7 @@ The above example generated 224 tables of data, each saved in its own CSV file. 
 
 ## NAPSContinuousHeatMap
 
-A Java tool that generates highly customizable heat map diagram for the visualization of NAPS continuous data. These heat maps are saved in high resolution PNG format.
+A Java tool that generates highly customizable heat map diagrams for the visualization of NAPS continuous data. These heat maps are saved in high resolution PNG format.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatmap.continuous.NAPSContinuousDataHeatMap`.
 
@@ -677,7 +677,7 @@ All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsCon
 
 ## NAPSIntegratedHeatMap
 
-A Java tool that generates highly customizable heat map diagram for the visualization of NAPS integrated data. It functions the same as the [NAPSContinuousHeatMap](#napscontinuousheatmap) and accepts all of the same command line arguments, with the exception that the data fields used for the x and y axes (`group1` and `group2`) cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
+A Java tool that generates highly customizable heat map diagrams for the visualization of NAPS integrated data. It functions the same as the [NAPSContinuousHeatMap](#napscontinuousheatmap) and accepts all of the same command line arguments, with the exception that the data fields used for the x and y axes (`group1` and `group2`) cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatmap.integrated.NAPSIntegratedDataHeatMap`.
 
