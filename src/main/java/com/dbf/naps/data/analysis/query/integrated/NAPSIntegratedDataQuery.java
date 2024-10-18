@@ -1,8 +1,8 @@
 package com.dbf.naps.data.analysis.query.integrated;
 
-import com.dbf.naps.data.analysis.query.NAPSDataQuery;
+import com.dbf.naps.data.analysis.query.NAPSExtendedDataQuery;
 
-public class NAPSIntegratedDataQuery extends NAPSDataQuery<IntegratedDataQueryOptions> {
+public class NAPSIntegratedDataQuery extends NAPSExtendedDataQuery<IntegratedDataQueryOptions> {
 
 	public NAPSIntegratedDataQuery(String[] args) {
 		super(args);

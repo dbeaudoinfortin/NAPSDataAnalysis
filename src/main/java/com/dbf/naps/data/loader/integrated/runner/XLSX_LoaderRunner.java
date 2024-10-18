@@ -213,6 +213,7 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 				throw new IllegalArgumentException("Unable to locate the units for column " + col);
 			}
 			units = units.replace("m3", "m³");
+			units = units.replace("ug/m³", "µg/m³");
 			return units;
 		});
 	}

@@ -2,10 +2,10 @@ package com.dbf.naps.data.exporter.integrated;
 
 import java.io.File;
 
-import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.exporter.ExtractorOptions;
 import com.dbf.naps.data.exporter.NAPSCSVExporter;
 
-public class NAPSIntegratedDataExporter extends NAPSCSVExporter<ExporterOptions> {
+public class NAPSIntegratedDataExporter extends NAPSCSVExporter<ExtractorOptions> {
 	
 	public NAPSIntegratedDataExporter(String[] args) {
 		super(args);
@@ -17,8 +17,8 @@ public class NAPSIntegratedDataExporter extends NAPSCSVExporter<ExporterOptions>
 	}
 	
 	@Override
-	public Class<ExporterOptions> getOptionsClass(){
-		return ExporterOptions.class;
+	public Class<ExtractorOptions> getOptionsClass(){
+		return ExtractorOptions.class;
 	}
 
 	@Override

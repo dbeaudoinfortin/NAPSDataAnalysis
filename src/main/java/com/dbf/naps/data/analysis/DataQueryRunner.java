@@ -5,11 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
@@ -19,6 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
+import com.dbf.naps.data.globals.DayOfWeekMapping;
+import com.dbf.naps.data.globals.MonthMapping;
+import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
+import com.dbf.naps.data.utilities.Utils;
 
 public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRunner<O> {
 	
@@ -29,10 +32,22 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	}
 	
 	@Override
-	public void run() {		
+	public void run() {
+		String queryUnits = null;
+		String title = null;
 		List<DataQueryRecord> records = null;
 		try {
 			checkFile();
+			
+			queryUnits = determineUnits();
+			if(null == queryUnits) return; //We have determine that there is no data or the units are mixed
+			if(!queryUnits.isEmpty()) {
+				log.info(getThreadId() + ":: Will use the units " + queryUnits + " for the file " + getDataFile() + ".");
+			}
+			
+			title = getReportTitle(queryUnits);
+			log.info(getThreadId() + ":: Will use the report title \"" + title + "\" for the file " + getDataFile() + ".");
+			
 			records = queryData();
 			if(records.isEmpty()) return;
 		} catch (Throwable t) {
@@ -41,31 +56,32 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		}
 		
 		try {
-			writeToFile(records, getDataFile());
+			writeToFile(records, queryUnits, title, getDataFile());
 		 } catch (Throwable t) {
 			 log.error(getThreadId() + ":: ERROR writing to file " + getDataFile() + ".", t);
 			return;
 		 }
 	}
 	
-	private List<DataQueryRecord> queryData() {
-		log.info(getThreadId() + ":: Starting data query for file " + getDataFile() + ".");
-		List<DataQueryRecord> records;
+	private String determineUnits() {
+		log.info(getThreadId() + ":: Determining units for file " + getDataFile() + ".");
+
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			
 			//Only allow mixing unit if we are not aggregating data or we are grouping by pollutant
+			//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
+			//However, in practise the units are consistent for all of the pollutants.
 			if(!getConfig().getAggregateFunction().equals(AggregateFunction.COUNT) && !getConfig().getAggregateFunction().equals(AggregateFunction.NONE) 
 					&& getConfig().getFields().stream().filter(f->f.equals(AggregationField.POLLUTANT)).count() == 0) {
 				
-				//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
-				//However, in practise the units are consistent for all of the pollutants.
-				List<String> units = session.getMapper(DataMapper.class).getDistinctUnits(
+				Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+				Collection <String> pollutants = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+				Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+				
+				List<String> allUnits = session.getMapper(DataMapper.class).getDistinctUnits(
 					//Per-file filters
-					getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-					getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
-					getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(),
+					years, pollutants, sites,
 					//Basic filters
-					getConfig().getMonths(),getConfig().getDays(),
+					getConfig().getMonths(),getConfig().getDaysOfMonth(),
 					getConfig().getSiteName(), getConfig().getCityName(),
 					getConfig().getProvTerr().stream().map(p->p.name()).toList(),
 					//Advanced filters
@@ -73,13 +89,28 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					//Continuous vs. Integrated
 					getDataset());
 				
-				if(units.size() > 1) {
-					
+				if(allUnits.size() == 0) {
+					log.info(getThreadId() + ":: No data records found for " + getDataFile() + ". Skipping file.");
+					return null;
 				}
+				else if(allUnits.size() > 1) {
+					log.warn(getThreadId() + ":: WARNING: Cannot aggregate data with mixed units. Make sure all the selected pollutants are measured using the same units.");
+					return null;
+				}
+				return allUnits.get(0);
 			}
-			
+		}
+		return "";
+	}
+	
+	private List<DataQueryRecord> queryData() {
+		log.info(getThreadId() + ":: Starting data query for file " + getDataFile() + ".");
+		
+		List<DataQueryRecord> records;
+		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 			records = runQuery(session);
 		}
+		
 		if(records == null || records.isEmpty()) {
 			log.info(getThreadId() + ":: No data records found for " + getDataFile() + ". Skipping file.");
 			return Collections.emptyList();
@@ -89,15 +120,18 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	}
 	
 	public List<DataQueryRecord> runQuery(SqlSession session){
+		
+		Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+		Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+		Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+		
 		return session.getMapper(DataMapper.class).getQueryData(
 				//Grouping	
 				getConfig().getFields(), getConfig().getAggregateFunction(),
 				//Per-file filters
-				getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
-				getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
-				getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(),
+				years, pollutants, sites,
 				//Basic filters
-				getConfig().getMonths(),getConfig().getDays(),
+				getConfig().getMonths(),getConfig().getDaysOfMonth(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
 				//Advanced filters
@@ -110,7 +144,126 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				getDataset());
 	}
 	
-	public void writeToFile(List<DataQueryRecord> records, File dataFile) throws IOException {
+	protected String getReportTitle(String units) {
+		StringBuilder title = new StringBuilder();
+		
+		switch(getConfig().getAggregateFunction()) {
+		case AVG:
+			title.append("Average Concentration");
+			break;
+		case COUNT:
+			title.append("Number of Samples");
+			break;
+		case MAX:
+			title.append("Maximum Concentration");
+			break;
+		case MIN:
+			title.append("Minimum Concentration");
+			break;
+		case NONE:
+			title.append("Concentration");
+			break;
+		case SUM:
+			title.append("Sum of Concentration");
+			break;
+		}
+		
+		if(!getConfig().getAggregateFunction().equals(AggregateFunction.NONE) && !getConfig().getAggregateFunction().equals(AggregateFunction.COUNT)) {
+			title.append(" (");
+			title.append(units);
+			title.append(")");
+		}
+		
+		title.append(" of ");
+		
+		if(getSpecificPollutant() != null) {
+			title.append(getSpecificPollutant());
+		} else if(getConfig().getPollutants() == null || getConfig().getPollutants().isEmpty()) {
+			title.append("All Pollutants");
+		} else {
+			Utils.prettyPrintStringList(getConfig().getPollutants(), title);
+		}
+		
+		title.append(" for ");
+		
+		if(getSpecificSite() != null) {
+			title.append("NAPS Site ");
+			title.append(getSpecificSite());
+		} else if(getConfig().getSites() == null || getConfig().getSites().isEmpty()) {
+			title.append("All NAPS Sites");
+		} else {
+			title.append("NAPS Site");
+			if(getConfig().getSites().size() > 1) title.append("s");
+			Utils.prettyPrintStringList(getConfig().getPollutants(), title);
+		}
+
+		if(getConfig().getSiteName() != null && !getConfig().getSiteName().isEmpty()) {
+			title.append(" Named \"");
+			title.append(getConfig().getSiteName());
+			title.append("\"");
+		}
+		
+		if(getConfig().getCityName() != null && !getConfig().getCityName().isEmpty()) {
+			title.append(" From the Town/City \"");
+			title.append(getConfig().getCityName());
+			title.append("\"");
+		}
+		
+		if(getConfig().getProvTerr() != null && !getConfig().getProvTerr().isEmpty() && getConfig().getProvTerr().size() != 12) {
+			title.append(" in the ");
+			if(getConfig().getProvTerr().size() == 1) {
+				title.append("Province/Territory of ");
+			} else {
+				title.append("Provinces/Territories of ");
+			}
+			
+			Utils.prettyPrintStringList(ProvinceTerritoryMapping.getProvTerrStrings(getConfig().getProvTerr()), title, false);
+		}
+		
+		title.append(", Spanning ");
+		
+		if(getConfig().getDaysOfWeek() != null && !getConfig().getDaysOfWeek().isEmpty() && getConfig().getDaysOfWeek().size() != 7){
+			Utils.prettyPrintStringList(DayOfWeekMapping.getDayOfWeekStrings(getConfig().getDaysOfWeek()), title, false);
+			title.append(" of ");
+		}
+		
+		if(getConfig().getDaysOfMonth() != null && !getConfig().getDaysOfMonth().isEmpty() && getConfig().getDaysOfMonth().size() != 31){
+			title.append("Day");
+			if(getConfig().getDaysOfMonth().size() > 1) title.append("s");
+			title.append(" ");
+			Utils.prettyPrintStringList(getConfig().getDaysOfMonth().stream().sorted().map(d->d.toString()).toList(), title, false);
+			title.append(" of ");
+		}
+		
+		if(getConfig().getMonths() != null && !getConfig().getMonths().isEmpty() && getConfig().getMonths().size() != 12){
+			Utils.prettyPrintStringList(MonthMapping.getMonthStrings(getConfig().getMonths()), title, false);
+			title.append(" of ");
+		}
+		
+		if(getSpecificYear() != null) {
+			title.append("the Year ");
+			title.append(getSpecificYear());
+		} else if(Utils.isAllYears(getConfig().getYearStart(), getConfig().getYearEnd())) {
+			title.append("All Years");
+		} else if(getConfig().getYearStart() == getConfig().getYearEnd()) {
+			title.append("the Year ");
+			title.append(getConfig().getYearStart());
+		} else {
+			title.append("the Years ");
+			title.append(getConfig().getYearStart());
+			title.append(" to ");
+			title.append(getConfig().getYearEnd());
+		}
+		
+		if(getConfig().getFields() != null && !getConfig().getFields().isEmpty()) {
+			title.append(", Grouped by ");
+			Utils.prettyPrintStringList(getConfig().getFields().stream().map(f->f.getPrettyName()).toList(), title, false);
+		}		
+		
+		return title.toString();
+	}
+	
+	protected void writeToFile(List<DataQueryRecord> records, String queryUnits, String title, File dataFile) throws IOException {
 		log.info(getThreadId() + ":: Starting writing to file " + dataFile + ".");
 		
 		List<String> headers = buildCSVHeader();
@@ -120,23 +273,28 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				.setHeader(headers.toArray(new String[headers.size()]))
 				.setSkipHeaderRecord(false)
 				.build();
-			try(BufferedWriter writer = Files.newBufferedWriter(getDataFile().toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
+			try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 				writer.write('\ufeff'); //Manually print the UTF-8 BOM
-				try(CSVPrinter printer = new CSVPrinter(writer, format)){
-					for(DataQueryRecord record : records) {
-						printRecordToCSV(record, printer);
+				try (CSVPrinter titlePrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) { //No header!
+			        titlePrinter.printRecord(title);
+			        writer.newLine();
+			        try(CSVPrinter printer = new CSVPrinter(writer, format)){
+						for(DataQueryRecord record : records) {
+							printRecordToCSV(record, printer);
+						}
 					}
-				}
+			    }
+				
 			}
 			
 		log.info(getThreadId() + ":: Completed writing to file " + dataFile + ".");
 	}
 	
-	public void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
+	protected void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
 		record.printToCSV(printer, getConfig().getFields().size());
 	}
 	
-	public List<String> buildCSVHeader() {
+	protected List<String> buildCSVHeader() {
 		//Dynamically build the CSV header based on the configuration
 		List<String> headerStrings = getConfig().getFields().stream().map(f->f.name()).collect(Collectors.toList());
 		

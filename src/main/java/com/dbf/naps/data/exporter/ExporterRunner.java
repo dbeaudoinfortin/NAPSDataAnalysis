@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.IntStream;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
@@ -19,8 +17,9 @@ import org.slf4j.LoggerFactory;
 import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.ExportDataRecord;
+import com.dbf.naps.data.utilities.Utils;
 
-public abstract class ExporterRunner<O extends ExporterOptions> extends FileRunner<O> {
+public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRunner<O> {
 	
 	private static final int MAX_ROWS_PER_QUERY = 1_000_000;
 	
@@ -53,7 +52,7 @@ public abstract class ExporterRunner<O extends ExporterOptions> extends FileRunn
 		while (true) {
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				records = session.getMapper(getDataMapper()).getExportData(
-					getSpecificYear() != null ? List.of(getSpecificYear()) : IntStream.range(getConfig().getYearStart(), getConfig().getYearEnd() + 1).boxed().toList(),
+					getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd()),
 					getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants(),
 					getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites(), offset, MAX_ROWS_PER_QUERY);
 			}

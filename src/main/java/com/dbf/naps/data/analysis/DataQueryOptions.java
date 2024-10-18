@@ -14,12 +14,12 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dbf.naps.data.exporter.ExporterOptions;
+import com.dbf.naps.data.exporter.ExtractorOptions;
 import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 
-public abstract class DataQueryOptions extends ExporterOptions {
+public abstract class DataQueryOptions extends ExtractorOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(DataQueryOptions.class);
 
@@ -27,7 +27,8 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private final List<AggregationField> fields = new ArrayList<AggregationField>();
 	
 	private final Set<Integer>  months = new HashSet<Integer>();
-	private final Set<Integer>  days = new HashSet<Integer>();
+	private final Set<Integer>  daysOfMonth = new HashSet<Integer>();
+	private final Set<Integer>  daysOfWeek = new HashSet<Integer>(); //TODO: Implement me as an option and in the queries
 	private final Set<ProvTerr> provTerr = new HashSet<ProvTerr>();
 	
 	private String siteName;
@@ -38,6 +39,9 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	private BigDecimal	valueLowerBound;
 	private Double		resultUpperBound;
 	private Double		resultLowerBound;
+	
+	private String fileName;//TODO: add the ability to set a custom filename. Per year, per site, etc. should append to the end (minus the extension)
+	private String title; //TODO: add the ability to set a custom title.
 	
 	static {
 		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
@@ -259,12 +263,12 @@ public abstract class DataQueryOptions extends ExporterOptions {
 				if (dayInt < 1 || dayInt > 31) {
 					throw new IllegalArgumentException("Invalid day: " + day + ". Must be between 1 and 31 (inclusive).");
 				}
-				days.add(dayInt);
+				daysOfMonth.add(dayInt);
 			}
-			if(days.isEmpty()) 
+			if(daysOfMonth.isEmpty()) 
 				throw new IllegalArgumentException("Must specify at least one day of the month.");
 			
-			log.info("Using only the following days of the month: " + days);
+			log.info("Using only the following days of the month: " + daysOfMonth);
 		} else {
 			log.info("Using all days.");
 		}
@@ -345,10 +349,6 @@ public abstract class DataQueryOptions extends ExporterOptions {
 		return months;
 	}
 
-	public Set<Integer> getDays() {
-		return days;
-	}
-
 	public Set<ProvTerr> getProvTerr() {
 		return provTerr;
 	}
@@ -379,5 +379,21 @@ public abstract class DataQueryOptions extends ExporterOptions {
 	
 	public Integer getMinSampleCount() {
 		return minSampleCount;
+	}
+
+	public Set<Integer> getDaysOfMonth() {
+		return daysOfMonth;
+	}
+
+	public Set<Integer> getDaysOfWeek() {
+		return daysOfWeek;
+	}
+	
+	public String getFileName() {
+		return fileName;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }
