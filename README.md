@@ -89,7 +89,7 @@ Say, for example, you want to know how many times the hourly reading for carbon 
 
 **Heat Map Diagrams**
 
-The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams for both the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) data. These heat maps are highly customizable can be generated in a single command. They make it much easier to spot trends in the data. For example, here is the entire history carbon monoxide readings for the entire history of NAPS data, for all of Canada,  aggregated into a single heat map diagram.
+The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams for both the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) data. These heat maps are highly customizable can be generated in a single command. They make it much easier to spot trends in the data. For example, here is the entire history carbon monoxide readings for all NAPS sites, for all of Canada, aggregated into a single heat map diagram.
 
 ![Avg_CO_By Day of the Year and Year](https://github.com/user-attachments/assets/c252ea64-4493-49aa-8295-33709243a8ce)
 
@@ -104,7 +104,7 @@ We can change the X-Axis to get a view of what is happening on the weekends comp
 
 ![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
 
-Note that this second heat map uses a different colour palette that better suits the data. Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2:
+Note that this second heat map uses a different colour palette that better suits the data. Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2, using a third colour palette:
 
 ![Avg_SO2_By Day of the Year and Year](https://github.com/user-attachments/assets/721cf42e-cd32-42b7-ab47-9f0538856cea)
 
@@ -114,7 +114,9 @@ And here are 2 heat maps for lead that, average and maximum concentrations, resp
 
 ![Max_Lead_By Month and Year](https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3)
 
-The queries used to generate these heat maps are fully dynamic and there are several colour pallettes to choose from. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table with all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
+(The provices of Ontario & Quebec were only chosen to demostrate the ability to filter by province/territory.)
+
+The queries used to generate these heat maps are fully dynamic and there are several colour pallettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outlyers from shifting the entire sclae. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table with all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
 
 # Dashboards
 
@@ -212,13 +214,43 @@ For more information about the possible command line arguments, see the NAPSInte
 
 ## Querying the Data
 
-(coming soon)
+At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to query the data to retrieve what you need for your own analysis.
+
+Assuming using all default database connection parameters, you can run the continuous query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+
+```
+java -cp naps_data.jar com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery -p C:\temp\NAPSData\queries\continuous -pollutants CO -group1 year -yearStart 1974 -yearEnd 2022 -aggregateFunction count -valueLowerBound 13
+```
+
+Likwise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+
+```
+java -cp naps_data.jar com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery -p C:\temp\NAPSData\queries\integrated -pollutants 3-Methyloctane -group1 day_of_week -aggregateFunction avg -showSampleCount
+```
+
+These are just example queries, you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousDataQuery section](#napscontinuousdataquery) or the [NAPSIntegratedDataQuery section](#napsintegrateddataquery) below.
 
 ## Generating Heat Maps
 
-(coming soon)
+At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to generate heat map diagrams to visualize the data as part of your own analysis.
+
+Assuming using all default database connection parameters, you can run the continuous heat map tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+
+```
+java -cp naps_data.jar com.dbf.naps.data.analysis.heatmap.continuous.NAPSContinuousDataHeatMap -p C:\temp\NAPSData\heatmaps\continuous -aggregateFunction avg -group1 day_of_year -group2 year -pollutants SO2 -generateCSV -colourGradient 3
+```
+
+Likwise, you can run the integrated query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
+
+```
+java -cp naps_data.jar com.dbf.naps.data.analysis.heatmap.integrated.NAPSIntegratedDataHeatMap -p C:\temp\NAPSData\heatmaps\integrated -aggregateFunction max -group1 month -group2 year -pollutants Lead -provTerr ON,QC -generateCSV -colourGradient 2
+```
+
+These are just example heat maps, you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousHeatMap section](#napscontinuousheatmap) or the [NAPSIntegratedHeatMap section](#napsintegratedheatmap) below.
 
 ## Installing Microsoft Power BI
+
+If you are interested, I have created an example Power BI report to demonstrate how dashboards can make use of the database that you previously created and populated with NAPS data in the previous steps above.
 
 The desktop version of Microsoft Power BI is a free tool for exploring and visualizing data. You can find it [here](https://go.microsoft.com/fwlink/?LinkId=2240819). Unfortunately, it only supports Windows x86-64 systems. I do plan to eventually make sample reports for other BI/Data Visualization software.
 
@@ -240,8 +272,6 @@ If all goes well, the model view of your report should look like the following:
 ![image](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/0e7c51a7-d90a-421a-9d11-a12d1d8dfe62)
 
 You can now drag-and-drop columns onto the visualization to start building your report/dashboard. If you would like to view the sample report to see how it was made, you can simply download it from [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/raw/main/reports/Pollutant%20Levels%20per%20Site.pbix) and open it in Power BI.
-
-
 
 # NAPS Site Tools
 
@@ -432,6 +462,12 @@ The above example generated 224 tables of data, each saved in its own CSV file. 
 
 ![image](https://github.com/user-attachments/assets/9e888c4d-524d-4e81-91d9-f97a3cfa74af)
 
+## NAPSContinuousHeatMap
+
+A Java tool that generates highly customizable heat map diagram for the visualization of NAPS continuous data.
+
+
+
 ## NAPSContinuousDataExporter
 
 A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
@@ -551,6 +587,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, URBANIZATION`. 
 
 All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsContinuousdataloader) apply.
+
+## NAPSIntegratedHeatMap
+
+A Java tool that generates highly customizable heat map diagram for the visualization of NAPS integrated data.
 
 ## NAPSIntegratedDataExporter
 
