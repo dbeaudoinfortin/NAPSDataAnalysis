@@ -230,7 +230,7 @@ Likewise, you can run the integrated query tool using the following command line
 java -cp naps_data.jar com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery -p C:\temp\NAPSData\queries\integrated -pollutants 3-Methyloctane -group1 day_of_week -aggregateFunction avg -showSampleCount
 ```
 
-These are just example queries; you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousDataQuery section](#napscontinuousdataquery) or the [NAPSIntegratedDataQuery section](#napsintegrateddataquery) below.
+These are just example queries; you will need to craft a command that works for your scenario. For more information about the possible command line arguments, see either the [NAPSContinuousDataQuery](#napscontinuousdataquery) section or the [NAPSIntegratedDataQuery](#napsintegrateddataquery) section below.
 
 ## Generating Heat Maps
 
@@ -515,6 +515,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -ye,  --yearEnd <arg>            End year (inclusive).
  -ys,  --yearStart <arg>          Start year (inclusive).
 ```
+
 **Colour Palettes:**
 8 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
 1. A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
@@ -622,7 +623,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.integrat
 
 ## NAPSIntegratedDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader).  It will output a CSV file containing a table of data based on the query rules that you provide. It functions the same as the [NAPSContinuousDataQuery](#napsContinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
+This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader).  It will output a CSV file containing a table of data based on the query rules that you provide. It functions the same as the [NAPSContinuousDataQuery](#napscontinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery`.
 
@@ -676,7 +677,55 @@ All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsCon
 
 ## NAPSIntegratedHeatMap
 
-A Java tool that generates highly customizable heat map diagram for the visualization of NAPS integrated data.
+A Java tool that generates highly customizable heat map diagram for the visualization of NAPS integrated data. It functions the same as the [NAPSContinuousHeatMap](#napscontinuousheatmap) and accepts all of the same command line arguments, with the exception that the data fields used for the x and y axes (`group1` and `group2`) cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
+
+You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatmap.integrated.NAPSIntegratedDataHeatMap`.
+
+**Command line usage:**
+```
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM).
+ -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-8 (inclusive).
+ -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
+ -cn,  --cityName <arg>           City name, partial match.
+ -csv, --generateCSV              Generate a corresponding CSV file containing the raw data for each heat map.
+ -cub, --colourUpperBound <arg>   Heat map colour upper bound (inclusive).
+ -d,   --days <arg>               Comma-separated list of days of the month.
+ -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -fp,  --filePerPollutant         Create a separate file for each pollutant.
+ -fs,  --filePerSite              Create a separate file for each site.
+ -fy,  --filePerYear              Create a separate file for each year.
+ -g1,  --group1 <arg>             Data field for the heat map X-axis.
+ -g2,  --group2 <arg>             Data field for the heat map Y-axis.
+ -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,   --overwriteFiles           Replace existing files.
+ -p,   --dataPath <arg>           Local path to save the data.
+ -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+                                     threshold will be filtered out of the result set after aggregation.
+ -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+                                     this threshold will be filtered out of the result set after aggregation.
+ -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+                                     result set.
+ -sid, --sites <arg>              Comma-separated list of site IDs.
+ -sn,  --siteName <arg>           NAPS site (station) name, partial match.
+ -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -v,   --verbose                  Make logging more verbose.
+ -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+                                     threshold will be filtered out before aggregation.
+ -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
+                                     this threshold will be filtered out before aggregation.
+ -ye,  --yearEnd <arg>            End year (inclusive).
+ -ys,  --yearStart <arg>          Start year (inclusive).
+```
+
+Possible values for `group1` and `group2` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
+
+All of the same rules and restrictions of the [NAPSContinuousHeatMap](#napscontinuousheatmap) apply.
 
 ## NAPSIntegratedDataExporter
 
