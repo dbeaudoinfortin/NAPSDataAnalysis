@@ -115,7 +115,9 @@ We can change the x-axis to get a view of what is happening on the weekends comp
 
 ![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
 
-(Note that this second heat map uses a different colour palette that better suits the data.)
+(Note that this second heat map uses a different colour palette that better suits the data.) Focusing on a single year (2002) makes it easy to see the difference between summer and winter months:
+
+![Monoxide_Yearly_2002](https://github.com/user-attachments/assets/9224b0b7-d57a-447f-ab1c-324bd36fd991)
 
 Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2, using a third colour palette:
 
