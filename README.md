@@ -41,7 +41,7 @@
 - [Legal Stuff](#legal-stuff)
 
 # Overview
-Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, importer, analysis, visualization toolbox. 
+Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data downloader, extractor, importer, analysis, and visualization toolbox. 
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
 
@@ -808,6 +808,7 @@ This repository makes use of GitHub's built-in issue tracker. You can view all o
 - If you want to build the jar from the source code you will need [Apache Maven](https://maven.apache.org/).
 - Other than the sample reports, everything in this toolbox should be multi-platform (supporting Windows, Linux, MacOS, etc.) and multi-architecture (supporting x86 and ARM). However, I am only one person and I have only developed and tested the code on Windows 11 x64.
 - The NAPS data is parsed from the Excel files downloaded from the website. There are 3 different Excel formats used: XLSX (Excel 2007 and later), XLS (BIFF8, Excel 5 - 1993 and later), and XLS (BIFF4, Excel 4 - 1992). For parsing XLSX, I'm using the [Apache POI](https://poi.apache.org/) library. For parsing XLS BIFF8, I'm using JXL - the [Java Excel API](https://jexcelapi.sourceforge.net/). For parsing XLS BIFF4, I could not find a Java library that supports it, so I built my own parser adapted from the Apache POI library's [OldExcelExtractor](https://github.com/apache/poi/blob/trunk/poi/src/main/java/org/apache/poi/hssf/extractor/OldExcelExtractor.java).
+- The rendering of heat maps is entirely written from scratch by myself. I intend to make a few small enhancements to add more customization and flexibility, then I'll spin it off into its own GitHub project so others can benefit from it.
 
 # Legal Stuff
 
