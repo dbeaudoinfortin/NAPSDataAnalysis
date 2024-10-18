@@ -2,12 +2,9 @@ package com.dbf.naps.data.analysis;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
@@ -15,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.exporter.ExtractorOptions;
+import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
@@ -40,19 +38,19 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	private Double		resultUpperBound;
 	private Double		resultLowerBound;
 	
-	private String fileName;//TODO: add the ability to set a custom filename. Per year, per site, etc. should append to the end (minus the extension)
-	private String title; //TODO: add the ability to set a custom title.
+	private String title;
 	
 	static {
-		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function ("
-				+ Arrays.stream(AggregateFunction.values()).map(f->f.name()).collect(Collectors.joining(", ")) + ").");
+		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function (" + AggregateFunction.ALL_VALUES + ").");
 		getOptions().addOption("g1","group1", true, "Data field for level 1 grouping.");
 		getOptions().addOption("g2","group2", true, "Data field for optional level 2 grouping.");
 		getOptions().addOption("m","months", true, "Comma-separated list of months of the year, starting at 1 for January.");
 		getOptions().addOption("d","days", true, "Comma-separated list of days of the month.");
+		getOptions().addOption("dow","daysOfWeek", true, "Comma-separated list of days of the week, starting at 1 for Sunday.");
 		getOptions().addOption("pt","provTerr", true, "Comma-separated list of 2-digit province & territory codes.");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
+		getOptions().addOption("ct","title", true, "Chart title. Will be automatically generated if not defined.");
 		getOptions().addOption("scm","minSampleCount", true, "Minimum sample count (number of samples or data points) in order to be included in the result set.");
 		getOptions().addOption("vub","valueUpperBound", true, "Upper bound (inclusive) of pre-aggregated raw values to include. "
 				+ "Values greater than this threshold will be filtered out before aggregation.");
@@ -82,9 +80,11 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadAggregateFunction(cmd);
 		loadMonths(cmd);
 		loadDays(cmd);
+		loadDaysOfWeek(cmd);
 		loadProvTerr(cmd);
 		loadSiteName(cmd);
 		loadCityName(cmd);
+		loadTitle(cmd);
 		
 		loadValueLowerBound(cmd); //Check me first!
 		loadValueUpperBound(cmd);
@@ -169,6 +169,16 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		}
 	}
 	
+	private void loadTitle(CommandLine cmd) {
+		if(cmd.hasOption("title")) {
+			title = cmd.getOptionValue("title");
+			title = title.trim();
+			log.info("Using the custom title \"" + title + "\".");
+		} else {
+			log.info("Using an auto-generated title.");
+		}
+	}
+	
 	private void loadSiteName(CommandLine cmd) {
 		if(cmd.hasOption("siteName")) {
 			String site = cmd.getOptionValue("siteName");
@@ -228,6 +238,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 				//Try doing a lookup to convert the long form into the integer
 				Integer monthInt = MonthMapping.getMonth(month);
 				if (null == monthInt) {
+					//Fallback to integer parsing
 					try {
 						monthInt =  Integer.parseInt(month);
 					} catch (Exception e){
@@ -254,6 +265,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			for(String day : cmd.getOptionValue("days").split(",")) {
 				day = day.trim();
 				if (day.isEmpty()) continue;
+				
 				int dayInt;
 				try {
 					dayInt = Integer.parseInt(day); 
@@ -274,6 +286,36 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		}
 	}
 	
+	private void loadDaysOfWeek(CommandLine cmd) {
+		if(cmd.hasOption("daysOfWeek")) {
+			for(String day : cmd.getOptionValue("daysOfWeek").split(",")) {
+				day = day.trim();
+				if (day.isEmpty()) continue;
+				
+				//Try doing a lookup to convert the long form into the integer
+				Integer dayInt = DayOfWeekMapping.getDayOfWeek(day);
+				if(null == dayInt) {
+					//Fallback to integer parsing
+					try {
+						dayInt = Integer.parseInt(day); 
+					} catch (Exception e){
+						throw new IllegalArgumentException("Invalid day of the week: " + day);
+					}
+					if (dayInt < 1 || dayInt > 7) {
+						throw new IllegalArgumentException("Invalid day of the week: " + day + ". Must be between 1 and 7 (inclusive).");
+					}
+				}
+				daysOfWeek.add(dayInt);
+			}
+			if(daysOfWeek.isEmpty()) 
+				throw new IllegalArgumentException("Must specify at least one day of the week.");
+			
+			log.info("Using only the following days of the week: " + daysOfWeek);
+		} else {
+			log.info("Using all days of the week.");
+		}
+	}
+	
 	public void loadAggregationField(CommandLine cmd, int dimIndex, boolean mandatory) {
 		final String field =  "group" + dimIndex;
 		AggregationField aggregationField = null;
@@ -287,10 +329,14 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			}
 				
 			String rawValue = cmd.getOptionValue(field);
+			if("DAY_OF_MONTH".equals(rawValue.toUpperCase())) rawValue = "DAY"; //Allow both forms
+			
 			try {
 				aggregationField = AggregationField.valueOf(rawValue.toUpperCase()); 
 			} catch(Exception e) {
-				throw new IllegalArgumentException("Invalid data field for group " + dimIndex + " " + rawValue);
+				String allValues = AggregationField.ALL_VALUES;
+				if(!allowAggregationFieldHour()) allValues = allValues.replace(", HOUR", ""); //Remove hour for integrated
+				throw new IllegalArgumentException("Invalid data field for group " + dimIndex + ": " + rawValue + ". Possible values are: " + allValues);
 			}
 			if(aggregationField.equals(AggregationField.HOUR) && !allowAggregationFieldHour()) {
 				log.info("Cannot use 'HOUR' as a data field for group " + dimIndex + ".");
@@ -311,7 +357,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			try {
 				aggregateFunction = AggregateFunction.valueOf(rawValue.toUpperCase()); 
 			} catch(Exception e) {
-				throw new IllegalArgumentException("Invalid aggregation function option: " + rawValue);
+				throw new IllegalArgumentException("Invalid aggregation function option: " + rawValue + ". Possible values are: " + AggregateFunction.ALL_VALUES);
 			}
 			
 			if(aggregateFunction.equals(AggregateFunction.NONE)) {
@@ -389,10 +435,6 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		return daysOfWeek;
 	}
 	
-	public String getFileName() {
-		return fileName;
-	}
-
 	public String getTitle() {
 		return title;
 	}

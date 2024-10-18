@@ -95,6 +95,6 @@ public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRun
 			}
 		}
 	}
-	
+
 	protected abstract Class<? extends DataMapper> getDataMapper();
 }

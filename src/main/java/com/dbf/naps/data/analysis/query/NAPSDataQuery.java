@@ -1,7 +1,14 @@
 package com.dbf.naps.data.analysis.query;
 
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+
+import com.dbf.naps.data.analysis.AggregateFunction;
 import com.dbf.naps.data.analysis.DataQueryOptions;
+import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.exporter.NAPSDataExtractor;
+import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.Utils;
 
 public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSDataExtractor<O> {
@@ -11,11 +18,40 @@ public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSData
 	}
 	
 	@Override
+	protected List<DataRecordGroup> getDataGroups() {
+		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
+			return session.getMapper(DataMapper.class).getExportDataGroups(
+					getOptions().getYearStart(), getOptions().getYearEnd(), getOptions().getPollutants(),  getOptions().getSites(),			//Per-file filters
+					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite(),							//Grouping
+					getOptions().getMonths(), getOptions().getDaysOfMonth(), getOptions().getDaysOfWeek(),									//Basic filters
+					getOptions().getSiteName(), getOptions().getCityName(), getOptions().getProvTerr().stream().map(p->p.name()).toList(),  //Basic filters
+					getOptions().getValueUpperBound(), getOptions().getValueLowerBound(), 													//Advanced filters
+					getDataset());
+		}
+	}
+	
+	@Override
 	protected void appendFilename(StringBuilder fileName, Integer year, String pollutant, Integer site) {
 		super.appendFilename(fileName, year, pollutant, site);
-		if(getOptions().getFields() != null && !getOptions().getFields().isEmpty()) {
-			fileName.append("_By ");
-			Utils.prettyPrintStringList(getOptions().getFields().stream().map(f->f.getPrettyName()).toList(), fileName, false);
+		
+		if(getOptions().getFileName() == null) {
+			//Not using a custom filename
+			boolean hasFunction = getOptions().getAggregateFunction() != null && !getOptions().getAggregateFunction().equals(AggregateFunction.NONE);
+			if(hasFunction) {
+				fileName.append("_");
+				//Convert the function name to lower case, except for the first character: AVG -> Avg, COUNT -> Count
+				String funcName = getOptions().getAggregateFunction().name().substring(0, 1) + getOptions().getAggregateFunction().name().substring(1).toLowerCase();
+				fileName.append(funcName);
+			}
+			if(getOptions().getFields() != null && !getOptions().getFields().isEmpty()) {
+				if(!hasFunction) {
+					fileName.append("_");
+				} else {
+					fileName.append(" ");
+				}
+				fileName.append("By ");
+				Utils.prettyPrintStringList(getOptions().getFields().stream().map(f->f.getPrettyName()).toList(), fileName, false);
+			}
 		}
 	}
 }

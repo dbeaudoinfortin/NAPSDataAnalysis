@@ -81,7 +81,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					//Per-file filters
 					years, pollutants, sites,
 					//Basic filters
-					getConfig().getMonths(),getConfig().getDaysOfMonth(),
+					getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 					getConfig().getSiteName(), getConfig().getCityName(),
 					getConfig().getProvTerr().stream().map(p->p.name()).toList(),
 					//Advanced filters
@@ -131,7 +131,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				//Per-file filters
 				years, pollutants, sites,
 				//Basic filters
-				getConfig().getMonths(),getConfig().getDaysOfMonth(),
+				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
 				//Advanced filters
@@ -145,6 +145,13 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	}
 	
 	protected String getReportTitle(String units) {
+		
+		//Predefined custom title"
+		if(getConfig().getTitle() != null) {
+			//Empty string is perfectly fine
+			return getConfig().getTitle();
+		}
+		
 		StringBuilder title = new StringBuilder();
 		
 		switch(getConfig().getAggregateFunction()) {
@@ -276,8 +283,10 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
 				writer.write('\ufeff'); //Manually print the UTF-8 BOM
 				try (CSVPrinter titlePrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) { //No header!
-			        titlePrinter.printRecord(title);
-			        writer.newLine();
+			        if(title != null && !title.isEmpty()) {
+			        	titlePrinter.printRecord(title);
+			        	writer.newLine();
+			        }
 			        try(CSVPrinter printer = new CSVPrinter(writer, format)){
 						for(DataQueryRecord record : records) {
 							printRecordToCSV(record, printer);

@@ -1,5 +1,8 @@
 package com.dbf.naps.data.analysis;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public enum AggregationField {
 	YEAR,
 	MONTH,
@@ -13,6 +16,8 @@ public enum AggregationField {
 	PROVINCE_TERRITORY,
 	URBANIZATION,
 	SITE_TYPE;
+	
+	public static final String ALL_VALUES = Arrays.stream(AggregationField.values()).map(f->f.name()).collect(Collectors.joining(", "));
 	
 	public String getPrettyName() {
 		switch (this) {

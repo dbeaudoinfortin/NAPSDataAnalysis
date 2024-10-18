@@ -26,6 +26,7 @@ public class ExtractorOptions extends DBOptions {
 	private final Set<String>  pollutants = new HashSet<String>();
 	private final Set<Integer> sites = new HashSet<Integer>();
 	
+	private String fileName;
 	private boolean filePerYear = false;
 	private boolean filePerPollutant = false;
 	private boolean filePerSite = false;
@@ -37,6 +38,7 @@ public class ExtractorOptions extends DBOptions {
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
 		getOptions().addOption("pn","pollutants", true, "Comma-separated list of pollutant names.");	
 		getOptions().addOption("sid","sites", true, "Comma-separated list of site IDs.");
+		getOptions().addOption("fn","fileName", true, "Custom file name without the extension. Will be automatically generated if not defined.");
 		getOptions().addOption("fy","filePerYear", false, "Create a separate file for each year.");
 		getOptions().addOption("fp","filePerPollutant", false, "Create a separate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a separate file for each site.");
@@ -60,6 +62,7 @@ public class ExtractorOptions extends DBOptions {
 		loadYearStart(cmd); //Check me first!
 		loadYearEnd(cmd);
 		loadDataPath(cmd);
+		loadFileName(cmd);
 		
 		loadPollutants(cmd);
 		loadSites(cmd);
@@ -78,6 +81,18 @@ public class ExtractorOptions extends DBOptions {
 	private void loadOverwriteFiles(CommandLine cmd) {
 		overwriteFiles = cmd.hasOption("overwriteFiles");
 		log.info("Overwrite existing files flag is set to " + overwriteFiles);
+	}
+	
+	private void loadFileName(CommandLine cmd) {
+		if(cmd.hasOption("fileName")) {
+			fileName = cmd.getOptionValue("fileName");
+			fileName = fileName.trim(); //TODO: prevent invalid filenames here
+			if(fileName.isBlank()) 
+				throw new IllegalArgumentException("FileName cannot be blank.");
+			log.info("Using the custom file name \"" + fileName + "\".");
+		} else {
+			log.info("Using an auto-generated file name.");
+		}
 	}
 	
 	private void loadSites(CommandLine cmd) {
@@ -188,5 +203,9 @@ public class ExtractorOptions extends DBOptions {
 	
 	public boolean isOverwriteFiles() {
 		return overwriteFiles;
+	}
+	
+	public String getFileName() {
+		return fileName;
 	}
 }

@@ -144,9 +144,10 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         
         //Now that we know the image width we can figure out if we need to wrap the text of the big chart title
         final int chartTitleMaxWidth = imageWidth - (outsidePadding*2);
-        List<Entry<String, Entry<Integer, Integer>>> titleLines = getTitleSized(title, chartTitleMaxWidth);
-        final int chartTitleLineHeight = titleLines.get(0).getValue().getValue();
-        final int chartTitleHeight = titleLines.size() * chartTitleLineHeight;
+        List<Entry<String, Entry<Integer, Integer>>> titleLines = null;
+        if(!title.isEmpty()) titleLines = getTitleSized(title, chartTitleMaxWidth); //Empty chart titles are supported
+        final int chartTitleLineHeight = title.isEmpty() ? 0 : titleLines.get(0).getValue().getValue();
+        final int chartTitleHeight = title.isEmpty() ? 0 : titleLines.size() * chartTitleLineHeight;
         
 		//Now that we know the big chart title height, we can calculate the Y positional values
         final int chartTitleStartPosY = outsidePadding;
@@ -173,18 +174,21 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 				
 			//Render the text smoothly
 			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			 
-			//Set the title font
-			g2d.setFont(titleFont);
-			g2d.setColor(Color.BLACK);
-			for (int i = 0; i < titleLines.size(); i++) {
-				Entry<String, Entry<Integer, Integer>> line = titleLines.get(i);
-				// Label positions are bottom left so we need to add 1 to the line number
-				final int linePosY = chartTitleStartPosY + ((i + 1) * chartTitleLineHeight);
-				//Centre each line horizontally
-				g2d.drawString(line.getKey(), imageCenterY - (line.getValue().getKey()/2), linePosY);
+			
+			//Render the chart title
+			if(!title.isEmpty()) {
+				//Set the title font
+				g2d.setFont(titleFont);
+				g2d.setColor(Color.BLACK);
+				for (int i = 0; i < titleLines.size(); i++) {
+					Entry<String, Entry<Integer, Integer>> line = titleLines.get(i);
+					// Label positions are bottom left so we need to add 1 to the line number
+					final int linePosY = chartTitleStartPosY + ((i + 1) * chartTitleLineHeight);
+					//Centre each line horizontally
+					g2d.drawString(line.getKey(), imageCenterY - (line.getValue().getKey()/2), linePosY);
+				}
 			}
-			 
+			
 			//Reset to a decent basic font
 	        g2d.setFont(basicFont);
 	

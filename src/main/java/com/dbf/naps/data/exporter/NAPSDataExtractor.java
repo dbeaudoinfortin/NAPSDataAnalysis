@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -61,9 +60,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 		log.info("Calculating file data groups based on the provided arguments.");
 		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
 		{
-			List<DataRecordGroup> dataGroups = getDataGroups(getOptions().getYearStart(), getOptions().getYearEnd(),
-					getOptions().getPollutants(),  getOptions().getSites(),
-					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite());
+			List<DataRecordGroup> dataGroups = getDataGroups();
 					
 			log.info(dataGroups.size() + " file(s) will be created.");
 			for(DataRecordGroup group : dataGroups) {
@@ -77,12 +74,12 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 		waitForTaskCompletion(futures);
 	}
 	
-	protected List<DataRecordGroup> getDataGroups(int startYear, int endYear, Collection<String> pollutants,
-			Collection<Integer> sites, boolean groupByYear, boolean groupByPollutant, boolean groupBySite) {
+	protected List<DataRecordGroup> getDataGroups() {
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			return session.getMapper(DataMapper.class).getExportDataGroups(startYear, endYear, pollutants, sites, //Per-file filters
-					groupByYear, groupByPollutant, groupBySite, //Grouping
-					null, null, null, null, null, null, null,	//Filtering
+			return session.getMapper(DataMapper.class).getExportDataGroups(
+					getOptions().getYearStart(), getOptions().getYearEnd(), getOptions().getPollutants(),  getOptions().getSites(), //Per-file filters
+					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite(), //Grouping
+					null, null, null, null, null, null, null, null,	//Filtering
 					getDataset());
 		}
 	}
@@ -99,7 +96,12 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 	}
 	
 	protected void appendFilename(StringBuilder fileName, Integer year, String pollutant, Integer site) {
-		fileName.append(getDataset());
+		if(getOptions().getFileName() != null) {
+			//Using a custom filename
+			fileName.append(getOptions().getFileName());
+		} else {
+			fileName.append(getDataset());
+		}
 		
 		if(null != pollutant) {
 			fileName.append("_");

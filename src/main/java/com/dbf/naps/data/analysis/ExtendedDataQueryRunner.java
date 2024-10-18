@@ -33,7 +33,7 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 				//Per-file filters
 				years, pollutants,sites,
 				//Basic filters
-				getConfig().getMonths(),getConfig().getDaysOfMonth(),
+				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
 				//Advanced filters

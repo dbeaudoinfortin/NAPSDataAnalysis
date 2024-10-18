@@ -81,9 +81,20 @@ To work around GitHub's file size limit of 100MB, some of the zip files have bee
 
 The NAPS Data Analysis Toolbox provides powerful tools for the analysis of Canadian air quality data. The dynamic query tools for both the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data allow you to run highly customized queries to aggregate or simply retrieve the data in the way that you need it, in a single command.
 
-The dynamic query tools have support for several types of aggregation functions, multiple levels of grouping, filtering on many dimensions (site IDs, site name, pollutants, days of the week, days of the month, months, years, provinces/territories, city name, site type, site urbanization), standard deviation functions, sample counts, minimum sample counts (to optionally ensure a statistically significant number of data points), lower and upper bounds for data point (to optionally exclude outliers) and post-aggregation lower and upper bounds (to eliminate results outside the scope of interest). I'm planning to add even more functionality in the future.
+The dynamic query tools have support for several types of aggregation functions, multiple levels of grouping, filtering on many dimensions (site IDs, site name, pollutants, hour, days of the week, days of the month, months, years, provinces/territories, city name, site type, site urbanization), standard deviation functions, sample counts, minimum sample counts (to optionally ensure a statistically significant number of data points), lower and upper bounds for data points (to optionally exclude outliers) and post-aggregation lower and upper bounds (to eliminate results outside the scope of interest). I'm planning to add even more functionality in the future.
 
-Say, for example, you want to know how many times the hourly reading for carbon monoxide exceeded the national standard of 13ppm across all of Canada for the years between 1974 and 2022:
+Say, for example, you want to know how many times the hourly reading for carbon monoxide exceeded the national standard of 13ppm across all of Canada for the years between 1974 and 2022. You can produce the following table by running the following command:
+
+```
+-pollutants CO
+-group1 year
+-yearStart 1974
+-yearEnd 2022
+-aggregateFunction count
+-valueLowerBound 13
+```
+
+For more details on how to run these query tools, see the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data query sections below.
 
 ![image](https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065)
 
@@ -118,7 +129,9 @@ And here are two heat maps for lead, showing the average and maximum concentrati
 
 (The provinces of Ontario & Quebec were only chosen to demonstrate the ability to filter by province/territory.)
 
-The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heatmap. For more information on how to customize heat maps, see the section below for either [continuous](#napscontinuousheatmap) or [integrated](#napsintegratedheatmap) data.
+The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heat map. 
+
+For more details on how to generate custom heat maps, see the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) heat map sections below.
 
 # Dashboards
 
@@ -144,7 +157,7 @@ You can download an installer of PostgreSQL for every major desktop/server OS [h
 
 ## Installing Java
 
-The tools in this toolbox are written in Java. You will need the Java 17 or later in order to run any of the tools. The Java JDK is free, multi-platform (supporting Windows, Linux, MacOS, etc.), multi-architecture (supporting x86 and ARM), and can be downloaded [directly from Oracle](https://www.oracle.com/ca-en/java/technologies/downloads/).
+The tools in this toolbox are written in Java. You will need the Java 21 or later in order to run any of the tools. The Java JDK is free, multi-platform (supporting Windows, Linux, MacOS, etc.), multi-architecture (supporting x86 and ARM), and can be downloaded [directly from Oracle](https://www.oracle.com/ca-en/java/technologies/downloads/).
 
 ## Downloading the Data
 
@@ -216,7 +229,7 @@ For more information about the possible command line arguments, see the NAPSInte
 
 ## Querying the Data
 
-At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to query the data to retrieve what you need for your own analysis.
+By now, all the data you wish to analyse should have been loaded into your database using either the [NAPSContinuousDataLoader](#napscontinuousdataloader), the [NAPSIntegratedDataLoader](#napsintegrateddataloader), or both. You may now want to query the data to retrieve what you need for your own analysis.
 
 Assuming you are using all default database connection parameters, you can run the continuous query tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
@@ -234,7 +247,7 @@ These are just example queries; you will need to craft a command that works for 
 
 ## Generating Heat Maps
 
-At this time, all of the data you are interested in analysing should have been loaded into your database using one or both of either the [NAPSContinuousDataLoader](#napscontinuousdataloader) or the [NAPSIntegratedDataLoader](#napsintegrateddataloader). You may now want to generate heat map diagrams to visualize the data as part of your own analysis.
+By now, all the data you wish to analyse should have been loaded into your database using either the [NAPSContinuousDataLoader](#napscontinuousdataloader), the [NAPSIntegratedDataLoader](#napsintegrateddataloader), or both. You may now want to generate heat map diagrams to visualize the data as part of your own analysis.
 
 Assuming you are using all default database connection parameters, you can run the continuous heat map tool using the following command line command, on Windows, in the directory of the naps_data.jar: 
 
@@ -357,41 +370,43 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,	  --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
- -cn,	 --cityName <arg>           City name, partial match.
- -d,	  --days <arg>               Comma-separated list of days of the month.
- -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
- -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
- -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
- -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
- -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
- -fp,	 --filePerPollutant         Create a separate file for each pollutant.
- -fs,	 --filePerSite              Create a separate file for each site.
- -fy,	 --filePerYear              Create a separate file for each year.
- -g1,	 --group1 <arg>             Data field for level 1 grouping.
- -g2,	 --group2 <arg>             Data field for optional level 2 grouping.
- -g3,	 --group3 <arg>             Data field for optional level 3 grouping
- -g4,	 --group4 <arg>             Data field for optional level 4 grouping
- -g5,	 --group5 <arg>             Data field for optional level 5 grouping
- -m,	  --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
- -o,	  --overwriteFiles           Replace existing files.
- -p,	  --dataPath <arg>           Local path to save the data.
- -pn,	 --pollutants <arg>         Comma-separated list of pollutant names.
- -pt,	 --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
- -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,  --cityName <arg>           City name, partial match.
+ -d,   --days <arg>               Comma-separated list of days of the month.
+ -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -dow, --daysOfWeek <arg>         Comma-separated list of days of the week, starting at 1 for Sunday.
+ -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
+ -fp,  --filePerPollutant         Create a separate file for each pollutant.
+ -fs,  --filePerSite              Create a separate file for each site.
+ -fy,  --filePerYear              Create a separate file for each year.
+ -g1,  --group1 <arg>             Data field for level 1 grouping.
+ -g2,  --group2 <arg>             Data field for optional level 2 grouping.
+ -g3,  --group3 <arg>             Data field for optional level 3 grouping
+ -g4,  --group4 <arg>             Data field for optional level 4 grouping
+ -g5,  --group5 <arg>             Data field for optional level 5 grouping
+ -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,   --overwriteFiles           Replace existing files.
+ -p,   --dataPath <arg>           Local path to save the data.
+ -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
- -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+ -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
- -sc,	 --showSampleCount          Include the sample count (number of samples or data points) in the result set.
- -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+ -sc,  --showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
                                      result set.
- -sid,	--sites <arg>              Comma-separated list of site IDs.
- -sn,	 --siteName <arg>           NAPS site (station) name, partial match.
+ -sid, --sites <arg>              Comma-separated list of site IDs.
+ -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
- -t,	  --threadCount <arg>        Maximum number of parallel threads.
+ -t,   --threadCount <arg>        Maximum number of parallel threads.
  -v,   --verbose                  Make logging more verbose.
- -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+ -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
  -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
@@ -412,7 +427,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
-- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`).
+- The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
+- The possible values for `daysOfWeek` are either the full names (`SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY`) case-insensitive, or the day of the week numbers (`1, 2, 3, 4, 5, 6, 7`), starting at 1 for Sunday.
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 
 **Other Notes:**
@@ -488,6 +504,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
  -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
  -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -dow, --daysOfWeek <arg>         Comma-separated list of days of the week, starting at 1 for Sunday.
+ -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant         Create a separate file for each pollutant.
  -fs,  --filePerSite              Create a separate file for each site.
  -fy,  --filePerYear              Create a separate file for each year.
@@ -527,7 +545,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 6. A 3 step black-red-orange gradient, similar to black-body radiation, up to approximately 1300 degrees kelvin.
 7. Same as number 6 but two more steps are added to extend the scale up to approximately 6500k degrees kelvin.
 8. A 2 step grey-scale gradient that should be used for non-colour screen/print-outs.
-The default colour palette, if not specified, is number 1. 
+
+The default colour palette, if not specified, is number 1. Here are examples of what the colour palette look like, in order:
 
 ![Continuous_By Day of the Month and Month_C1](https://github.com/user-attachments/assets/c55ced9a-36af-4006-b47e-40b2ce04bc60)
 ![Continuous_By Day of the Month and Month_C2](https://github.com/user-attachments/assets/5ca35e2f-d8e8-46b7-b2ef-95e335128480)
@@ -548,7 +567,8 @@ The default colour palette, if not specified, is number 1.
 
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
-- The possible values for `month` are either the full name (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`), or the month number (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`).
+- The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
+- The possible values for `daysOfWeek` are either the full names (`SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY`) case-insensitive, or the day of the week numbers (`1, 2, 3, 4, 5, 6, 7`), starting at 1 for Sunday.
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - 
 **Notes:**
@@ -570,6 +590,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.contin
  -dbp, --dbPass <arg>      Database password for the PostgreSQL database. Default: password
  -dbt, --dbPort <arg>      Port for the PostgreSQL database. Default: 5432
  -dbu, --dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fn,  --fileName <arg>    Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant  Create a separate file for each pollutant.
  -fs,  --filePerSite       Create a separate file for each site.
  -fy,  --filePerYear       Create a separate file for each year.
@@ -630,41 +651,43 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,	  --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
- -cn,	 --cityName <arg>           City name, partial match.
- -d,	  --days <arg>               Comma-separated list of days of the month.
- -dbh,	--dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
- -dbn,	--dbName <arg>             Database name for the PostgreSQL database. Default: naps
- -dbp,	--dbPass <arg>             Database password for the PostgreSQL database. Default: password
- -dbt,	--dbPort <arg>             Port for the PostgreSQL database. Default: 5432
- -dbu,	--dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
- -fp,	 --filePerPollutant         Create a separate file for each pollutant.
- -fs,	 --filePerSite              Create a separate file for each site.
- -fy,	 --filePerYear              Create a separate file for each year.
- -g1,	 --group1 <arg>             Data field for level 1 grouping.
- -g2,	 --group2 <arg>             Data field for optional level 2 grouping.
- -g3,	 --group3 <arg>             Data field for optional level 3 grouping
- -g4,	 --group4 <arg>             Data field for optional level 4 grouping
- -g5,	 --group5 <arg>             Data field for optional level 5 grouping
- -m,	  --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
- -o,	  --overwriteFiles           Replace existing files.
- -p,	  --dataPath <arg>           Local path to save the data.
- -pn,	 --pollutants <arg>         Comma-separated list of pollutant names.
- -pt,	 --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
- -rlb,	--resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
+ -cn,  --cityName <arg>           City name, partial match.
+ -d,   --days <arg>               Comma-separated list of days of the month.
+ -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
+ -dbn, --dbName <arg>             Database name for the PostgreSQL database. Default: naps
+ -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
+ -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
+ -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -dow, --daysOfWeek <arg>         Comma-separated list of days of the week, starting at 1 for Sunday.
+ -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
+ -fp,  --filePerPollutant         Create a separate file for each pollutant.
+ -fs,  --filePerSite              Create a separate file for each site.
+ -fy,  --filePerYear              Create a separate file for each year.
+ -g1,  --group1 <arg>             Data field for level 1 grouping.
+ -g2,  --group2 <arg>             Data field for optional level 2 grouping.
+ -g3,  --group3 <arg>             Data field for optional level 3 grouping
+ -g4,  --group4 <arg>             Data field for optional level 4 grouping
+ -g5,  --group5 <arg>             Data field for optional level 5 grouping
+ -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -o,   --overwriteFiles           Replace existing files.
+ -p,   --dataPath <arg>           Local path to save the data.
+ -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
+ -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
+ -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
- -rub,	--resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
+ -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
- -sc,	 --showSampleCount          Include the sample count (number of samples or data points) in the result set.
- -scm,	--minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
+ -sc,  --showSampleCount          Include the sample count (number of samples or data points) in the result set.
+ -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
                                      result set.
- -sid,	--sites <arg>              Comma-separated list of site IDs.
- -sn,	 --siteName <arg>           NAPS site (station) name, partial match.
+ -sid, --sites <arg>              Comma-separated list of site IDs.
+ -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
- -t,	  --threadCount <arg>        Maximum number of parallel threads.
+ -t,   --threadCount <arg>        Maximum number of parallel threads.
  -v,   --verbose                  Make logging more verbose.
- -vlb,	--valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
+ -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
  -vub, --valueUpperBound <arg>    Upper bound (inclusive) of pre-aggregated raw values to include. Values greater than
                                      this threshold will be filtered out before aggregation.
@@ -674,7 +697,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
 
-All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napsContinuousdataloader) apply.
+All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napscontinuousdataquery) apply.
 
 ## NAPSIntegratedHeatMap
 
@@ -696,6 +719,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -dbp, --dbPass <arg>             Database password for the PostgreSQL database. Default: password
  -dbt, --dbPort <arg>             Port for the PostgreSQL database. Default: 5432
  -dbu, --dbUser <arg>             Database user name for the PostgreSQL database. Default: postgres
+ -dow, --daysOfWeek <arg>         Comma-separated list of days of the week, starting at 1 for Sunday.
+ -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant         Create a separate file for each pollutant.
  -fs,  --filePerSite              Create a separate file for each site.
  -fy,  --filePerYear              Create a separate file for each year.
@@ -742,6 +767,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.integr
  -dbp, --dbPass <arg>      Database password for the PostgreSQL database. Default: password
  -dbt, --dbPort <arg>      Port for the PostgreSQL database. Default: 5432
  -dbu, --dbUser <arg>      Database user name for the PostgreSQL database. Default: postgres
+ -fn,  --fileName <arg>    Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant  Create a separate file for each pollutant.
  -fs,  --filePerSite       Create a separate file for each site.
  -fy,  --filePerYear       Create a separate file for each year.
