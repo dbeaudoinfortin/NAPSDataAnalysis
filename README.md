@@ -116,7 +116,9 @@ We can change the x-axis to get a view of what is happening on the weekends comp
 
 ![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
 
-(Note that this second heat map uses a different colour palette that better suits the data.) Focusing on a single year (2002) makes it easy to see the difference between summer and winter months:
+(Note that this second heat map uses a different colour palette that better suits the data.)
+
+Focusing on a single year (2002) makes it easy to see the difference between summer and winter months:
 
 ![Monoxide_Yearly_2002](https://github.com/user-attachments/assets/9224b0b7-d57a-447f-ab1c-324bd36fd991)
 
@@ -131,6 +133,10 @@ And here are two heat maps for lead, showing the average and maximum concentrati
 ![Max_Lead_By Month and Year](https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3)
 
 (The provinces of Ontario & Quebec were only chosen to demonstrate the ability to filter by province/territory.)
+
+We can limit the results to only large and medium urban areas, and focus in around the year 1990 to better see the large effect of the ban on leaded gasoline:
+
+![Integrated_Avg By Week of the Year and Year](https://github.com/user-attachments/assets/d8acdda9-2def-4580-8310-df719ebf4627)
 
 The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heat map. 
 
