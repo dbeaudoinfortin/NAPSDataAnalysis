@@ -20,7 +20,12 @@ import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
+import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
+import com.dbf.naps.data.globals.SiteType;
+import com.dbf.naps.data.globals.SiteTypeMapping;
+import com.dbf.naps.data.globals.Urbanization;
+import com.dbf.naps.data.globals.UrbanizationMapping;
 import com.dbf.naps.data.utilities.Utils;
 
 public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRunner<O> {
@@ -84,7 +89,10 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 					getConfig().getSiteName(), getConfig().getCityName(),
 					getConfig().getProvTerr().stream().map(p->p.name()).toList(),
-					//Advanced filters
+					//Advanced site filters
+					getConfig().getSiteType().stream().map(s->s.name()).toList(),
+					getConfig().getUrbanization().stream().map(u->u.name()).toList(),
+					//Advanced data filters
 					getConfig().getValueUpperBound(), getConfig().getValueLowerBound(),
 					//Continuous vs. Integrated
 					getDataset());
@@ -134,7 +142,10 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
-				//Advanced filters
+				//Advanced site filters
+				getConfig().getSiteType().stream().map(s->s.name()).toList(),
+				getConfig().getUrbanization().stream().map(u->u.name()).toList(),
+				//Advanced data filters
 				getConfig().getValueUpperBound(), getConfig().getValueLowerBound(),
 				//Additional Columns
 				false, false, false,
@@ -194,14 +205,38 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		title.append(" for ");
 		
 		if(getSpecificSite() != null) {
+			//Adjectives don't matter if there is only one site.
+			//If the site doesn't match the adjectives then there will be no data and thus no report
 			title.append("NAPS Site ");
 			title.append(getSpecificSite());
-		} else if(getConfig().getSites() == null || getConfig().getSites().isEmpty()) {
-			title.append("All NAPS Sites");
+		} else if (getConfig().getSites() == null || getConfig().getSites().isEmpty()) {
+			//Now the adjectives matter
+			if(getConfig().getSites() == null || getConfig().getSites().isEmpty()) {
+				title.append("All ");
+			}
+			
+			boolean needSpace = false;
+			if(getConfig().getUrbanization() != null && !getConfig().getUrbanization().isEmpty() && getConfig().getUrbanization().size() != Urbanization.values().length) {
+				Utils.prettyPrintStringList(UrbanizationMapping.getUrbanizationStrings(getConfig().getUrbanization()), title, false);
+				needSpace = true;
+			}
+			
+			if(getConfig().getSiteType() != null && !getConfig().getSiteType().isEmpty() && getConfig().getSiteType().size() != SiteType.values().length) {
+				if(needSpace) title.append(", ");
+				Utils.prettyPrintStringList(SiteTypeMapping.getSiteTypeStrings(getConfig().getSiteType()), title, false);
+				needSpace = true; //Regardless, we still need a space afterwards
+			}
+			
+			if(needSpace) title.append(" ");
+			title.append("NAPS Sites");
+		} else if(getConfig().getSites().size() == 1) {
+			title.append("NAPS Site ");
+			title.append(getConfig().getSites().iterator().next());
 		} else {
-			title.append("NAPS Site");
-			if(getConfig().getSites().size() > 1) title.append("s");
-			Utils.prettyPrintStringList(getConfig().getPollutants(), title);
+			//I'm not sure it makes to sense to have adjectives here. Why would someone explicitly define a list of site IDs but then want to filter the sites down further?
+			//Regardless, it makes for a very awkward English sentence, so I'll omit it.
+			title.append("NAPS Sites ");
+			Utils.prettyPrintStringList(getConfig().getSites().stream().sorted().map(s->s.toString()).toList(), title, false);
 		}
 
 		if(getConfig().getSiteName() != null && !getConfig().getSiteName().isEmpty()) {
@@ -216,7 +251,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			title.append("\"");
 		}
 		
-		if(getConfig().getProvTerr() != null && !getConfig().getProvTerr().isEmpty() && getConfig().getProvTerr().size() != 12) {
+		if(getConfig().getProvTerr() != null && !getConfig().getProvTerr().isEmpty() && getConfig().getProvTerr().size() != ProvTerr.values().length) {
 			title.append(" in the ");
 			if(getConfig().getProvTerr().size() == 1) {
 				title.append("Province/Territory of ");

@@ -16,6 +16,8 @@ import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.ProvTerr;
 import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
+import com.dbf.naps.data.globals.SiteType;
+import com.dbf.naps.data.globals.Urbanization;
 
 public abstract class DataQueryOptions extends ExtractorOptions {
 
@@ -26,8 +28,10 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	
 	private final Set<Integer>  months = new HashSet<Integer>();
 	private final Set<Integer>  daysOfMonth = new HashSet<Integer>();
-	private final Set<Integer>  daysOfWeek = new HashSet<Integer>(); //TODO: Implement me as an option and in the queries
+	private final Set<Integer>  daysOfWeek = new HashSet<Integer>();
 	private final Set<ProvTerr> provTerr = new HashSet<ProvTerr>();
+	private final Set<Urbanization> urbanization = new HashSet<Urbanization>();
+	private final Set<SiteType> siteType = new HashSet<SiteType>();
 	
 	private String siteName;
 	private String cityName;
@@ -47,7 +51,9 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		getOptions().addOption("m","months", true, "Comma-separated list of months of the year, starting at 1 for January.");
 		getOptions().addOption("d","days", true, "Comma-separated list of days of the month.");
 		getOptions().addOption("dow","daysOfWeek", true, "Comma-separated list of days of the week, starting at 1 for Sunday.");
-		getOptions().addOption("pt","provTerr", true, "Comma-separated list of 2-digit province & territory codes.");
+		getOptions().addOption("pt","provTerr", true, "Comma-separated list of 2-digit province & territory codes (" + ProvTerr.ALL_VALUES + ").");
+		getOptions().addOption("u","urbanization", true, "NAPS site urbanization classification (" + Urbanization.ALL_VALUES + ").");
+		getOptions().addOption("st","siteType", true, "NAPS site type classification (" + SiteType.ALL_VALUES + ").");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
 		getOptions().addOption("ct","title", true, "Chart title. Will be automatically generated if not defined.");
@@ -82,6 +88,8 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadDays(cmd);
 		loadDaysOfWeek(cmd);
 		loadProvTerr(cmd);
+		loadUrbanization(cmd);
+		loadSiteType(cmd);
 		loadSiteName(cmd);
 		loadCityName(cmd);
 		loadTitle(cmd);
@@ -215,7 +223,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 					try {
 						provTerrEnum = ProvTerr.valueOf(provTrimmed);
 					} catch (Exception e) {
-						throw new IllegalArgumentException("Invalid province/territory code: " + provRaw);
+						throw new IllegalArgumentException("Invalid province/territory code: " + provRaw + ". Possible values are: " + ProvTerr.ALL_VALUES);
 					}
 				}
 				provTerr.add(provTerrEnum);
@@ -226,6 +234,52 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			log.info("Using only the following provinces/territories: " + provTerr);
 		} else {
 			log.info("Using all provinces/territories.");
+		}
+	}
+	
+	private void loadSiteType(CommandLine cmd) {
+		if(cmd.hasOption("siteType")) {
+			for(String siteTypeRaw : cmd.getOptionValue("siteType").split(",")) {
+				String siteTypeTrimmed = siteTypeRaw.trim().toUpperCase();
+				if (siteTypeTrimmed.isEmpty()) continue;
+				
+				SiteType siteTypeEnum;
+				try {
+					siteTypeEnum = SiteType.valueOf(siteTypeTrimmed);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Invalid NAPS site type code: " + siteTypeRaw + ". Possible values are: " + SiteType.ALL_VALUES);
+				}
+				siteType.add(siteTypeEnum);
+			}
+			if(siteType.isEmpty()) 
+				throw new IllegalArgumentException("Must specify at least one NAPS site type code.");
+			
+			log.info("Using only the following NAPS site type codes: " + siteType);
+		} else {
+			log.info("Using all NAPS site type codes.");
+		}
+	}
+	
+	private void loadUrbanization(CommandLine cmd) {
+		if(cmd.hasOption("urbanization")) {
+			for(String urbanizationRaw : cmd.getOptionValue("urbanization").split(",")) {
+				String urbanizationTrimmed = urbanizationRaw.trim().toUpperCase();
+				if (urbanizationTrimmed.isEmpty()) continue;
+				
+				Urbanization urbanizationEnum;
+				try {
+					urbanizationEnum = Urbanization.valueOf(urbanizationTrimmed);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Invalid NAPS site urbanization code: " + urbanizationRaw + ". Possible values are: " + Urbanization.ALL_VALUES);
+				}
+				urbanization.add(urbanizationEnum);
+			}
+			if(urbanization.isEmpty()) 
+				throw new IllegalArgumentException("Must specify at least one NAPS site urbanization code.");
+			
+			log.info("Using only the following NAPS site urbanization codes: " + urbanization);
+		} else {
+			log.info("Using all NAPS site urbanization codes.");
 		}
 	}
 	
@@ -330,6 +384,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 				
 			String rawValue = cmd.getOptionValue(field);
 			if("DAY_OF_MONTH".equals(rawValue.toUpperCase())) rawValue = "DAY"; //Allow both forms
+			if("PROVINCE".equals(rawValue.toUpperCase())) rawValue = "PROVINCE_TERRITORY";
 			
 			try {
 				aggregationField = AggregationField.valueOf(rawValue.toUpperCase()); 
@@ -437,5 +492,13 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	
 	public String getTitle() {
 		return title;
+	}
+
+	public Set<Urbanization> getUrbanization() {
+		return urbanization;
+	}
+
+	public Set<SiteType> getSiteType() {
+		return siteType;
 	}
 }

@@ -8,7 +8,6 @@ import java.util.Map;
 public class ProvinceTerritoryMapping {
 	
 	private static final Map<String, ProvTerr> provTerrMap = new HashMap<String, ProvTerr>(13);
-	
 	private static final Map<ProvTerr, String> prettyMap = new HashMap<ProvTerr, String>(13);
 
     static {

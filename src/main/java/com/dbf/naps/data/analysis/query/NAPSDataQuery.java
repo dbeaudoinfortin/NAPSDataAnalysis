@@ -25,7 +25,9 @@ public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSData
 					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite(),							//Grouping
 					getOptions().getMonths(), getOptions().getDaysOfMonth(), getOptions().getDaysOfWeek(),									//Basic filters
 					getOptions().getSiteName(), getOptions().getCityName(), getOptions().getProvTerr().stream().map(p->p.name()).toList(),  //Basic filters
-					getOptions().getValueUpperBound(), getOptions().getValueLowerBound(), 													//Advanced filters
+					getOptions().getSiteType().stream().map(s->s.name()).toList(),															//Advanced site filters
+					getOptions().getUrbanization().stream().map(u->u.name()).toList(),														//Advanced site filters
+					getOptions().getValueUpperBound(), getOptions().getValueLowerBound(), 													//Advanced data filters
 					getDataset());
 		}
 	}

@@ -17,7 +17,7 @@ public enum AggregationField {
 	URBANIZATION,
 	SITE_TYPE;
 	
-	public static final String ALL_VALUES = Arrays.stream(AggregationField.values()).map(f->f.name()).collect(Collectors.joining(", "));
+	public static final String ALL_VALUES = Arrays.stream(values()).map(f->f.name()).collect(Collectors.joining(", "));
 	
 	public String getPrettyName() {
 		switch (this) {

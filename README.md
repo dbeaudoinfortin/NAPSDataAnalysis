@@ -120,7 +120,7 @@ We can change the x-axis to get a view of what is happening on the weekends comp
 
 ![Monoxide_Yearly_2002](https://github.com/user-attachments/assets/9224b0b7-d57a-447f-ab1c-324bd36fd991)
 
-Similarly, we can look at any pollutant, or all pollutants. Here is the same time frame, but for SO2, using a third colour palette:
+Similarly, we can look at any pollutant, or all pollutants. Here is SO2, for all years, using a third colour palette:
 
 ![Avg_SO2_By Day of the Year and Year](https://github.com/user-attachments/assets/721cf42e-cd32-42b7-ab47-9f0538856cea)
 
@@ -405,9 +405,11 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      result set.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
- -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
- -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
+ -st, --siteType <arg>            NAPS site type classification (PE, RB, T, PS).
+ -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
+ -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
  -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -432,6 +434,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
 - The possible values for `daysOfWeek` are either the full names (`SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY`) case-insensitive, or the day of the week numbers (`1, 2, 3, 4, 5, 6, 7`), starting at 1 for Sunday.
+- The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
+- The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 
 **Other Notes:**
@@ -527,7 +531,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
                                      result set.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
+ -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
  -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
  -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -572,6 +578,8 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
 - The possible values for `daysOfWeek` are either the full names (`SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY`) case-insensitive, or the day of the week numbers (`1, 2, 3, 4, 5, 6, 7`), starting at 1 for Sunday.
+- The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
+- The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - 
 **Notes:**
@@ -686,9 +694,11 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      result set.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
- -stdDevPop, --showStdDevPop       Include the population standard deviation in the result set.
- -stdDevSmp, --showStdDevSamp      Include the sample standard deviation in the result set.
+ -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
+ -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
+ -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
  -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -742,7 +752,9 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
                                      result set.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
+ -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
  -t,   --threadCount <arg>        Maximum number of parallel threads.
+ -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
  -vlb, --valueLowerBound <arg>    Lower bound (inclusive) of pre-aggregated raw values to include. Values less than this
                                      threshold will be filtered out before aggregation.
@@ -801,10 +813,11 @@ The following table lists all of the compounds (pollutants) and how many data po
 
 <details>
 <summary>Table of Compounds</summary>
-**As of October 2024**
+
+### As of October 2024
 
 |Compound|Continuous Data Points|Integrated Data Points|
-|:---: |:---: |:---: 
+|:--- | :---: | :---: |
 |CO|22,515,492||
 |NO|38,711,270||
 |NO2|41,663,301||

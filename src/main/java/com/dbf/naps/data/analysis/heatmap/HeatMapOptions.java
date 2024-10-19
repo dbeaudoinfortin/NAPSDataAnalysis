@@ -85,7 +85,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private void loadColourUpperBound(CommandLine cmd) {
 		if(cmd.hasOption("colourUpperBound")) {
 			colourUpperBound = Double.parseDouble(cmd.getOptionValue("colourUpperBound"));
-			if (colourLowerBound >= colourUpperBound) {
+			if (colourLowerBound != null && (colourLowerBound >= colourUpperBound)) {
 				throw new IllegalArgumentException("Invalid heat map colour upper bound: " + colourUpperBound);
 			}
 			log.info("Using heat map colour upper bound: " + colourUpperBound);

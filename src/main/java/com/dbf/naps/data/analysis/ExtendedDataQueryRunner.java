@@ -36,6 +36,9 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
+				//Advanced site filters
+				getConfig().getSiteType().stream().map(s->s.name()).toList(),
+				getConfig().getUrbanization().stream().map(u->u.name()).toList(),
 				//Advanced filters
 				getConfig().getValueUpperBound(), getConfig().getValueLowerBound(),
 				//Additional Columns

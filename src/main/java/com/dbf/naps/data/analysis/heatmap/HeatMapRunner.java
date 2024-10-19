@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,6 +34,10 @@ import com.dbf.naps.data.analysis.heatmap.axis.IntegerAxis;
 import com.dbf.naps.data.analysis.heatmap.axis.StringAxis;
 import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
+import com.dbf.naps.data.globals.SiteType;
+import com.dbf.naps.data.globals.SiteTypeMapping;
+import com.dbf.naps.data.globals.Urbanization;
+import com.dbf.naps.data.globals.UrbanizationMapping;
 
 public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	
@@ -398,18 +403,14 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			
 		case URBANIZATION:
 			StringAxis sAxis =  new StringAxis(prettyName);
-			sAxis.addEntry("LU", "Large Urban");
-			sAxis.addEntry("MU", "Medium Urban");
-			sAxis.addEntry("SU", "Small Urban");
-			sAxis.addEntry("NU", "Rural");
+			Stream.of(Urbanization.values())
+				.forEach(entry-> sAxis.addEntry(entry.toString(), UrbanizationMapping.getUrbanization(entry)));
 			return sAxis;
 			
 		case SITE_TYPE:
 			StringAxis stAxis =  new StringAxis(prettyName);
-			stAxis.addEntry("PE", "General Population");
-			stAxis.addEntry("RB", "Regional Backgrounds");
-			stAxis.addEntry("T",  "Transportation");
-			stAxis.addEntry("PS", "Point Source");
+			Stream.of(SiteType.values())
+				.forEach(entry-> stAxis.addEntry(entry.toString(), SiteTypeMapping.getSiteType(entry)));
 			return stAxis;
 			
 		case YEAR:

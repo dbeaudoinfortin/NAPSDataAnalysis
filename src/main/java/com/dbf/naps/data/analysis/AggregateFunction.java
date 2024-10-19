@@ -11,5 +11,5 @@ public enum AggregateFunction {
 	SUM,
 	NONE;
 	
-	public static final String ALL_VALUES = Arrays.stream(AggregateFunction.values()).map(f->f.name()).collect(Collectors.joining(", "));
+	public static final String ALL_VALUES = Arrays.stream(values()).map(f->f.name()).collect(Collectors.joining(", "));
 }

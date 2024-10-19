@@ -1,5 +1,8 @@
 package com.dbf.naps.data.globals;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public enum ProvTerr {
 	NL,
 	PE,
@@ -13,5 +16,7 @@ public enum ProvTerr {
 	BC,
 	YT,
 	NT,
-	NU
+	NU;
+	
+	public static final String ALL_VALUES = Arrays.stream(values()).map(f->f.name()).collect(Collectors.joining(", "));
 }

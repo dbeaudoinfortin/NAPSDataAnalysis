@@ -31,6 +31,8 @@ public interface DataMapper {
 			+ "<if test=\"siteName != null &amp;&amp; !siteName.isEmpty()\">and s.station_name LIKE '%#{siteName}%'</if>"
 			+ "<if test=\"cityName != null &amp;&amp; !cityName.isEmpty()\">and s.city_name LIKE '%#{cityName}%'</if>"
 			+ "<if test=\"provTerr != null &amp;&amp; !provTerr.isEmpty()\">and s.prov_terr in <foreach collection='provTerr' item='prov' index='index' open='(' separator = ',' close=')'>#{prov}</foreach></if>"
+			+ "<if test=\"siteType != null &amp;&amp; !siteType.isEmpty()\">and s.site_type in <foreach collection='siteType' item='sType' index='index' open='(' separator = ',' close=')'>#{sType}</foreach></if>"
+			+ "<if test=\"urbanization != null &amp;&amp; !urbanization.isEmpty()\">and s.urbanization in <foreach collection='urbanization' item='urb' index='index' open='(' separator = ',' close=')'>#{urb}</foreach></if>"
 			+ "<if test=\"months != null &amp;&amp; !months.isEmpty()\">and d.month in<foreach collection='months' item='month' index='index' open='(' separator = ',' close=')'>#{month}</foreach></if>"
 			+ "<if test=\"daysOfMonth != null &amp;&amp; !daysOfMonth.isEmpty()\">and d.day in<foreach collection='daysOfMonth' item='dayOfMonth' index='index' open='(' separator = ',' close=')'>#{dayOfMonth}</foreach></if>"
 			+ "<if test=\"daysOfWeek  != null &amp;&amp; !daysOfWeek.isEmpty()\">and d.day_of_week in<foreach collection='daysOfWeek' item='dayOfWeek' index='index' open='(' separator = ',' close=')'>#{dayOfWeek}</foreach></if>"
@@ -50,7 +52,8 @@ public interface DataMapper {
 			boolean groupByYear, boolean groupByPollutant, boolean groupBySite,							 //Grouping
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek, //Basic filters
 			String siteName, String cityName, Collection<String> provTerr,								 //Basic filters
-			BigDecimal valueUpperBound, BigDecimal valueLowerBound,										 //Advanced filters
+			Collection<String> siteType, Collection<String> urbanization,								 //Advanced site filters
+			BigDecimal valueUpperBound, BigDecimal valueLowerBound,										 //Advanced data filters
 			String dataset);																			 //Continuous vs. Integrated
 
 	public List<? extends ExportDataRecord> getExportData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
@@ -68,6 +71,8 @@ public interface DataMapper {
 			+ "<if test=\"siteName != null &amp;&amp; !siteName.isEmpty()\">and s.station_name LIKE '%#{siteName}%'</if>"
 			+ "<if test=\"cityName != null &amp;&amp; !cityName.isEmpty()\">and s.city_name LIKE '%#{cityName}%'</if>"
 			+ "<if test=\"provTerr != null &amp;&amp; !provTerr.isEmpty()\">and s.prov_terr in <foreach collection='provTerr' item='prov' index='index' open='(' separator = ',' close=')'>#{prov}</foreach></if>"
+			+ "<if test=\"siteType != null &amp;&amp; !siteType.isEmpty()\">and s.site_type in <foreach collection='siteType' item='sType' index='index' open='(' separator = ',' close=')'>#{sType}</foreach></if>"
+			+ "<if test=\"urbanization != null &amp;&amp; !urbanization.isEmpty()\">and s.urbanization in <foreach collection='urbanization' item='urb' index='index' open='(' separator = ',' close=')'>#{urb}</foreach></if>"
 			+ "<if test=\"months != null &amp;&amp; !months.isEmpty()\">and d.month in<foreach collection='months' item='month' index='index' open='(' separator = ',' close=')'>#{month}</foreach></if>"
 			+ "<if test=\"daysOfMonth != null &amp;&amp; !daysOfMonth.isEmpty()\">and d.day in<foreach collection='daysOfMonth' item='dayOfMonth' index='index' open='(' separator = ',' close=')'>#{dayOfMonth}</foreach></if>"
 			+ "<if test=\"daysOfWeek  != null &amp;&amp; !daysOfWeek.isEmpty()\">and d.day_of_week in<foreach collection='daysOfWeek' item='dayOfWeek' index='index' open='(' separator = ',' close=')'>#{dayOfWeek}</foreach></if>"
@@ -79,7 +84,8 @@ public interface DataMapper {
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
-			BigDecimal valueUpperBound, BigDecimal valueLowerBound,													//Advanced filters			
+			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters
+			BigDecimal valueUpperBound, BigDecimal valueLowerBound,													//Advanced data filters			
 			String dataset);																						//Continuous vs. Integrated
 	
 	@Select("<script>"
@@ -125,6 +131,8 @@ public interface DataMapper {
 			+ "<if test=\"siteName != null &amp;&amp; !siteName.isEmpty()\">and s.station_name LIKE '%#{siteName}%'</if>"
 			+ "<if test=\"cityName != null &amp;&amp; !cityName.isEmpty()\">and s.city_name LIKE '%#{cityName}%'</if>"
 			+ "<if test=\"provTerr != null &amp;&amp; !provTerr.isEmpty()\">and s.prov_terr in <foreach collection='provTerr' item='prov' index='index' open='(' separator = ',' close=')'>#{prov}</foreach></if>"
+			+ "<if test=\"siteType != null &amp;&amp; !siteType.isEmpty()\">and s.site_type in <foreach collection='siteType' item='sType' index='index' open='(' separator = ',' close=')'>#{sType}</foreach></if>"
+			+ "<if test=\"urbanization != null &amp;&amp; !urbanization.isEmpty()\">and s.urbanization in <foreach collection='urbanization' item='urb' index='index' open='(' separator = ',' close=')'>#{urb}</foreach></if>"
 			+ "<if test=\"months != null &amp;&amp; !months.isEmpty()\">and d.month in<foreach collection='months' item='month' index='index' open='(' separator = ',' close=')'>#{month}</foreach></if>"
 			+ "<if test=\"daysOfMonth != null &amp;&amp; !daysOfMonth.isEmpty()\">and d.day in<foreach collection='daysOfMonth' item='dayOfMonth' index='index' open='(' separator = ',' close=')'>#{dayOfMonth}</foreach></if>"
 			+ "<if test=\"daysOfWeek  != null &amp;&amp; !daysOfWeek.isEmpty()\">and d.day_of_week in<foreach collection='daysOfWeek' item='dayOfWeek' index='index' open='(' separator = ',' close=')'>#{dayOfWeek}</foreach></if>"
@@ -166,7 +174,8 @@ public interface DataMapper {
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
-			BigDecimal valueUpperBound, BigDecimal valueLowerBound,													//Advanced filters
+			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters
+			BigDecimal valueUpperBound, BigDecimal valueLowerBound,													//Advanced data filters
 			boolean sampleCount, boolean stdDevPop, boolean stdDevSmp,												//Additional Columns
 			Double resultUpperBound, Double resultLowerBound, Integer minSampleCount,								//Having conditions						
 			String dataset);																						//Continuous vs. Integrated
