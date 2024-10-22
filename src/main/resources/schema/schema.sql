@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS naps.methods
    units VARCHAR(10) NOT NULL,
    UNIQUE NULLS NOT DISTINCT (dataset, report_type, method, units)
 );
+CREATE INDEX IF NOT EXISTS idx_methods_units ON naps.methods (units ASC);
 
 CREATE TABLE IF NOT EXISTS naps.sites
 (

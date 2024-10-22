@@ -42,10 +42,8 @@ import com.dbf.naps.data.globals.UrbanizationMapping;
 public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	
 	//TODO: make these configurable
-	private static final int cellWidth  = 50;
-	private static final int cellHeight = 50;
-	private static final int halfCellWidth  = cellWidth  / 2;
-	private static final int halfCellHeight = cellHeight / 2;
+	private static final int DEFAULT_CELL_WIDTH  = 50;
+	private static final int DEFAULT_CELL_HEIGHT = DEFAULT_CELL_WIDTH;
 	
 	private static final int labelPadding   = 10;
 	private static final int chartTitlePadding = labelPadding*4;
@@ -55,8 +53,9 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	private static final int    legendPadding = chartTitlePadding;
 	private static final String legendFormat = "0.####";
 	
-	private static final Font basicFont = new Font("Calibri", Font.BOLD, 20);
-	private static final Font titleFont = new Font("Calibri", Font.BOLD, 36);
+	private static final Font basicFont = new Font("Calibri", Font.PLAIN, 20);
+	private static final Font smallTitleFont = new Font("Calibri", Font.BOLD, 20);
+	private static final Font bigTitleFont = new Font("Calibri", Font.BOLD, 36);
 	
 	private static final Logger log = LoggerFactory.getLogger(HeatMapRunner.class);
 	
@@ -69,8 +68,8 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		
 		log.info("Analyzing heatmap data for " + dataFile + "...");
 		//Determine the bounds of the X & Y dimension
-		Axis<?> xDimension = determineAxisDimensions(records, 0);
-		Axis<?> yDimension = determineAxisDimensions(records, 1);
+		Axis<?> xDimension = determineAxis(records, 0);
+		Axis<?> yDimension = determineAxis(records, 1);
 		
 		//Determine the bounds of the data values
 		BigDecimal minValue = records.get(0).getValue();
@@ -96,18 +95,27 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	
 	private static void renderHeatMap(File dataFile, List<DataQueryRecord> records, Axis<?> xAxis, Axis<?> yAxis, double minValue, double maxValue, boolean minClamped, boolean maxClamped, String title, int colourGradient) throws IOException{		
 		//Render all of the X & Y labels first so we can determine the maximum size
-		final Entry<Integer, Integer> xAxisLabelMaxSize = getMaxStringSize(xAxis.getEntryLabels().values());
-		final int yAxisLabelMaxWidth  = getMaxStringSize(yAxis.getEntryLabels().values()).getKey();
+		final Entry<Integer, Integer> xAxisLabelMaxSize = getMaxStringSize(xAxis.getEntryLabels().values(), basicFont);
+		final int yAxisLabelMaxWidth  = getMaxStringSize(yAxis.getEntryLabels().values(), basicFont).getKey();
 		int xAxisLabelHeight = xAxisLabelMaxSize.getKey(); //Assume rotated by default
+		
+		//Since the font height is the same for all basic text, we can use the axis labels
+		final int basicFontHeight = xAxisLabelMaxSize.getValue();
+		
+		//The cells need to be at least as big as the font height
+		//This is true for the x-axis as  well since at a minimum we can rotate the text
+		final int cellWidth  = Math.max(DEFAULT_CELL_WIDTH, basicFontHeight + labelPadding);
+		final int cellHeight = Math.max(DEFAULT_CELL_HEIGHT, basicFontHeight + labelPadding);
+		
+		//Save a little bit of math later
+		final int halfCellWidth  = cellWidth  / 2;
+		final int halfCellHeight = cellHeight / 2;
 		
 		//Only rotate the x-axis labels when they are too big
 		final boolean rotateXLabels = (xAxisLabelHeight - labelPadding) > cellWidth;
 		if(!rotateXLabels) {
 			xAxisLabelHeight = xAxisLabelMaxSize.getValue();
 		}
-		
-		//Since the font height is the same for all basic text, we can use the axis labels
-		final int basicFontHeight = xAxisLabelMaxSize.getValue();
 		
 		//Calculate the legend values
 		final int    legendBoxes = yAxis.getCount() > 5 ? yAxis.getCount() : 5; //Must be at least 5
@@ -129,7 +137,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		
 		//Calculate legend sizes
 		final int legendHeight = cellHeight * legendBoxes;
-		final int legendLabelMaxWidth = getMaxStringSize(legendLabels).getKey();
+		final int legendLabelMaxWidth = getMaxStringSize(legendLabels, smallTitleFont).getKey();
 		final int legendWidth = cellWidth + labelPadding + legendLabelMaxWidth;
 		
 		//Calculate the X positional values, first
@@ -172,6 +180,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         BufferedImage heatmapImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = heatmapImage.createGraphics();
         
+        //Start the actual drawing onto the canvas
 		 try {
 			//Make the background all white
 			g2d.setColor(Color.WHITE);
@@ -183,7 +192,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			//Render the chart title
 			if(!title.isEmpty()) {
 				//Set the title font
-				g2d.setFont(titleFont);
+				g2d.setFont(bigTitleFont);
 				g2d.setColor(Color.BLACK);
 				for (int i = 0; i < titleLines.size(); i++) {
 					Entry<String, Entry<Integer, Integer>> line = titleLines.get(i);
@@ -196,14 +205,11 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			
 			//Reset to a decent basic font
 	        g2d.setFont(basicFont);
+	        g2d.setColor(Color.BLACK);
 	
-			//Will will need to determine the width of each label individually using fontMetrics
-	    	FontMetrics fontMetrics = g2d.getFontMetrics();
-    		
     		//Render the legend labels
     		//The number of legend boxes may be greater than the number of labels
-	    	g2d.setColor(Color.BLACK);
-    		g2d.drawString(legendLabels.get(legendLabels.size()-1), legendLabelStartPosX, legendLabelStartPosY); //First
+	   		g2d.drawString(legendLabels.get(legendLabels.size()-1), legendLabelStartPosX, legendLabelStartPosY); //First
     		g2d.drawString(legendLabels.get(0), legendLabelStartPosX, legendLabelStartPosY + (cellHeight * (legendBoxes-1))); //Last
     		if(valueRange > 0 ) {
     			//Only render the rest of the labels if there is a range to the colours
@@ -224,21 +230,30 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 				g2d.fillRect(legendStartPosX, legendStartPosY + (i * cellHeight), cellWidth, cellHeight);	
     		}
     		
+    		//Will will need to determine the width of each title individually using fontMetrics
+    		g2d.setFont(smallTitleFont);
+    		g2d.setColor(Color.BLACK); //Reset back to black! The last colour was from the legend
+	    	FontMetrics titleFontMetrics = g2d.getFontMetrics();
+    		
     		//Render the X-axis title
     		//TODO: Wrap the title if it's too long
-    		final int xAxisTitleWidth = fontMetrics.stringWidth(xAxis.getTitle());
-    		g2d.setColor(Color.BLACK);
+    		final int xAxisTitleWidth = titleFontMetrics.stringWidth(xAxis.getTitle());
     		g2d.drawString(xAxis.getTitle(), matrixCentreX - (xAxisTitleWidth/2), xAxisTitleStartPosY);
     		
     		//Render the Y-axis title
     		//TODO: Wrap the title if it's too long
-    		final int yAxisTitleWidth = fontMetrics.stringWidth(yAxis.getTitle());
+    		final int yAxisTitleWidth = titleFontMetrics.stringWidth(yAxis.getTitle());
     		AffineTransform transform = g2d.getTransform();
     		g2d.translate(yAxisTitleStartPosX, matrixCentreY + (yAxisTitleWidth/2));
 			g2d.rotate(-Math.PI / 2); // Rotate 90 degrees counter-clockwise
     		g2d.drawString(yAxis.getTitle(), 0, 0);
     		g2d.setTransform(transform);
     		
+    		
+    		//Will will need to determine the width of each label individually using fontMetrics
+    		g2d.setFont(basicFont);
+	    	FontMetrics labelFontMetrics = g2d.getFontMetrics(); //Font is different between titles and labels
+	    	
     		//Add all of the x labels, drawn vertically or horizontally
     		for (Entry<String, Integer> entry : xAxis.getLabelIndices().entrySet()) {
     			if(rotateXLabels) {
@@ -253,14 +268,14 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	    			//Restore the old transform
 	    			g2d.setTransform(transform);
     			} else {
-    				final int labelWidth = fontMetrics.stringWidth(entry.getKey());
+    				final int labelWidth = labelFontMetrics.stringWidth(entry.getKey());
     				g2d.drawString(entry.getKey(), xAxisLabelStartPosX - (labelWidth/2) + (entry.getValue() * cellWidth) + halfCellWidth, xAxisLabelStartPosY);
     			}
     		}
     		
     		//Add all of the y labels, drawn horizontally
     		for (Entry<String, Integer> entry : yAxis.getLabelIndices().entrySet()) {
-    			final int labelWidth = fontMetrics.stringWidth(entry.getKey());
+    			final int labelWidth = labelFontMetrics.stringWidth(entry.getKey());
     			//Align right
     			g2d.drawString(entry.getKey(), yAxisLabelStartPosX + (yAxisLabelMaxWidth - labelWidth), yAxisLabelStartPosY + (basicFontHeight/3) + (entry.getValue() * cellHeight) + halfCellHeight);
     		}
@@ -282,14 +297,14 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         }
 	}
 	
-	private static Entry<Integer, Integer> getMaxStringSize(Collection<String> strings) {
+	private static Entry<Integer, Integer> getMaxStringSize(Collection<String> strings, Font font) {
 		//Create a temporary image to get Graphics2D context for measuring
         BufferedImage tinyImage = new BufferedImage(1, 1, BufferedImage.BITMASK);
         Graphics2D g2d = tinyImage.createGraphics();
         int maxLabelLength = 0;
         int labelHeight = 0;
         try {
-        	 g2d.setFont(basicFont);
+        	 g2d.setFont(font);
         	 g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
              FontMetrics fontMetrics = g2d.getFontMetrics();
              
@@ -314,7 +329,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         Graphics2D g2d = tinyImage.createGraphics();
         List<Entry<String, Entry<Integer, Integer>>> titleLines = new ArrayList<Entry<String, Entry<Integer, Integer>>>();
         try {
-        	 g2d.setFont(titleFont);
+        	 g2d.setFont(bigTitleFont);
         	 g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
              FontMetrics fontMetrics = g2d.getFontMetrics();
              
@@ -371,7 +386,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         return titleLines;
 	}
 
-	private <T> Axis<?> determineAxisDimensions(List<DataQueryRecord> records, int index) {
+	private <T> Axis<?> determineAxis(List<DataQueryRecord> records, int index) {
 		String prettyName = getConfig().getFields().get(index).getPrettyName();
 		
 		switch (getConfig().getFields().get(index)) {
@@ -388,27 +403,27 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			return new IntegerAxis(prettyName, 1, 53);
 			
 		case DAY_OF_WEEK:
-			IntegerAxis dowAxis =  new IntegerAxis(prettyName);
+			IntegerAxis dowAxis = new IntegerAxis(prettyName);
 			for(int day = 1; day < 8; day++) {
 				dowAxis.addEntry(day, DayOfWeekMapping.getDayOfWeek(day));
 			}
 			return dowAxis;
 			
 		case MONTH:
-			IntegerAxis mAxis =  new IntegerAxis(prettyName);
+			IntegerAxis mAxis = new IntegerAxis(prettyName);
 			for(int month = 1; month < 13; month++) {
 				mAxis.addEntry(month, MonthMapping.getMonth(month));
 			}
 			return mAxis;
 			
 		case URBANIZATION:
-			StringAxis sAxis =  new StringAxis(prettyName);
+			StringAxis sAxis = new StringAxis(prettyName);
 			Stream.of(Urbanization.values())
 				.forEach(entry-> sAxis.addEntry(entry.toString(), UrbanizationMapping.getUrbanization(entry)));
 			return sAxis;
 			
 		case SITE_TYPE:
-			StringAxis stAxis =  new StringAxis(prettyName);
+			StringAxis stAxis = new StringAxis(prettyName);
 			Stream.of(SiteType.values())
 				.forEach(entry-> stAxis.addEntry(entry.toString(), SiteTypeMapping.getSiteType(entry)));
 			return stAxis;
