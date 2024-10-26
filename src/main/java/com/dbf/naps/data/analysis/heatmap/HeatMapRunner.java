@@ -112,7 +112,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		final int halfCellHeight = cellHeight / 2;
 		
 		//Only rotate the x-axis labels when they are too big
-		final boolean rotateXLabels = (xAxisLabelHeight - labelPadding) > cellWidth;
+		final boolean rotateXLabels = (xAxisLabelHeight ) > (cellWidth- labelPadding);
 		if(!rotateXLabels) {
 			xAxisLabelHeight = xAxisLabelMaxSize.getValue();
 		}
@@ -182,8 +182,13 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         
         //Start the actual drawing onto the canvas
 		 try {
-			//Make the background all white
-			g2d.setColor(Color.WHITE);
+			//Make the background all white, except if the colour scale goes to white
+			Color maxColour = HeatMapGradient.getColour(1.0, colourGradient);
+			if(maxColour.getBlue() > 240 && maxColour.getGreen() > 240 && maxColour.getRed() > 240) {
+				g2d.setColor(new Color(210, 210, 210));
+			} else {
+				g2d.setColor(Color.WHITE);
+			}
 			g2d.fillRect(0, 0, imageWidth, imageHeight);
 				
 			//Render the text smoothly
@@ -229,6 +234,10 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     			}
 				g2d.fillRect(legendStartPosX, legendStartPosY + (i * cellHeight), cellWidth, cellHeight);	
     		}
+    		
+    		//Render the legend border on top of the boxes
+    		g2d.setColor(Color.BLACK);
+    		g2d.drawRect(legendStartPosX, legendStartPosY, cellWidth-1, (cellHeight*legendBoxes) -1);
     		
     		//Will will need to determine the width of each title individually using fontMetrics
     		g2d.setFont(smallTitleFont);

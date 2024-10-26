@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.naps.data.globals.Constants;
+
 public class DataCleaner {
 	
 	private static final Logger log = LoggerFactory.getLogger(DataCleaner.class);
@@ -52,13 +54,19 @@ public class DataCleaner {
 	}
 	
 	public static BigDecimal extractDecimalData(String rawValue, boolean ignoreError) {
-		//Data points are allowed to be null
+		//These all represent missing data points
+		//Data points are allowed to be null.
+		//Negative data points are different. They generally represent "below the detection limit"
 		if (rawValue == null || rawValue.equals("") || rawValue.equals("-") || rawValue.startsWith("-99")) return null;
 		
 		try {
 			BigDecimal decimalVal = new BigDecimal(rawValue);
 			 //Make sure the scale is less than the error of a double
 			decimalVal = decimalVal.setScale(10, RoundingMode.HALF_UP);
+			if (decimalVal.compareTo(Constants.bigDecimal0) < 0) {
+				//Negative values are to be treated as below the detection limit and thus zero
+				decimalVal = Constants.bigDecimal0;
+			}
     		return decimalVal;
 		} catch (NumberFormatException e){
 			if(!ignoreError) throw new IllegalArgumentException("Invalid decimal data point: " + rawValue, e);

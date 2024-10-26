@@ -21,5 +21,6 @@ public class Constants {
 	public static final int DATASET_YEAR_END   = Year.now().getValue();
 	
 	public static final BigDecimal bigDecimal1000 = new BigDecimal(1000);
+	public static final BigDecimal bigDecimal0 = new BigDecimal(0);
 	
 }
