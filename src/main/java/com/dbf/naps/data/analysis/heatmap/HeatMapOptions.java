@@ -29,7 +29,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		
 		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
-		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getGradientCount()+1) + " (inclusive).");
+		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getGradientCount()) + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
 	}
 

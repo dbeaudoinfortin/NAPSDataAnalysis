@@ -56,7 +56,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		getOptions().addOption("st","siteType", true, "NAPS site type classification (" + SiteType.ALL_VALUES + ").");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
-		getOptions().addOption("ct","title", true, "Chart title. Will be automatically generated if not defined.");
+		getOptions().addOption("ct","title", true, "Chart/report title. Will be automatically generated if not defined.");
 		getOptions().addOption("scm","minSampleCount", true, "Minimum sample count (number of samples or data points) in order to be included in the result set.");
 		getOptions().addOption("vub","valueUpperBound", true, "Upper bound (inclusive) of pre-aggregated raw values to include. "
 				+ "Values greater than this threshold will be filtered out before aggregation.");
