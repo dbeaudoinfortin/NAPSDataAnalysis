@@ -96,8 +96,9 @@ Say, for example, you want to know how many times the hourly reading for carbon 
 ```
 
 For more details on how to run these query tools, see the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data query sections below.
-
-![image](https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065)
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065" width="400" />
+</p>
 
 **Heat Map Diagrams**
 
@@ -114,13 +115,17 @@ From this diagram alone there are some trends that immediately stand out, such a
 
 We can change the x-axis to get a view of what is happening on the weekends compared to the weekdays:
 
-![Avg_CO_By Day of the Week and Year](https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6)
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6" width="400" />
+</p>
 
 (Note that this second heat map uses a different colour palette that better suits the data.)
 
 Focusing on a single year (2002) makes it easy to see the difference between summer and winter months:
 
-![Monoxide_Yearly_2002](https://github.com/user-attachments/assets/9224b0b7-d57a-447f-ab1c-324bd36fd991)
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/9224b0b7-d57a-447f-ab1c-324bd36fd991" width="400" />
+</p>
 
 Similarly, we can look at any pollutant, or all pollutants. Here is SO2, for all years, using a third colour palette:
 
@@ -128,9 +133,10 @@ Similarly, we can look at any pollutant, or all pollutants. Here is SO2, for all
 
 And here are two heat maps for lead, showing the average and maximum concentrations, respectively. This makes it easy to see the large reduction in air pollution starting with the ban on leaded gasoline in 1990:
 
-![Avg_Lead_By Month and Year](https://github.com/user-attachments/assets/9660ba50-52bf-4b9b-ba17-7fcde5766e34)
-
-![Max_Lead_By Month and Year](https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3)
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/9660ba50-52bf-4b9b-ba17-7fcde5766e34" width="400" />
+ <img src="https://github.com/user-attachments/assets/a7b8b1ce-dfcf-4778-b158-fabde5fb27f3" width="400" />
+</p>
 
 (The provinces of Ontario & Quebec were only chosen to demonstrate the ability to filter by province/territory.)
 
