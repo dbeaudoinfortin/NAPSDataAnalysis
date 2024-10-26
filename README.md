@@ -101,7 +101,7 @@ For more details on how to run these query tools, see the [continuous](#napscont
 
 **Heat Map Diagrams**
 
-The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams for both the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) data. These heat maps are highly customizable can be generated in a single command. They make it much easier to spot trends in the data. For example, here is the entire history carbon monoxide readings for all NAPS sites, for all of Canada, aggregated into a single heat map diagram.
+The NAPS Data Analysis Toolbox provides tools for generating heat map diagrams for both the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) data. These heat maps are highly customizable and can be generated in a single command. They make it much easier to spot trends in the data. For example, here is the entire history carbon monoxide readings for all NAPS sites, for all of Canada, aggregated into a single heat map diagram.
 
 ![Avg_CO_By Day of the Year and Year](https://github.com/user-attachments/assets/c252ea64-4493-49aa-8295-33709243a8ce)
 
@@ -381,6 +381,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 ```
  -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, NONE).
  -cn,  --cityName <arg>           City name, partial match.
+ -ct,  --title <arg>              Chart title. Will be automatically generated if not defined.
  -d,   --days <arg>               Comma-separated list of days of the month.
  -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
  -dbn, --dbName <arg>             Database name for the PostgreSQL database. Default: naps
@@ -445,7 +446,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 
 **Other Notes:**
-- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide.  
+- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
 
 **Example Query:**
 
@@ -506,10 +507,11 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 **Command line usage:**
 ```
  -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM).
- -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-8 (inclusive).
+ -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-9 (inclusive).
  -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
  -cn,  --cityName <arg>           City name, partial match.
  -csv, --generateCSV              Generate a corresponding CSV file containing the raw data for each heat map.
+ -ct,  --title <arg>              Chart title. Will be automatically generated if not defined.
  -cub, --colourUpperBound <arg>   Heat map colour upper bound (inclusive).
  -d,   --days <arg>               Comma-separated list of days of the month.
  -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
@@ -551,7 +553,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 
 **Colour Palettes:**
 
-8 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
+9 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
 1. A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
 2. A 12 step gradient from blue to red with less saturation than the first colour palette.
 3. A simplified 5 step gradient from blue to red.
@@ -559,7 +561,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 5. A 5 step colour blind friendly gradient of greenish-yellow to dark orange.
 6. A 3 step black-red-orange gradient, similar to black-body radiation, up to approximately 1300 degrees kelvin.
 7. Same as number 6 but two more steps are added to extend the scale up to approximately 6500k degrees kelvin.
-8. A 2 step grey-scale gradient that should be used for non-colour screen/print-outs.
+8. A 50 step colour gradient based on [Dave Green's ‘cubehelix’ colour scheme](https://people.phy.cam.ac.uk/dag9/CUBEHELIX/)
+9. A 2 step grey-scale gradient that should be used for non-colour screen/print-outs.
 
 The default colour palette, if not specified, is number 1. Here are examples of what the colour palette look like, in order:
 
@@ -570,7 +573,8 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 ![Continuous_By Day of the Month and Month_C5](https://github.com/user-attachments/assets/523a4438-bb37-4236-af18-d5885a4770a7)
 ![Continuous_By Day of the Month and Month_C6](https://github.com/user-attachments/assets/1085aec3-b82f-42e3-af67-72df9c5af137)
 ![Continuous_By Day of the Month and Month_C7](https://github.com/user-attachments/assets/fc17e80b-846b-4998-af25-766da3bc09ac)
-![Continuous_By Day of the Month and Month_C8](https://github.com/user-attachments/assets/a9f9100e-dfbe-4a39-8dce-1da1bd0e222f)
+![Continuous_By Day of the Month and Month_C8](https://github.com/user-attachments/assets/0c10d7ce-09cc-4d3c-be2e-ceb7b12272d1)
+![Continuous_By Day of the Month and Month_C9](https://github.com/user-attachments/assets/a9f9100e-dfbe-4a39-8dce-1da1bd0e222f)
 
 **Aggregation Rules:**
 - The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM`).
@@ -591,7 +595,7 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 **Notes:**
 - The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
 - The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically. 
-- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide.
+- A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
 
 ## NAPSContinuousDataExporter
 
