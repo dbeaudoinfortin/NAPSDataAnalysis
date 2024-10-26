@@ -44,6 +44,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	//TODO: make these configurable
 	private static final int DEFAULT_CELL_WIDTH  = 50;
 	private static final int DEFAULT_CELL_HEIGHT = DEFAULT_CELL_WIDTH;
+	private static final int DEFAULT_GRID_WIDTH = 1;
 	
 	private static final int labelPadding   = 10;
 	private static final int chartTitlePadding = labelPadding*4;
@@ -83,7 +84,8 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		log.info("Analysis complete for " + dataFile + ".");
 
 		log.info("Rendering heatmap graphics for " + dataFile + "...");
-		renderHeatMap(dataFile, records, xDimension, yDimension, dMinValue, dMaxValue, getConfig().getColourLowerBound()!=null, getConfig().getColourUpperBound()!=null, title, getConfig().getColourGradient());
+		String shortTitle = getReportTitle(queryUnits, false);
+		renderHeatMap(dataFile, records, xDimension, yDimension, dMinValue, dMaxValue, getConfig().getColourLowerBound()!=null, getConfig().getColourUpperBound()!=null, shortTitle, getConfig().getColourGradient(), getConfig().isGridLines());
 		log.info("Rendering complete for " + dataFile + ".");
 		
 		if (getConfig().isGenerateCSV()) {
@@ -93,7 +95,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		}
 	}
 	
-	private static void renderHeatMap(File dataFile, List<DataQueryRecord> records, Axis<?> xAxis, Axis<?> yAxis, double minValue, double maxValue, boolean minClamped, boolean maxClamped, String title, int colourGradient) throws IOException{		
+	private static void renderHeatMap(File dataFile, List<DataQueryRecord> records, Axis<?> xAxis, Axis<?> yAxis, double minValue, double maxValue, boolean minClamped, boolean maxClamped, String title, int colourGradient, boolean includeGrids) throws IOException{		
 		//Render all of the X & Y labels first so we can determine the maximum size
 		final Entry<Integer, Integer> xAxisLabelMaxSize = getMaxStringSize(xAxis.getEntryLabels().values(), basicFont);
 		final int yAxisLabelMaxWidth  = getMaxStringSize(yAxis.getEntryLabels().values(), basicFont).getKey();
@@ -112,7 +114,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		final int halfCellHeight = cellHeight / 2;
 		
 		//Only rotate the x-axis labels when they are too big
-		final boolean rotateXLabels = (xAxisLabelHeight ) > (cellWidth- labelPadding);
+		final boolean rotateXLabels = (xAxisLabelHeight ) > (cellWidth + (includeGrids ? DEFAULT_GRID_WIDTH : 0) - labelPadding);
 		if(!rotateXLabels) {
 			xAxisLabelHeight = xAxisLabelMaxSize.getValue();
 		}
@@ -136,19 +138,20 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		if(maxClamped) legendLabels.set(legendvalues.size()-1, ">= " + legendLabels.get(legendvalues.size()-1));
 		
 		//Calculate legend sizes
-		final int legendHeight = cellHeight * legendBoxes;
+		final int legendHeight = (cellHeight * legendBoxes) + (includeGrids ? (legendBoxes + 1) * DEFAULT_GRID_WIDTH : 0) ;
 		final int legendLabelMaxWidth = getMaxStringSize(legendLabels, smallTitleFont).getKey();
-		final int legendWidth = cellWidth + labelPadding + legendLabelMaxWidth;
+		final int legendBoxesWidth = cellWidth + (includeGrids ? 2 * DEFAULT_GRID_WIDTH : 0);
+		final int legendWidth = legendBoxesWidth + labelPadding + legendLabelMaxWidth;
 		
 		//Calculate the X positional values, first
 		final int yAxisTitleStartPosX = outsidePadding + basicFontHeight;
 		final int yAxisLabelStartPosX = yAxisTitleStartPosX + (labelPadding*2);
 		final int matrixStartPosX = yAxisLabelStartPosX + yAxisLabelMaxWidth + labelPadding;
-		final int matrixWidth = (xAxis.getCount()  * cellWidth);
+		final int matrixWidth = (xAxis.getCount()  * cellWidth) + (includeGrids ? (xAxis.getCount() + 1) * DEFAULT_GRID_WIDTH : 0);
 		final int matrixCentreX =  matrixStartPosX + (matrixWidth/2);
-		final int xAxisLabelStartPosX = matrixStartPosX;
+		final int xAxisLabelStartPosX = matrixStartPosX + (includeGrids ? DEFAULT_GRID_WIDTH : 0);
 		final int legendStartPosX = matrixStartPosX + matrixWidth + legendPadding;
-		final int legendLabelStartPosX = legendStartPosX + cellWidth + labelPadding;
+		final int legendLabelStartPosX = legendStartPosX + legendBoxesWidth + labelPadding;
 		
 		//Calculate the overall image width
 		//Outside padding + Y Axis Title + label padding + Y Axis Labels + label padding + chart width + legend padding + legend width + outside padding
@@ -162,16 +165,16 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
         final int chartTitleLineHeight = title.isEmpty() ? 0 : titleLines.get(0).getValue().getValue();
         final int chartTitleHeight = title.isEmpty() ? 0 : titleLines.size() * chartTitleLineHeight;
         
-		//Now that we know the big chart title height, we can calculate the Y positional values
+		//Now that we know the chart title height, we can calculate the Y positional values
         final int chartTitleStartPosY = outsidePadding;
-		final int xAxisTitleStartPosY = chartTitleStartPosY + chartTitleHeight + chartTitlePadding + basicFontHeight; //Label positions are bottom left!!
+		final int xAxisTitleStartPosY = chartTitleStartPosY + (!title.isEmpty() ? chartTitleHeight + chartTitlePadding : 0) + basicFontHeight; //Label positions are bottom left!!
 		final int xAxisLabelStartPosY = xAxisTitleStartPosY + (labelPadding*2) + xAxisLabelHeight;
 		final int matrixStartPosY = xAxisLabelStartPosY + labelPadding;
-		final int matrixHeight = (yAxis.getCount()  * cellHeight);
+		final int matrixHeight = (yAxis.getCount()  * cellHeight) + (includeGrids ? (yAxis.getCount() + 1) * DEFAULT_GRID_WIDTH : 0);
 		final int matrixCentreY =  matrixStartPosY + (matrixHeight/2);
-		final int yAxisLabelStartPosY = matrixStartPosY;
+		final int yAxisLabelStartPosY = matrixStartPosY + (includeGrids ? DEFAULT_GRID_WIDTH : 0);
 		final int legendStartPosY = (matrixHeight>=legendHeight) ? (matrixCentreY - (legendHeight/2)) : matrixStartPosY; //Legend is centred with the Matrix only if the matrix is big enough
-		final int legendLabelStartPosY = legendStartPosY + basicFontHeight; //Label positions are bottom left!!
+		final int legendLabelStartPosY = legendStartPosY + basicFontHeight + (basicFontHeight/4) + (includeGrids ? DEFAULT_GRID_WIDTH : 0); //Label positions are bottom left!!
 		
         //Finally, we can figure out the overall image height
         //Outside padding + big title + title padding + X Axis Title + label padding + X Axis Labels + label padding + chart height + outside padding
@@ -215,15 +218,16 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     		//Render the legend labels
     		//The number of legend boxes may be greater than the number of labels
 	   		g2d.drawString(legendLabels.get(legendLabels.size()-1), legendLabelStartPosX, legendLabelStartPosY); //First
-    		g2d.drawString(legendLabels.get(0), legendLabelStartPosX, legendLabelStartPosY + (cellHeight * (legendBoxes-1))); //Last
+    		g2d.drawString(legendLabels.get(0), legendLabelStartPosX, legendLabelStartPosY + (cellHeight * (legendBoxes-1)) + (includeGrids ? DEFAULT_GRID_WIDTH*(legendBoxes-1) : 0)); //Last
     		if(valueRange > 0 ) {
     			//Only render the rest of the labels if there is a range to the colours
     			for(int i = 1; i < legendBoxes-1; i++) {
-    				g2d.drawString(legendLabels.get(legendBoxes-i-1), legendLabelStartPosX, legendLabelStartPosY + (cellHeight * (i)));
+    				final int legendLabelPosY = legendLabelStartPosY + (cellHeight * i) + (includeGrids ? DEFAULT_GRID_WIDTH*i : 0);
+    				g2d.drawString(legendLabels.get(legendBoxes-i-1), legendLabelStartPosX, legendLabelPosY);
     			}
     		}
     		
-    		//Render the legend boxes, starting with the bottom (minimum) first
+    		//Render the legend boxes, starting with the top (maximum colour value) first
     		for(int i = 0; i < legendBoxes; i++) {
     			if(i == 0) {
     				g2d.setColor(HeatMapGradient.getColour(1.0, colourGradient));
@@ -232,12 +236,29 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     			} else {
     				g2d.setColor(HeatMapGradient.getColour((1-(legendvalues.get(i)-minValue)/valueRange), colourGradient));
     			}
-				g2d.fillRect(legendStartPosX, legendStartPosY + (i * cellHeight), cellWidth, cellHeight);	
+    			final int legendBoxPosX = legendStartPosX + (includeGrids ? DEFAULT_GRID_WIDTH : 0);
+    			final int legendBoxPosY = legendStartPosY + (includeGrids ? (DEFAULT_GRID_WIDTH + i * (cellHeight + DEFAULT_GRID_WIDTH)) : i * cellHeight);
+				g2d.fillRect(legendBoxPosX, legendBoxPosY, cellWidth, cellHeight);
+				
+				//Also render the dividing lines
+				//The last box doesn't need a line, that's handled by the outside border
+				if(includeGrids && (i != legendBoxes -1)) {
+					g2d.setColor(Color.BLACK); //Reset back to black! The last colour was from the legend
+					g2d.fillRect(legendBoxPosX, legendBoxPosY + cellHeight, cellWidth, DEFAULT_GRID_WIDTH); 
+				}
     		}
     		
-    		//Render the legend border on top of the boxes
+    		//Render the legend grid lines or outside border
     		g2d.setColor(Color.BLACK);
-    		g2d.drawRect(legendStartPosX, legendStartPosY, cellWidth-1, (cellHeight*legendBoxes) -1);
+    		if(includeGrids) {
+    			g2d.fillRect(legendStartPosX, legendStartPosY, legendBoxesWidth, DEFAULT_GRID_WIDTH); //Top
+    			g2d.fillRect(legendStartPosX, legendStartPosY + legendHeight - DEFAULT_GRID_WIDTH, legendBoxesWidth, DEFAULT_GRID_WIDTH); //Bottom
+    			g2d.fillRect(legendStartPosX, legendStartPosY, DEFAULT_GRID_WIDTH, legendHeight); //Left
+    			g2d.fillRect(legendStartPosX + legendBoxesWidth - DEFAULT_GRID_WIDTH, legendStartPosY, DEFAULT_GRID_WIDTH, legendHeight); //Right
+    		} else {
+    			//Render the legend border on top of the boxes
+        		g2d.drawRect(legendStartPosX, legendStartPosY, cellWidth-1, (cellHeight*legendBoxes) -1);
+    		}
     		
     		//Will will need to determine the width of each title individually using fontMetrics
     		g2d.setFont(smallTitleFont);
@@ -258,7 +279,6 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     		g2d.drawString(yAxis.getTitle(), 0, 0);
     		g2d.setTransform(transform);
     		
-    		
     		//Will will need to determine the width of each label individually using fontMetrics
     		g2d.setFont(basicFont);
 	    	FontMetrics labelFontMetrics = g2d.getFontMetrics(); //Font is different between titles and labels
@@ -268,7 +288,8 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     			if(rotateXLabels) {
 	    			//Store the current transform
 	    			transform = g2d.getTransform();
-	    			g2d.translate(xAxisLabelStartPosX + (entry.getValue() * cellWidth) + halfCellWidth, xAxisLabelStartPosY); //TODO: need to centre this in the x dimension
+	    			final int cellOffsetX = xAxisLabelStartPosX + (entry.getValue() * cellWidth) + (includeGrids ? entry.getValue()*DEFAULT_GRID_WIDTH : 0) + halfCellWidth + (basicFontHeight/4);
+	    			g2d.translate(cellOffsetX, xAxisLabelStartPosY);
 	    			g2d.rotate(-Math.PI / 2); // Rotate 90 degrees counter-clockwise
 	    			
 	    			// Draw the x axis label
@@ -278,15 +299,17 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	    			g2d.setTransform(transform);
     			} else {
     				final int labelWidth = labelFontMetrics.stringWidth(entry.getKey());
-    				g2d.drawString(entry.getKey(), xAxisLabelStartPosX - (labelWidth/2) + (entry.getValue() * cellWidth) + halfCellWidth, xAxisLabelStartPosY);
+    				final int cellOffsetX = xAxisLabelStartPosX - (labelWidth/2) + (entry.getValue() * cellWidth) + (includeGrids ? entry.getValue()*DEFAULT_GRID_WIDTH : 0) + halfCellWidth;
+    				g2d.drawString(entry.getKey(), cellOffsetX, xAxisLabelStartPosY);
     			}
     		}
     		
     		//Add all of the y labels, drawn horizontally
     		for (Entry<String, Integer> entry : yAxis.getLabelIndices().entrySet()) {
     			final int labelWidth = labelFontMetrics.stringWidth(entry.getKey());
-    			//Align right
-    			g2d.drawString(entry.getKey(), yAxisLabelStartPosX + (yAxisLabelMaxWidth - labelWidth), yAxisLabelStartPosY + (basicFontHeight/3) + (entry.getValue() * cellHeight) + halfCellHeight);
+    			final int cellOffsetY = yAxisLabelStartPosY + (basicFontHeight/4) + (entry.getValue() * cellHeight) + (includeGrids ? entry.getValue()*DEFAULT_GRID_WIDTH : 0) + halfCellHeight;
+    			//Aligned right
+    			g2d.drawString(entry.getKey(), yAxisLabelStartPosX + (yAxisLabelMaxWidth - labelWidth), cellOffsetY);
     		}
     		
 			//Draw the heat map itself
@@ -297,7 +320,27 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
     			//Determine the colour for this square of the map
 				final double val = minClamped || maxClamped ? Math.max(Math.min(record.getValue().doubleValue(), maxValue), minValue) : record.getValue().doubleValue();
 				g2d.setColor(HeatMapGradient.getColour((valueRange == 0 ? 1.0 : (val-minValue) / valueRange), colourGradient));
-				g2d.fillRect(matrixStartPosX + (x * cellWidth), matrixStartPosY + (y * cellHeight), cellWidth, cellHeight);	
+				
+				final int matrixCellOffsetX = includeGrids ?  x * (cellWidth  + DEFAULT_GRID_WIDTH) : x * cellWidth;
+				final int matrixCellOffsetY = includeGrids ?  y * (cellHeight + DEFAULT_GRID_WIDTH) : y * cellHeight;
+				
+				final int matrixBoxPosX = matrixStartPosX + (includeGrids ? DEFAULT_GRID_WIDTH : 0) + matrixCellOffsetX;
+    			final int matrixBoxPosY = matrixStartPosY + (includeGrids ? DEFAULT_GRID_WIDTH : 0) + matrixCellOffsetY;
+				g2d.fillRect(matrixBoxPosX, matrixBoxPosY, cellWidth, cellHeight);
+			}
+    		
+    		//Draw the grid lines
+			if(includeGrids) {
+				g2d.setColor(Color.BLACK); //Reset back to black! The last colour was from the matrix
+				for(int y = 0; y <= yAxis.getCount(); y++) {
+					final int matrixOffsetY = y * (cellHeight + DEFAULT_GRID_WIDTH);
+					g2d.fillRect(matrixStartPosX, matrixStartPosY + matrixOffsetY , matrixWidth, DEFAULT_GRID_WIDTH); // Top line of each row
+				}
+				
+				for(int x = 0; x <= xAxis.getCount(); x++) {
+					final int matrixOffsetX = x * (cellWidth + DEFAULT_GRID_WIDTH);
+					g2d.fillRect(matrixStartPosX + matrixOffsetX, matrixStartPosY , DEFAULT_GRID_WIDTH, matrixHeight); // Top line of each row
+				}
 			}
     		
     		ImageIO.write(heatmapImage, "png", dataFile);

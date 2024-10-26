@@ -50,7 +50,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				log.info(getThreadId() + ":: Will use the units " + queryUnits + " for the file " + getDataFile() + ".");
 			}
 			
-			title = getReportTitle(queryUnits);
+			title = getReportTitle(queryUnits, true);
 			log.info(getThreadId() + ":: Will use the report title \"" + title + "\" for the file " + getDataFile() + ".");
 			
 			records = queryData();
@@ -155,7 +155,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				getDataset());
 	}
 	
-	protected String getReportTitle(String units) {
+	protected String getReportTitle(String units, boolean longTitle) {
 		
 		//Predefined custom title"
 		if(getConfig().getTitle() != null) {
@@ -254,11 +254,16 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		}
 		
 		if(getConfig().getProvTerr() != null && !getConfig().getProvTerr().isEmpty() && getConfig().getProvTerr().size() != ProvTerr.values().length) {
-			title.append(" in the ");
-			if(getConfig().getProvTerr().size() == 1) {
-				title.append("Province/Territory of ");
+			if(longTitle) {
+				//Not sure why I need this part before the province name
+				title.append(" in the ");
+				if(getConfig().getProvTerr().size() == 1) {
+					title.append("Province/Territory of ");
+				} else {
+					title.append("Provinces/Territories of ");
+				}
 			} else {
-				title.append("Provinces/Territories of ");
+				title.append(" in ");
 			}
 			
 			Utils.prettyPrintStringList(ProvinceTerritoryMapping.getProvTerrStrings(getConfig().getProvTerr()), title, false);
@@ -299,11 +304,13 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			title.append(getConfig().getYearEnd());
 		}
 		
-		if(getConfig().getFields() != null && !getConfig().getFields().isEmpty()) {
-			title.append(", Grouped by ");
-			Utils.prettyPrintStringList(getConfig().getFields().stream().map(f->f.getPrettyName()).toList(), title, false);
-		}		
-		
+		if(longTitle) {
+			if(getConfig().getFields() != null && !getConfig().getFields().isEmpty()) {
+				title.append(", Grouped by ");
+				Utils.prettyPrintStringList(getConfig().getFields().stream().map(f->f.getPrettyName()).toList(), title, false);
+			}
+		}
+
 		return title.toString();
 	}
 	

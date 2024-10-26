@@ -17,6 +17,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private int colourGradient = 1;
 	
 	private boolean generateCSV = false;
+	private boolean gridlines = false;
 	
 	static {
 		//The parent class' static initialiser will be called first.
@@ -31,6 +32,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
 		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getGradientCount()) + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
+		getOptions().addOption("gl","gridlines", false, "Include grid lines.");	
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
@@ -50,6 +52,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		loadColourLowerBound(cmd); //Check me first!
 		loadColourUpperBound(cmd);
 		loadGenerateCSV(cmd);
+		loadGridLines(cmd);
 		loadGradient(cmd);
 	}
 	
@@ -68,6 +71,11 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private void loadGenerateCSV(CommandLine cmd) {
 		generateCSV = cmd.hasOption("generateCSV");
 		log.info("Generate CSV file flag is set to " + generateCSV);
+	}
+	
+	private void loadGridLines(CommandLine cmd) {
+		gridlines = cmd.hasOption("gridlines");
+		log.info("Include grid lines flag is set to " + gridlines);
 	}
 	
 	private void loadColourLowerBound(CommandLine cmd) {
@@ -111,5 +119,9 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 
 	public int getColourGradient() {
 		return colourGradient;
+	}
+
+	public boolean isGridLines() {
+		return gridlines;
 	}
 }
