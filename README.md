@@ -144,22 +144,22 @@ We can limit the results to only large and medium urban areas, and focus in arou
 
 ![Integrated_Avg By Week of the Year and Year](https://github.com/user-attachments/assets/d8acdda9-2def-4580-8310-df719ebf4627)
 
-Here is a breakdown by province/territory of PM2.5 concentrations:
+Here is a breakdown by province/territory of PM2.5 concentrations. The upper and lower bounds of the colour scales have been fixed to be consistent between all 13 graphs.
 
 <p align="center">
- <img src="https://github.com/user-attachments/assets/4cd0131e-955a-4943-bb16-f861090f64c6" width="300" />
- <img src="https://github.com/user-attachments/assets/2effe67d-7dd0-4336-b1f1-0f025076e115" width="300" />
- <img src="https://github.com/user-attachments/assets/33d54e35-bea0-4c18-b2fa-09732a52452b" width="300" />
- <img src="https://github.com/user-attachments/assets/8b2d4df2-9f58-467c-83ae-b2eea672859a" width="300" />
- <img src="https://github.com/user-attachments/assets/11b91e0f-8633-48d7-990c-ab2cf6297a1a" width="300" />
- <img src="https://github.com/user-attachments/assets/918b3147-e795-4014-b1d2-86cf703599b5" width="300" />
- <img src="https://github.com/user-attachments/assets/36725f0d-1295-4acd-a238-8aa510a63f90" width="300" />
- <img src="https://github.com/user-attachments/assets/492b226e-3a79-44e4-9354-e1cd3b282b0f" width="300" />
- <img src="https://github.com/user-attachments/assets/fc3b572a-0049-41cd-8549-e0b507ca8bc8" width="300" />
- <img src="https://github.com/user-attachments/assets/9850b8c2-9904-4ac5-ae65-81284f8e573e" width="300" />
- <img src="https://github.com/user-attachments/assets/f759dc62-0e62-492a-a671-d55092ac1157" width="300" />
- <img src="https://github.com/user-attachments/assets/5430a222-5192-4fa0-b890-6ff99f97214d" width="300" />
- <img src="https://github.com/user-attachments/assets/4c3a4def-4755-4d05-8bd0-586cc7e5b8b7" width="300" />
+ <img src="https://github.com/user-attachments/assets/4cd0131e-955a-4943-bb16-f861090f64c6" width="400" />
+ <img src="https://github.com/user-attachments/assets/2effe67d-7dd0-4336-b1f1-0f025076e115" width="400" />
+ <img src="https://github.com/user-attachments/assets/33d54e35-bea0-4c18-b2fa-09732a52452b" width="400" />
+ <img src="https://github.com/user-attachments/assets/8b2d4df2-9f58-467c-83ae-b2eea672859a" width="400" />
+ <img src="https://github.com/user-attachments/assets/11b91e0f-8633-48d7-990c-ab2cf6297a1a" width="400" />
+ <img src="https://github.com/user-attachments/assets/918b3147-e795-4014-b1d2-86cf703599b5" width="400" />
+ <img src="https://github.com/user-attachments/assets/36725f0d-1295-4acd-a238-8aa510a63f90" width="400" />
+ <img src="https://github.com/user-attachments/assets/492b226e-3a79-44e4-9354-e1cd3b282b0f" width="400" />
+ <img src="https://github.com/user-attachments/assets/fc3b572a-0049-41cd-8549-e0b507ca8bc8" width="400" />
+ <img src="https://github.com/user-attachments/assets/9850b8c2-9904-4ac5-ae65-81284f8e573e" width="400" />
+ <img src="https://github.com/user-attachments/assets/f759dc62-0e62-492a-a671-d55092ac1157" width="400" />
+ <img src="https://github.com/user-attachments/assets/5430a222-5192-4fa0-b890-6ff99f97214d" width="400" />
+ <img src="https://github.com/user-attachments/assets/4c3a4def-4755-4d05-8bd0-586cc7e5b8b7" width="400" />
 </p>
 
 The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heat map. 
