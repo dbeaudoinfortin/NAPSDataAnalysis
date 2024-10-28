@@ -451,7 +451,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 ```
 
 **Aggregation Rules:**
-- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM, NONE`).
+- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM, NONE`.
 - The default aggregation function, if not specified, is `AVG`.
 - The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
@@ -577,7 +577,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 
 **Colour Palettes:**
 
-9 different colour palettes are currently offered. I will plan to eventually add more in the future. The current palettes are the following:
+9 different colour palettes are currently offered. I plan to eventually add more in the future. The current palettes are the following:
 1. A smooth gradient based on the colour wheel from blue to red. All the of the colours are fully saturated.
 2. A 12 step gradient from blue to red with less saturation than the first colour palette.
 3. A simplified 5 step gradient from blue to red.
@@ -601,7 +601,7 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 ![Continuous_By Day of the Month and Month_C9](https://github.com/user-attachments/assets/a9f9100e-dfbe-4a39-8dce-1da1bd0e222f)
 
 **Aggregation Rules:**
-- The possible values for the aggregation function are (`AVG, MIN, MAX, COUNT, SUM`).
+- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM`.
 - The use of an aggregation function is mandatory to generate the heat map.
 - The default aggregation function, if not specified, is `AVG`.
 - Both the `group1` and `group2` options are mandatory since they represent the x-axis and y-axis of the chart, respectively. 
