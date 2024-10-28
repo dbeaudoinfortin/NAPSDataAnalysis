@@ -144,7 +144,7 @@ We can limit the results to only large and medium urban areas, and focus in arou
 
 ![Integrated_Avg By Week of the Year and Year](https://github.com/user-attachments/assets/d8acdda9-2def-4580-8310-df719ebf4627)
 
-Here is a breakdown by province/territory of PM2.5 concentrations. The upper and lower bounds of the colour scales have been fixed to be consistent between all 13 graphs.
+Here is a breakdown by province/territory of PM2.5 concentrations. The upper and lower bounds of the colour scales have been fixed to be consistent between all 13 graphs. The seasonal trends by province become apparent when averaging the data over many years.
 
 <p align="center">
  <img src="https://github.com/user-attachments/assets/4cd0131e-955a-4943-bb16-f861090f64c6" width="400" />
@@ -160,6 +160,15 @@ Here is a breakdown by province/territory of PM2.5 concentrations. The upper and
  <img src="https://github.com/user-attachments/assets/f759dc62-0e62-492a-a671-d55092ac1157" width="400" />
  <img src="https://github.com/user-attachments/assets/5430a222-5192-4fa0-b890-6ff99f97214d" width="400" />
  <img src="https://github.com/user-attachments/assets/4c3a4def-4755-4d05-8bd0-586cc7e5b8b7" width="400" />
+</p>
+
+The seasonal differences between Quebec and Ontario become more apparent when looking at just the large and medium urban zones. Here is a comparison of both the average and maximum PM2.5 concentrations:
+
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/22d829c6-05c3-4059-b4a1-befeede455e7" width="400" />
+ <img src="https://github.com/user-attachments/assets/e0c27530-fa35-4e24-b780-e0e4c148cbb8" width="400" />
+ <img src="https://github.com/user-attachments/assets/a4b07961-e5a8-4f87-a77a-a03e956f40b2" width="400" />
+ <img src="https://github.com/user-attachments/assets/14f63809-3ea6-42d7-bcc5-7e79a3ee40d1" width="400" />
 </p>
 
 The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heat map. 
