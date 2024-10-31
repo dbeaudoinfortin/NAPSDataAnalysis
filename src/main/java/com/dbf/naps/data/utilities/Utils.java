@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import com.dbf.naps.data.globals.Constants;
@@ -47,4 +49,37 @@ public class Utils {
 			sb.append(strings.get(i));
 		}
 	}
+	
+    public static String convertToJsObjectNotation(String variableName, Map<String, Map<Integer, Set<Integer>>> map) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("const ");
+        sb.append(variableName); //Ex. integratedDataMap
+        sb.append("={");
+        for (Map.Entry<String, Map<Integer, Set<Integer>>> entry : map.entrySet()) {
+            sb.append("\"");
+            sb.append(entry.getKey()); //Pollutant
+            sb.append("\":{");
+            for (Map.Entry<Integer, Set<Integer>> yearEntry : entry.getValue().entrySet()) {
+                sb.append(yearEntry.getKey()); //year
+                sb.append(":");
+                stringifyCollection(sb, yearEntry.getValue()); //site ids, without spaces
+                sb.append(",");
+            }
+            sb.setLength(sb.length() - 1); //Remove the last comma
+            sb.append("},");
+        }
+        sb.setLength(sb.length() - 1); //Remove the last comma
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    public static void stringifyCollection(StringBuilder sb, Collection<?> items) {
+    	sb.append("[");
+    	for (Object item :items) {
+    		sb.append(item.toString());
+    		sb.append(",");
+    	}
+    	sb.setLength(sb.length() - 1); //Remove the last comma
+    	sb.append("]");
+    }
 }

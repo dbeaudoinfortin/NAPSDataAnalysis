@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Future;
-
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,7 @@ import com.dbf.naps.data.db.NAPSDBAction;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
+import com.dbf.naps.data.utilities.Utils;
 
 public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPSDBAction<O> {
 
@@ -23,6 +27,8 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 	public NAPSDataExtractor(String[] args) {
 		super(args);
 	}
+	
+	//TODO: Create an options class and add an option to automatically zip the export files
 	
 	@Override
 	protected void run() {
@@ -61,6 +67,24 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
 		{
 			List<DataRecordGroup> dataGroups = getDataGroups();
+			
+			if(getOptions().isFilePerYear() && getOptions().isFilePerPollutant() && getOptions().isFilePerSite()) {
+				//Generate a multi-dimensional lookup table
+				Map<String, Map<Integer, Set<Integer>>> dataMap = new HashMap<String, Map<Integer, Set<Integer>>>();
+				dataGroups.stream().forEach(r->{
+					dataMap.computeIfAbsent(r.getPollutantName(), p->new HashMap<Integer, Set<Integer>>())
+						.computeIfAbsent(r.getYear(), y->new TreeSet<Integer>())
+						.add(r.getSiteID());
+				});
+				
+				String jsFormattedDataMap = Utils.convertToJsObjectNotation(getDataset().toLowerCase() + "DataMap", dataMap);
+				
+				if(getOptions().isVerbose()) {
+					log.debug("Data Groups:");
+					log.debug(jsFormattedDataMap);
+				}
+			}
+			
 					
 			log.info(dataGroups.size() + " file(s) will be created.");
 			for(DataRecordGroup group : dataGroups) {

@@ -10,6 +10,12 @@ name: Java CI with Maven
 
 on:
   push:
+    paths-ignore:
+      - 'docs/**'
+      - 'exports/**'
+      - 'heatmaps/**'
+      - 'reports/**'
+      - 'target/**'
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Download Canadian air quality data provided by the National Air Pollution Surveillance (NAPS) program of Environment and Climate Change Canada.">
+    <meta name="keywords" content="naps data, naps, air quality data, air pollution data, Canada air quality, aqhi, data analysis">
+    <title>NAPS Air Quality Data Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+			background-color: #fffffd;
+        }
+		select {
+			flex: 1;
+			 min-width: 50px;
+			 max-width: 90%;
+		}
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .container {  
+			background-color: white;
+			padding: 30px;
+			border-radius: 10px;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+			max-width: 800px;
+			min-width: 230px;
+			margin: auto;
+			margin-bottom: 50px;
+        }
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 20px;
+		}
+		.logo {
+			height: 60px; /* Adjust the size of the logo */
+			margin-right: 0px; /* Space between the logo and the title */
+		}
+		.dropdowns {
+			white-space: nowrap;
+		}
+		h1 {
+			font-size: 32px;
+			margin: 0;
+			color: #333;
+		}
+    </style>
+</head>
+<body>
+    <div class="container">
+		<div class="header">
+			<img src="splash.jpg" alt="Logo" class="logo">
+			<h1>NAPS Continuous Data Downloader</h1>
+		</div>
+        <p>Select the Pollutant, Year, and Site to download continuous air quality data.</p>
+		<div class="dropdowns">
+		Pollutant&nbsp;<select id="pollutantContinuous" onchange="clearMessage('Continuous');updateYear('Continuous')">
+            <option value="CO">CO</option>
+            <option value="NO">NO</option>
+            <option value="NO2">NO2</option>
+			<option value="NOX">NOX</option>
+			<option value="O3">O3</option>
+			<option value="PM10">PM10</option>
+			<option value="PM2.5" selected="selected">PM2.5</option>
+			<option value="SO2">SO2</option>
+        </select>
+		<br/>
+        Year&nbsp;<select id="yearContinuous" onchange="clearMessage('Continuous');updateSite('Continuous')">
+			<option value="1974">1974</option>
+			<option value="1975">1975</option>
+			<option value="1976">1976</option>
+		    <option value="1977">1977</option>
+            <option value="1978">1978</option>
+			<option value="1979">1979</option>
+            <option value="1980">1980</option>
+            <option value="1981">1981</option>
+			<option value="1982">1982</option>
+            <option value="1983">1983</option>
+            <option value="1984">1984</option>
+			<option value="1985">1985</option>
+            <option value="1986">1986</option>
+            <option value="1987">1987</option>
+			<option value="1988">1988</option>
+            <option value="1989">1989</option>
+            <option value="1990">1990</option>
+			<option value="1991">1991</option>
+            <option value="1992">1992</option>
+            <option value="1993">1993</option>
+			<option value="1994">1994</option>
+            <option value="1995">1995</option>
+            <option value="1996">1996</option>
+            <option value="1997">1997</option>
+            <option value="1998">1998</option>
+            <option value="1999">1999</option>
+            <option value="2000">2000</option>
+            <option value="2001">2001</option>
+			<option value="2002">2002</option>
+            <option value="2003">2003</option>
+            <option value="2004">2004</option>
+			<option value="2005">2005</option>
+            <option value="2006">2006</option>
+            <option value="2007">2007</option>
+			<option value="2008">2008</option>
+            <option value="2009">2009</option>
+            <option value="2010">2010</option>
+			<option value="2011">2011</option>
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+			<option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+			<option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022" selected="selected">2022</option>
+        </select>
+		<br/>
+        Site&nbsp;<select id="siteContinuous" onchange="clearMessage('Continuous')"></select>
+		</div>
+        <br>
+        <button onclick="downloadCSV('Continuous')">Download CSV</button>
+		<p id="messageContinuous"></p>
+    </div>
+	
+	<div class="container">
+		<div class="header">
+			<img src="splash.jpg" alt="Logo" class="logo">
+			<h1>NAPS Integrated Data Downloader</h1>
+		</div>
+        <p>Select the Pollutant, Year, and Site to download integrated air quality data.</p>
+		<div class="dropdowns">
+        Pollutant&nbsp;<select id="pollutantIntegrated" onchange="clearMessage('Integrated');updateYear('Integrated')">
+            <option value="PM2.5">PM2.5</option>
+			<option value="SO2">SO2</option>
+			<option value="1-Bromopropane">1-Bromopropane</option>
+			<option value="1-Butene_Isobutene">1-Butene/Isobutene</option>
+			<option value="1-Butyne">1-Butyne</option>
+			<option value="1-Decene">1-Decene</option>
+			<option value="1-Heptene">1-Heptene</option>
+			<option value="1-Hexene">1-Hexene</option>
+			<option value="1-Hexene_2-Methyl-1-Pentene">1-Hexene/2-Methyl-1-Pentene</option>
+			<option value="1-Me-Pyrene">1-Me-Pyrene</option>
+			<option value="1-Methylcyclohexene">1-Methylcyclohexene</option>
+			<option value="1-Methylcyclopentene">1-Methylcyclopentene</option>
+			<option value="1-Methylpyrene">1-Methylpyrene</option>
+			<option value="1-Nonene">1-Nonene</option>
+			<option value="1-Octene">1-Octene</option>
+			<option value="1-Pentene">1-Pentene</option>
+			<option value="1-Propyne">1-Propyne</option>
+			<option value="1-Undecene">1-Undecene</option>
+			<option value="1,1-Dichloroethane">1,1-Dichloroethane</option>
+			<option value="1,1-Dichloroethylene">1,1-Dichloroethylene</option>
+			<option value="1,1,1-Trichloroethane">1,1,1-Trichloroethane</option>
+			<option value="1,1,2-Trichloroethane">1,1,2-Trichloroethane</option>
+			<option value="1,1,2,2-Tetrachloroethane">1,1,2,2-Tetrachloroethane</option>
+			<option value="1,2-Dichlorobenzene">1,2-Dichlorobenzene</option>
+			<option value="1,2-Dichloroethane">1,2-Dichloroethane</option>
+			<option value="1,2-Dichloropropane">1,2-Dichloropropane</option>
+			<option value="1,2-Diethylbenzene">1,2-Diethylbenzene</option>
+			<option value="1,2,3-Trimethylbenzene">1,2,3-Trimethylbenzene</option>
+			<option value="1,2,4-Trichlorobenzene">1,2,4-Trichlorobenzene</option>
+			<option value="1,2,4-Trimethylbenzene">1,2,4-Trimethylbenzene</option>
+			<option value="1,3-Butadiene">1,3-Butadiene</option>
+			<option value="1,3-Dichlorobenzene">1,3-Dichlorobenzene</option>
+			<option value="1,3-Diethylbenzene">1,3-Diethylbenzene</option>
+			<option value="1,3,5-Trimethylbenzene">1,3,5-Trimethylbenzene</option>
+			<option value="1,4-Dichlorobenzene">1,4-Dichlorobenzene</option>
+			<option value="1,4-Dichlorobutane">1,4-Dichlorobutane</option>
+			<option value="1,4-Diethylbenzene">1,4-Diethylbenzene</option>
+			<option value="1234678-H7CDD">1234678-H7CDD</option>
+			<option value="1234678-H7CDF">1234678-H7CDF</option>
+			<option value="123478-H6CDD">123478-H6CDD</option>
+			<option value="123478-H6CDF">123478-H6CDF</option>
+			<option value="1234789-H7CDF">1234789-H7CDF</option>
+			<option value="123678-H6CDD">123678-H6CDD</option>
+			<option value="123678-H6CDF">123678-H6CDF</option>
+			<option value="12378-P5CDD">12378-P5CDD</option>
+			<option value="12378-P5CDF">12378-P5CDF</option>
+			<option value="123789-H6CDD">123789-H6CDD</option>
+			<option value="123789-H6CDF">123789-H6CDF</option>
+			<option value="13C12-H6CDD">13C12-H6CDD</option>
+			<option value="13C12-H6CDF">13C12-H6CDF</option>
+			<option value="13C12-H7CDD">13C12-H7CDD</option>
+			<option value="13C12-H7CDF">13C12-H7CDF</option>
+			<option value="13C12-OCDD">13C12-OCDD</option>
+			<option value="13C12-P5CDD">13C12-P5CDD</option>
+			<option value="13C12-P5CDF">13C12-P5CDF</option>
+			<option value="13C12-TCDD">13C12-TCDD</option>
+			<option value="13C12-TCDF">13C12-TCDF</option>
+			<option value="13C6-HCB">13C6-HCB</option>
+			<option value="13C6-PCP">13C6-PCP</option>
+			<option value="2-Ethyl-1-Butene">2-Ethyl-1-Butene</option>
+			<option value="2-Ethyltoluene">2-Ethyltoluene</option>
+			<option value="2-Me-Fluorene">2-Me-Fluorene</option>
+			<option value="2-Methyl-1-butene">2-Methyl-1-butene</option>
+			<option value="2-Methyl-1-Pentene">2-Methyl-1-Pentene</option>
+			<option value="2-Methyl-2-butene">2-Methyl-2-butene</option>
+			<option value="2-methyl-2-Pentene">2-methyl-2-Pentene</option>
+			<option value="2-Methylfluorene">2-Methylfluorene</option>
+			<option value="2-Methylheptane">2-Methylheptane</option>
+			<option value="2-Methylhexane">2-Methylhexane</option>
+			<option value="2-Methylpentane">2-Methylpentane</option>
+			<option value="2-Pentanone">2-Pentanone</option>
+			<option value="2-Pentanone_Isovaleraldehyde">2-Pentanone/Isovaleraldehyde</option>
+			<option value="2,2-Dimethylbutane">2,2-Dimethylbutane</option>
+			<option value="2,2-Dimethylhexane">2,2-Dimethylhexane</option>
+			<option value="2,2-Dimethylpentane">2,2-Dimethylpentane</option>
+			<option value="2,2-Dimethylpropane">2,2-Dimethylpropane</option>
+			<option value="2,2,3-Trimethylbutane">2,2,3-Trimethylbutane</option>
+			<option value="2,2,4-Trimethylpentane">2,2,4-Trimethylpentane</option>
+			<option value="2,2,5-Trimethylhexane">2,2,5-Trimethylhexane</option>
+			<option value="2,3-Dimethylbutane">2,3-Dimethylbutane</option>
+			<option value="2,3-Dimethylpentane">2,3-Dimethylpentane</option>
+			<option value="2,3,4-Trimethylpentane">2,3,4-Trimethylpentane</option>
+			<option value="2,4-Dimethylhexane">2,4-Dimethylhexane</option>
+			<option value="2,4-Dimethylpentane">2,4-Dimethylpentane</option>
+			<option value="2,5-Dimethylbenzaldehyde">2,5-Dimethylbenzaldehyde</option>
+			<option value="2,5-Dimethylheptane">2,5-Dimethylheptane</option>
+			<option value="2,5-Dimethylhexane">2,5-Dimethylhexane</option>
+			<option value="234678-H6CDF">234678-H6CDF</option>
+			<option value="23478-P5CDF">23478-P5CDF</option>
+			<option value="2378-TCDD">2378-TCDD</option>
+			<option value="2378-TCDF">2378-TCDF</option>
+			<option value="3-Ethyltoluene">3-Ethyltoluene</option>
+			<option value="3-Me-Cholanthrene">3-Me-Cholanthrene</option>
+			<option value="3-Methyl-1-Butene">3-Methyl-1-Butene</option>
+			<option value="3-Methyl-1-pentene">3-Methyl-1-pentene</option>
+			<option value="3-Methylcholanthrene">3-Methylcholanthrene</option>
+			<option value="3-Methylheptane">3-Methylheptane</option>
+			<option value="3-Methylhexane">3-Methylhexane</option>
+			<option value="3-Methyloctane">3-Methyloctane</option>
+			<option value="3-Methylpentane">3-Methylpentane</option>
+			<option value="3,6-Dimethyloctane">3,6-Dimethyloctane</option>
+			<option value="4-Ethyltoluene">4-Ethyltoluene</option>
+			<option value="4-Methyl-1-pentene">4-Methyl-1-pentene</option>
+			<option value="4-Methylheptane">4-Methylheptane</option>
+			<option value="4-Methyloctane">4-Methyloctane</option>
+			<option value="7-Me-Benz(a)Anthracene">7-Me-Benz(a)Anthracene</option>
+			<option value="7-Methylbenz(a)Anthracene">7-Methylbenz(a)Anthracene</option>
+			<option value="A-Pinene">A-Pinene</option>
+			<option value="Acenaphthene">Acenaphthene</option>
+			<option value="Acenaphthylene">Acenaphthylene</option>
+			<option value="Acetaldehyde">Acetaldehyde</option>
+			<option value="Acetate">Acetate</option>
+			<option value="Acetone">Acetone</option>
+			<option value="Acetylene">Acetylene</option>
+			<option value="Acrolein">Acrolein</option>
+			<option value="Aluminum">Aluminum</option>
+			<option value="Ammonia">Ammonia</option>
+			<option value="Ammonium">Ammonium</option>
+			<option value="Anthanthrene">Anthanthrene</option>
+			<option value="Anthracene">Anthracene</option>
+			<option value="Antimony">Antimony</option>
+			<option value="Arabitol">Arabitol</option>
+			<option value="Arsenic">Arsenic</option>
+			<option value="B-Pinene">B-Pinene</option>
+			<option value="Barium">Barium</option>
+			<option value="Benz(a)Anthracene">Benz(a)Anthracene</option>
+			<option value="Benzaldehyde">Benzaldehyde</option>
+			<option value="Benzene">Benzene</option>
+			<option value="Benzo(a)Fluorene">Benzo(a)Fluorene</option>
+			<option value="Benzo(a)Pyrene">Benzo(a)Pyrene</option>
+			<option value="Benzo(b)&(k)Fluoranthene">Benzo(b)&(k)Fluoranthene</option>
+			<option value="Benzo(b)Chrysene">Benzo(b)Chrysene</option>
+			<option value="Benzo(b)Fluoranthene">Benzo(b)Fluoranthene</option>
+			<option value="Benzo(b)Fluorene">Benzo(b)Fluorene</option>
+			<option value="Benzo(e)Pyrene">Benzo(e)Pyrene</option>
+			<option value="Benzo(g,h,i)Fluoranthene">Benzo(g,h,i)Fluoranthene</option>
+			<option value="Benzo(g,h,i)Perylene">Benzo(g,h,i)Perylene</option>
+			<option value="Benzo(k)Fluoranthene">Benzo(k)Fluoranthene</option>
+			<option value="Benzylchloride">Benzylchloride</option>
+			<option value="Beryllium">Beryllium</option>
+			<option value="Bismuth">Bismuth</option>
+			<option value="Bromide">Bromide</option>
+			<option value="Bromine">Bromine</option>
+			<option value="Bromodichloromethane">Bromodichloromethane</option>
+			<option value="Bromoform">Bromoform</option>
+			<option value="Bromomethane">Bromomethane</option>
+			<option value="Bromotrichloromethane">Bromotrichloromethane</option>
+			<option value="Butane">Butane</option>
+			<option value="Butyraldehyde_Iso-Butyraldehyde">Butyraldehyde/Iso-Butyraldehyde</option>
+			<option value="Cadmium">Cadmium</option>
+			<option value="Calcium">Calcium</option>
+			<option value="Camphene">Camphene</option>
+			<option value="Carbontetrachloride">Carbontetrachloride</option>
+			<option value="Cerium">Cerium</option>
+			<option value="Cesium">Cesium</option>
+			<option value="Chloride">Chloride</option>
+			<option value="Chlorobenzene">Chlorobenzene</option>
+			<option value="Chloroethane">Chloroethane</option>
+			<option value="Chloroform">Chloroform</option>
+			<option value="Chloromethane">Chloromethane</option>
+			<option value="Chromium">Chromium</option>
+			<option value="Chrysene">Chrysene</option>
+			<option value="Chrysene & Triphenylene">Chrysene & Triphenylene</option>
+			<option value="cis-1,2-Dichloroethylene">cis-1,2-Dichloroethylene</option>
+			<option value="cis-1,2-Dimethylcyclohexane">cis-1,2-Dimethylcyclohexane</option>
+			<option value="cis-1,3-Dichloropropene">cis-1,3-Dichloropropene</option>
+			<option value="cis-1,3-Dimethylcyclohexane">cis-1,3-Dimethylcyclohexane</option>
+			<option value="cis-1,4_t-1,3-Dimethylcyclohexane">cis-1,4/t-1,3-Dimethylcyclohexane</option>
+			<option value="cis-2-Butene">cis-2-Butene</option>
+			<option value="cis-2-Heptene">cis-2-Heptene</option>
+			<option value="cis-2-Hexene">cis-2-Hexene</option>
+			<option value="cis-2-Octene">cis-2-Octene</option>
+			<option value="cis-2-Pentene">cis-2-Pentene</option>
+			<option value="cis-3-Heptene">cis-3-Heptene</option>
+			<option value="cis-3-Methyl-2-Pentene">cis-3-Methyl-2-Pentene</option>
+			<option value="cis-4-Methyl-2-pentene">cis-4-Methyl-2-pentene</option>
+			<option value="Cl-">Cl-</option>
+			<option value="Cobalt">Cobalt</option>
+			<option value="Copper">Copper</option>
+			<option value="Crotonaldehyde">Crotonaldehyde</option>
+			<option value="Cyclohexane">Cyclohexane</option>
+			<option value="Cyclohexene">Cyclohexene</option>
+			<option value="Cyclopentane">Cyclopentane</option>
+			<option value="Cyclopentene">Cyclopentene</option>
+			<option value="D-Limonene">D-Limonene</option>
+			<option value="Decane">Decane</option>
+			<option value="Dibenz(a,c)&(a,h)Anthracene">Dibenz(a,c)&(a,h)Anthracene</option>
+			<option value="Dibromochloromethane">Dibromochloromethane</option>
+			<option value="Dibromomethane">Dibromomethane</option>
+			<option value="Dodecane">Dodecane</option>
+			<option value="EC">EC</option>
+			<option value="EC(A)">EC(A)</option>
+			<option value="EC(B)">EC(B)</option>
+			<option value="EC_R">EC_R</option>
+			<option value="EC_T">EC_T</option>
+			<option value="EC1">EC1</option>
+			<option value="EC1(A)">EC1(A)</option>
+			<option value="EC1(B)">EC1(B)</option>
+			<option value="EC2">EC2</option>
+			<option value="EC2(A)">EC2(A)</option>
+			<option value="EC2(B)">EC2(B)</option>
+			<option value="EC3">EC3</option>
+			<option value="EC3(A)">EC3(A)</option>
+			<option value="EC3(B)">EC3(B)</option>
+			<option value="EDB">EDB</option>
+			<option value="Ethane">Ethane</option>
+			<option value="Ethylbenzene">Ethylbenzene</option>
+			<option value="Ethylbromide">Ethylbromide</option>
+			<option value="Ethylene">Ethylene</option>
+			<option value="Fluoranthene">Fluoranthene</option>
+			<option value="Fluorene">Fluorene</option>
+			<option value="Fluoride">Fluoride</option>
+			<option value="Formaldehyde">Formaldehyde</option>
+			<option value="Formate">Formate</option>
+			<option value="Freon 11">Freon 11</option>
+			<option value="Freon 113">Freon 113</option>
+			<option value="Freon 114">Freon 114</option>
+			<option value="Freon 12">Freon 12</option>
+			<option value="Freon 22">Freon 22</option>
+			<option value="Galactosan">Galactosan</option>
+			<option value="Gallium">Gallium</option>
+			<option value="H6CDD">H6CDD</option>
+			<option value="H6CDF">H6CDF</option>
+			<option value="H7CDD">H7CDD</option>
+			<option value="H7CDF">H7CDF</option>
+			<option value="HCB">HCB</option>
+			<option value="Heptane">Heptane</option>
+			<option value="Hexachlorobutadiene">Hexachlorobutadiene</option>
+			<option value="Hexanal">Hexanal</option>
+			<option value="Hexane">Hexane</option>
+			<option value="Hexylbenzene">Hexylbenzene</option>
+			<option value="Indane">Indane</option>
+			<option value="Indeno(1,2,3-cd)Fluoranthene">Indeno(1,2,3-cd)Fluoranthene</option>
+			<option value="Indeno(1,2,3-cd)Pyrene">Indeno(1,2,3-cd)Pyrene</option>
+			<option value="Iron">Iron</option>
+			<option value="iso-Butylbenzene">iso-Butylbenzene</option>
+			<option value="iso-Propylbenzene">iso-Propylbenzene</option>
+			<option value="Isobutane">Isobutane</option>
+			<option value="Isopentane">Isopentane</option>
+			<option value="Isoprene">Isoprene</option>
+			<option value="Isovaleraldehyde">Isovaleraldehyde</option>
+			<option value="Lanthanum">Lanthanum</option>
+			<option value="Lead">Lead</option>
+			<option value="Levoglucosan">Levoglucosan</option>
+			<option value="Lithium">Lithium</option>
+			<option value="m-Tolualdehyde">m-Tolualdehyde</option>
+			<option value="m and p-Xylene">m and p-Xylene</option>
+			<option value="Magnesium">Magnesium</option>
+			<option value="Manganese">Manganese</option>
+			<option value="Mannitol">Mannitol</option>
+			<option value="Mannosan">Mannosan</option>
+			<option value="MEK">MEK</option>
+			<option value="MEK_Butyraidehyde">MEK/Butyraidehyde</option>
+			<option value="Methylcyclohexane">Methylcyclohexane</option>
+			<option value="Methylcyclopentane">Methylcyclopentane</option>
+			<option value="MIBK">MIBK</option>
+			<option value="Molybdenum">Molybdenum</option>
+			<option value="MSA">MSA</option>
+			<option value="MTBE">MTBE</option>
+			<option value="n-Butylbenzene">n-Butylbenzene</option>
+			<option value="n-Propylbenzene">n-Propylbenzene</option>
+			<option value="N_NO3">N_NO3</option>
+			<option value="Na+">Na+</option>
+			<option value="Naphthalene">Naphthalene</option>
+			<option value="NH4+">NH4+</option>
+			<option value="Nickel">Nickel</option>
+			<option value="Nitrate">Nitrate</option>
+			<option value="Nitric Acid">Nitric Acid</option>
+			<option value="Nitrite">Nitrite</option>
+			<option value="Nitrous Acid">Nitrous Acid</option>
+			<option value="NO3">NO3</option>
+			<option value="Nonane">Nonane</option>
+			<option value="o-Tolualdehyde">o-Tolualdehyde</option>
+			<option value="o-Xylene">o-Xylene</option>
+			<option value="OC">OC</option>
+			<option value="OC(A)">OC(A)</option>
+			<option value="OC(B)">OC(B)</option>
+			<option value="OC(corr)">OC(corr)</option>
+			<option value="OC_R">OC_R</option>
+			<option value="OC_RA">OC_RA</option>
+			<option value="OC_RB">OC_RB</option>
+			<option value="OC_T">OC_T</option>
+			<option value="OC1">OC1</option>
+			<option value="OC1(A)">OC1(A)</option>
+			<option value="OC1(B)">OC1(B)</option>
+			<option value="OC2">OC2</option>
+			<option value="OC2(A)">OC2(A)</option>
+			<option value="OC2(B)">OC2(B)</option>
+			<option value="OC3">OC3</option>
+			<option value="OC3(A)">OC3(A)</option>
+			<option value="OC3(B)">OC3(B)</option>
+			<option value="OC4">OC4</option>
+			<option value="OC4(A)">OC4(A)</option>
+			<option value="OC4(B)">OC4(B)</option>
+			<option value="OCDD">OCDD</option>
+			<option value="OCDF">OCDF</option>
+			<option value="OCS">OCS</option>
+			<option value="Octane">Octane</option>
+			<option value="Oxalate">Oxalate</option>
+			<option value="p-Cymene">p-Cymene</option>
+			<option value="p-Tolualdehyde">p-Tolualdehyde</option>
+			<option value="P5CDD">P5CDD</option>
+			<option value="P5CDF">P5CDF</option>
+			<option value="PCB-105">PCB-105</option>
+			<option value="PCB-114">PCB-114</option>
+			<option value="PCB-118">PCB-118</option>
+			<option value="PCB-123">PCB-123</option>
+			<option value="PCB-126">PCB-126</option>
+			<option value="PCB-156">PCB-156</option>
+			<option value="PCB-157">PCB-157</option>
+			<option value="PCB-167">PCB-167</option>
+			<option value="PCB-169">PCB-169</option>
+			<option value="PCB-189">PCB-189</option>
+			<option value="PCB-77">PCB-77</option>
+			<option value="PCB-81">PCB-81</option>
+			<option value="PCP">PCP</option>
+			<option value="Pentane">Pentane</option>
+			<option value="Perylene">Perylene</option>
+			<option value="Phenanthrene">Phenanthrene</option>
+			<option value="Phosphate">Phosphate</option>
+			<option value="PM2.5-10">PM2.5-10</option>
+			<option value="POC(A)">POC(A)</option>
+			<option value="POC(B)">POC(B)</option>
+			<option value="POC_R">POC_R</option>
+			<option value="POC_T">POC_T</option>
+			<option value="Potassium">Potassium</option>
+			<option value="Propane">Propane</option>
+			<option value="Propionaldehyde">Propionaldehyde</option>
+			<option value="Propionate">Propionate</option>
+			<option value="Propylene">Propylene</option>
+			<option value="Pyrene">Pyrene</option>
+			<option value="Retene">Retene</option>
+			<option value="Rubidium">Rubidium</option>
+			<option value="sec-Butylbenzene">sec-Butylbenzene</option>
+			<option value="Selenium">Selenium</option>
+			<option value="Silicon">Silicon</option>
+			<option value="Silver">Silver</option>
+			<option value="SO4">SO4</option>
+			<option value="Sodium">Sodium</option>
+			<option value="Strontium">Strontium</option>
+			<option value="Styrene">Styrene</option>
+			<option value="Sulfur">Sulfur</option>
+			<option value="Sulphate">Sulphate</option>
+			<option value="Sulphur">Sulphur</option>
+			<option value="Sulphur Dioxide">Sulphur Dioxide</option>
+			<option value="T_NO3">T_NO3</option>
+			<option value="TC">TC</option>
+			<option value="TC(A)">TC(A)</option>
+			<option value="TC(B)">TC(B)</option>
+			<option value="TC(corr)">TC(corr)</option>
+			<option value="TCDD">TCDD</option>
+			<option value="TCDF">TCDF</option>
+			<option value="TEQ">TEQ</option>
+			<option value="tert-Butylbenzene">tert-Butylbenzene</option>
+			<option value="Tetrachloroethylene">Tetrachloroethylene</option>
+			<option value="Thallium">Thallium</option>
+			<option value="Tin">Tin</option>
+			<option value="Titanium">Titanium</option>
+			<option value="Toluene">Toluene</option>
+			<option value="trans-1,2-Dichloroethylene">trans-1,2-Dichloroethylene</option>
+			<option value="trans-1,2-Dimethylcyclohexane">trans-1,2-Dimethylcyclohexane</option>
+			<option value="trans-1,3-Dichloropropene">trans-1,3-Dichloropropene</option>
+			<option value="trans-1,4-Dimethylcyclohexane">trans-1,4-Dimethylcyclohexane</option>
+			<option value="trans-2-Butene">trans-2-Butene</option>
+			<option value="trans-2-Heptene">trans-2-Heptene</option>
+			<option value="trans-2-Hexene">trans-2-Hexene</option>
+			<option value="trans-2-Octene">trans-2-Octene</option>
+			<option value="trans-2-Pentene">trans-2-Pentene</option>
+			<option value="trans-3-Heptene">trans-3-Heptene</option>
+			<option value="trans-3-Methyl-2-Pentene">trans-3-Methyl-2-Pentene</option>
+			<option value="trans-4-Methyl-2-Pentene">trans-4-Methyl-2-Pentene</option>
+			<option value="Trichloroethylene">Trichloroethylene</option>
+			<option value="Triphenylene">Triphenylene</option>
+			<option value="Tungsten">Tungsten</option>
+			<option value="Undecane">Undecane</option>
+			<option value="Uranium">Uranium</option>
+			<option value="Valeraldehyde">Valeraldehyde</option>
+			<option value="Vanadium">Vanadium</option>
+			<option value="Vinylchloride">Vinylchloride</option>
+			<option value="Zinc">Zinc</option>
+        </select>
+		<br/>
+		Year&nbsp;<select id="yearIntegrated" onchange="clearMessage('Integrated');updateSite('Integrated')">
+            <option value="1984">1984</option>
+			<option value="1985">1985</option>
+            <option value="1986">1986</option>
+            <option value="1987">1987</option>
+			<option value="1988">1988</option>
+            <option value="1989">1989</option>
+            <option value="1990">1990</option>
+			<option value="1991">1991</option>
+            <option value="1992">1992</option>
+            <option value="1993">1993</option>
+			<option value="1994">1994</option>
+            <option value="1995">1995</option>
+            <option value="1996">1996</option>
+            <option value="1997">1997</option>
+            <option value="1998">1998</option>
+            <option value="1999">1999</option>
+            <option value="2000">2000</option>
+            <option value="2001">2001</option>
+			<option value="2002">2002</option>
+            <option value="2003">2003</option>
+            <option value="2004">2004</option>
+			<option value="2005">2005</option>
+            <option value="2006">2006</option>
+            <option value="2007">2007</option>
+			<option value="2008">2008</option>
+            <option value="2009">2009</option>
+            <option value="2010">2010</option>
+			<option value="2011">2011</option>
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+			<option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+			<option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022" selected="selected">2022</option>
+        </select>
+		<br/>
+        Site&nbsp;<select id="siteIntegrated" onchange="clearMessage('Integrated')"></select>
+		</div>
+        <br/>
+        <button onclick="downloadCSV('Integrated')">Download CSV</button>
+		
+		<p id="messageIntegrated"></p>
+    </div>   
+<p align="center"><b>🍁Powered by the NAPS Data Analysis Toolbox</b><br/>Check out this project on <a href="https://github.com/dbeaudoinfortin/NAPSDataAnalysis">GitHub</a> for more information.<br>Last updated October 2024.</p>
+<p>&nbsp;</p>
+<footer>
+<p align="center"><b>Legal Stuff:</b><br/>This site is copyright &copy; 2024 David Fortin. The software is provided by David Fortin under the <a href="https://github.com/dbeaudoinfortin/NAPSDataAnalysis?tab=MIT-1-ov-file">MIT License</a>.<br/>The data itself is provided by the <a href="https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/">National Air Pollution Surveillance</a> (NAPS) program of Environment and Climate Change Canada.<br/>The data is licensed under the terms of the <a href="https://open.canada.ca/en/open-government-licence-canada">Canadian Open Government Licence</a> and can be freely re-published under those terms.<br/>All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.</p>
+</footer>
+
+	<script src="jszip.min.js"></script>
+	<script src="sites.js"></script>
+	<script src="continuous_datamap.js"></script>
+	<script src="integrated_datamap.js"></script>
+	<script>
+		function updateYear(dataSet) {
+			const yearSelect = document.getElementById('year' + dataSet);
+			const siteSelect = document.getElementById('site' + dataSet);
+            const pollutant = document.getElementById('pollutant' + dataSet).value;
+            const data = dataSet == 'Continuous' ? continuousDataMap : integratedDataMap;
+			
+            if (data[pollutant]) {
+				for (const option of yearSelect.options) {
+					if (!data[pollutant][option.value]) {
+						//Disable years that don't have data
+						option.disabled = true; 
+						option.style.color = 'lightgray';
+						option.selected = false;
+					} else {
+						//Enable years that do have data
+						option.disabled = false;
+						option.style.color = '';
+					}
+				}
+                yearSelect.disabled = false; //Enable pollutant dropdown
+				//We now have to update the site because the selection changed
+				updateSite(dataSet);
+            } else {
+				//No valid pollutants, disable the other two dropdowns
+                yearSelect.disabled = true; 
+				siteSelect.disabled = true;
+            }
+        }
+		
+		function updateSite(dataSet) {
+			const siteSelect = document.getElementById('site' + dataSet);
+			const pollutant = document.getElementById('pollutant' + dataSet).value;
+			const year = document.getElementById('year' + dataSet).value;
+            const data = dataSet == 'Continuous' ? continuousDataMap : integratedDataMap;
+			
+            //Populate pollutants for the selected site and year
+			const yearMap = data[pollutant];
+            if (yearMap) {
+				const siteList = yearMap[year];
+				if (siteList) {
+					for (const option of siteSelect.options) {
+						if (!siteList.includes(Number(option.value))) {
+							//Disable sites that don't have data
+							option.disabled = true; 
+							option.style.color = 'lightgray';
+							option.selected = false;
+						} else {
+							//Enable sites that do have data
+							option.disabled = false;
+							option.style.color = '';
+						}
+					}
+					siteSelect.disabled = false; //Enable pollutant dropdown
+				} else {
+					//No valid years, disable only the site drowpdown
+					siteSelect.disabled = true;
+				}
+            } else {
+				//No valid pollutants, disable the other two dropdowns
+                yearSelect.disabled = true; 
+				siteSelect.disabled = true;
+            }
+        }
+		
+		function populateSites(dataSet) {
+			const siteDropdown = document.getElementById('site' + dataSet);
+			
+			siteList.forEach(option => {
+				const optionElement = document.createElement("option");
+				optionElement.value = option.value;
+				optionElement.textContent = option.text;
+				siteDropdown.appendChild(optionElement);
+			});
+		}
+
+		function checkFileExists(url) {
+			return fetch(url, { method: 'HEAD' })
+				.then(response => response.ok)
+				.catch(() => false);
+		}
+
+		function clearMessage(dataSet) {
+			updateMessage(dataSet,'');
+		}
+		
+		function updateMessage(dataSet, message) {
+			document.getElementById('message' + dataSet).textContent = message;
+		}
+		async function fetchAndUnzipCSV(dataSet, zipFilePath){
+			try {
+				// Fetch the zip file
+				const response = await fetch(zipFilePath);
+				if (!response.ok) {
+					updateMessage(dataSet, 'No data available for the selected combination.');
+					return;
+				}
+
+				//Using JSZip decompress it on the fly
+				const blob = await response.blob();
+				const zip = await JSZip.loadAsync(blob);
+				const csvFileName = Object.keys(zip.files)[0];
+				const csvContent = await zip.file(csvFileName).async("string");
+				const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+				
+				//Download the file by faking a link
+				const downloadLink = document.createElement("a");
+				downloadLink.href = URL.createObjectURL(csvBlob);
+				downloadLink.download = csvFileName;
+				downloadLink.click();
+
+				updateMessage(dataSet, 'Successfully fetched data.');
+			} catch (error) {
+				updateMessage(dataSet, 'Error fetching data.');
+				console.error('Data fetch error:', error);
+			}
+		}
+        function downloadCSV(dataSet) {
+            const year = document.getElementById('year' + dataSet).value;
+            const site = document.getElementById('site' + dataSet).value;
+            const pollutant = document.getElementById('pollutant' + dataSet).value;
+            const zipFilePath = `data/${dataSet}_${pollutant}_${site}_${year}.zip`;
+			
+            checkFileExists(zipFilePath).then(exists => {
+				if (exists) {
+					updateMessage(dataSet, 'Fetching data...');
+					fetchAndUnzipCSV(dataSet, zipFilePath);
+				} else {
+					updateMessage(dataSet, 'No data available for the selected combination.');
+				}
+			});
+        }
+		
+		//Initialization of the dropdowns
+		populateSites('Continuous');
+		updateYear('Continuous');
+		
+		populateSites('Integrated');
+		updateYear('Integrated');
+    </script>
+</body>
+</html>

@@ -3,10 +3,12 @@
 <p align="center">
 <img src="https://github.com/dbeaudoinfortin/NAPSDataAnalysis/assets/15943629/bc1f2673-05fd-4713-8be7-57119d038358"/>
 </p>
+<p align="center"><b>Download NAPS air quality data <a href="https://dbeaudoinfortin.github.io/NAPSDataAnalysis/">here</a></b></p>
 
 ## Contents
 
 - [Overview](#overview)
+- [Data Download Web Page](#data-download-web-page)
 - [Clean Data Exports](#clean-data-exports)
 - [Data Analysis](#data-analysis)
 - [Dashboards](#dashboards)
@@ -46,9 +48,14 @@ Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data do
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
 
-I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization](#data-analysis) [tool](#napscontinuousheatmap) to generate pretty graphs, and a couple example [BI dashboards](#dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
+I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization](#data-analysis) [tool](#napscontinuousheatmap) to generate pretty graphs, and a couple example [BI dashboards](#dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in either the [data download web page](https://dbeaudoinfortin.github.io/NAPSDataAnalysis/) or the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
 
 All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
+
+# Data Download Web Page
+
+If you are simply looking to download NAPS air quality data, I have created a [simple web page](https://dbeaudoinfortin.github.io/NAPSDataAnalysis/) that makes it quick and easy to download CSV files. This web page is hosted on GitHub Pages and delivers static content from the [/docs](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/docs) directory of this project.
+
 
 # Clean Data Exports
 
@@ -56,9 +63,9 @@ All usage is for non-commercial research purposes. I am not affiliated with the 
 
 The NAPS data is messy; the data files contain many inconsistencies in structure, formatting, labelling, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
 
-In the [/exports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports) directory you will find many CSV files that re-publish the same NAPS data but cleaned-up. These files were generated using the [NAPSContinuousDataExporter](#napscontinuousdataexporter) and [NAPSIntegratedDataExporter](#napsintegrateddataexporter).
-
 If you are curious about the data issues I have encountered, I have started keeping track of some of the non-trivial issues [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues?q=is%3Aissue+label%3A%22Data+Issue%22).
+
+In the [/exports](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports) directory you will find many CSV files that re-publish the same NAPS data but cleaned-up and grouped. These files were generated using the [NAPSContinuousDataExporter](#napscontinuousdataexporter) and [NAPSIntegratedDataExporter](#napsintegrateddataexporter).
 
 **Integrated Data**
 
@@ -75,6 +82,10 @@ All of the continuous data exports have been zipped to compress them. There is s
 - [PerYear](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/exports/ContinuousData/PerYear) - contains data that is grouped into a single file for each year.
 
 To work around GitHub's file size limit of 100MB, some of the zip files have been created as multi-part archives. You will need to download all of the parts of the archive before you can extract the main zip file. 
+
+**Even More Granular Data**
+
+If you are looking for even more granular data, have a look at the [/docs/data](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/docs/data) directory which contains nearly 300,000 CSV files. I have created a [simple web page](https://dbeaudoinfortin.github.io/NAPSDataAnalysis/) with simple dropdowns that make it quick and easy to download these CSV files.
 
 # Data Analysis
 

@@ -18,8 +18,9 @@ public abstract class BaseOptions {
 	private static final Logger log = LoggerFactory.getLogger(BaseOptions.class);
 	
 	private static final Options options = new Options();
-	private final CommandLineParser parser = new DefaultParser(); 
+	private final CommandLineParser parser = new DefaultParser();
 	
+	private boolean verbose = false;
 	private int threadCount = 1;
 	
 	static {
@@ -45,7 +46,8 @@ public abstract class BaseOptions {
 	}
 	
 	private void loadVerbose(CommandLine cmd) {
-		if(cmd.hasOption("verbose")) {
+		verbose = cmd.hasOption("verbose");
+		if(verbose) {
 			//Need to get the logback root logger and change it to DEBUG
 	        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 	        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -87,5 +89,9 @@ public abstract class BaseOptions {
 	
 	public CommandLineParser getParser() {
 		return parser;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
 	}
 }
