@@ -105,11 +105,13 @@ Say, for example, you want to know how many times the hourly reading for carbon 
 -aggregateFunction count
 -valueLowerBound 13
 ```
+The table output will look something like this:
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065" height="600" />
+</p>
 
 For more details on how to run these query tools, see the [continuous](#napscontinuousdataquery) and [integrated](#napsintegrateddataquery) data query sections below.
-<p align="center">
- <img src="https://github.com/user-attachments/assets/b5d1d43a-8c7c-4424-aee9-596111532065" width="400" />
-</p>
+
 
 **Heat Map Diagrams**
 
@@ -127,7 +129,7 @@ From this diagram alone there are some trends that immediately stand out, such a
 We can change the x-axis to get a view of what is happening on the weekends compared to the weekdays:
 
 <p align="center">
- <img src="https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6" width="400" />
+ <img src="https://github.com/user-attachments/assets/25024f6e-e70f-43b2-9926-006a93ec4be6" height="600" />
 </p>
 
 (Note that this second heat map uses a different colour palette that better suits the data.)
@@ -173,7 +175,7 @@ Here is a breakdown by province/territory of PM2.5 concentrations. The upper and
  <img src="https://github.com/user-attachments/assets/4c3a4def-4755-4d05-8bd0-586cc7e5b8b7" width="400" />
 </p>
 
-The seasonal differences between Quebec and Ontario become more apparent when looking at just the large and medium urban zones. Here is a comparison of both the average and maximum PM2.5 concentrations:
+The seasonal differences between Ontario and Quebec become more apparent when looking at just the large and medium urban zones. Here is a comparison of both the average and maximum PM2.5 concentrations:
 
 <p align="center">
  <img src="https://github.com/user-attachments/assets/22d829c6-05c3-4059-b4a1-befeede455e7" width="400" />

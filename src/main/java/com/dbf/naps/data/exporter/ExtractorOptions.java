@@ -31,6 +31,7 @@ public class ExtractorOptions extends DBOptions {
 	private boolean filePerPollutant = false;
 	private boolean filePerSite = false;
 	private boolean overwriteFiles = false;
+	private boolean generateJSDataMap = false;
 	
 	static {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the data.");
@@ -43,6 +44,7 @@ public class ExtractorOptions extends DBOptions {
 		getOptions().addOption("fp","filePerPollutant", false, "Create a separate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a separate file for each site.");
 		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
+		getOptions().addOption("dm","generateJSDataMap", false, "Generates a JavaScript file containing a multi-dimensional lookup table of exported data. Only applies if filePerYear, filePerPollutant, and filePerSite are all set.");	
 	}
 
 	public ExtractorOptions(String[] args) throws IllegalArgumentException {
@@ -76,6 +78,9 @@ public class ExtractorOptions extends DBOptions {
 		
 		filePerSite = cmd.hasOption("filePerSite");
 		log.info("Will" + (filePerSite ? "" : " not") +  " create a file per site.");
+		
+		generateJSDataMap = cmd.hasOption("generateJSDataMap") && filePerYear && filePerPollutant && filePerSite;
+		log.info("Will" + (generateJSDataMap ? "" : " not") +  " generate the data map file.");
 	}
 	
 	private void loadOverwriteFiles(CommandLine cmd) {
@@ -207,5 +212,9 @@ public class ExtractorOptions extends DBOptions {
 	
 	public String getFileName() {
 		return fileName;
+	}
+
+	public boolean isGenerateJSDataMap() {
+		return generateJSDataMap;
 	}
 }

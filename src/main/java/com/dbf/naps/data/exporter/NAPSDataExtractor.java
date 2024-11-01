@@ -2,7 +2,9 @@ package com.dbf.naps.data.exporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +66,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 		}
 		
 		log.info("Calculating file data groups based on the provided arguments.");
-		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
+		if(getOptions().isGenerateJSDataMap())
 		{
 			List<DataRecordGroup> dataGroups = getDataGroups();
 			
@@ -78,11 +80,14 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 				});
 				
 				String jsFormattedDataMap = Utils.convertToJsObjectNotation(getDataset().toLowerCase() + "DataMap", dataMap);
-				
 				if(getOptions().isVerbose()) {
 					log.debug("Data Groups:");
 					log.debug(jsFormattedDataMap);
 				}
+				
+				Path dataMapPath = exportPath.resolve(getDataset().toLowerCase() + "_datamap.js");
+				Files.write(dataMapPath, jsFormattedDataMap.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+				log.info("JS data map has been written to " + exportPath);
 			}
 			
 					

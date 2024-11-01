@@ -597,12 +597,16 @@
             const data = dataSet == 'Continuous' ? continuousDataMap : integratedDataMap;
 			
             if (data[pollutant]) {
+				var selectionChanged = false;
 				for (const option of yearSelect.options) {
 					if (!data[pollutant][option.value]) {
 						//Disable years that don't have data
 						option.disabled = true; 
 						option.style.color = 'lightgray';
-						option.selected = false;
+						if(option.selected) {
+							option.selected = false;
+							selectionChanged = true;
+						}
 					} else {
 						//Enable years that do have data
 						option.disabled = false;
@@ -610,10 +614,14 @@
 					}
 				}
                 yearSelect.disabled = false; //Enable pollutant dropdown
-				//We now have to update the site because the selection changed
-				updateSite(dataSet);
+				if(selectionChanged) {
+					//Select the first non-disabled option. Should never be null.
+					yearSelect.querySelector('option:not([disabled])').selected = true;
+					//We now have to update the site because the selection changed
+					updateSite(dataSet);
+				}
             } else {
-				//No valid pollutants, disable the other two dropdowns
+				//No years for the selected pollutant! Disable the other two dropdowns
                 yearSelect.disabled = true; 
 				siteSelect.disabled = true;
             }
@@ -625,31 +633,37 @@
 			const year = document.getElementById('year' + dataSet).value;
             const data = dataSet == 'Continuous' ? continuousDataMap : integratedDataMap;
 			
-            //Populate pollutants for the selected site and year
 			const yearMap = data[pollutant];
             if (yearMap) {
 				const siteList = yearMap[year];
 				if (siteList) {
+					var selectionChanged = false;
 					for (const option of siteSelect.options) {
 						if (!siteList.includes(Number(option.value))) {
 							//Disable sites that don't have data
 							option.disabled = true; 
 							option.style.color = 'lightgray';
-							option.selected = false;
+							if(option.selected) {
+								option.selected = false;
+								selectionChanged = true;
+							}
 						} else {
 							//Enable sites that do have data
 							option.disabled = false;
 							option.style.color = '';
 						}
 					}
-					siteSelect.disabled = false; //Enable pollutant dropdown
+					if(selectionChanged) {
+						//Select the first non-disabled option. Should never be null.
+						siteSelect.querySelector('option:not([disabled])').selected = true;
+					}
+					siteSelect.disabled = false; //Enable site dropdown
 				} else {
 					//No valid years, disable only the site drowpdown
 					siteSelect.disabled = true;
 				}
             } else {
-				//No valid pollutants, disable the other two dropdowns
-                yearSelect.disabled = true; 
+				//No sites for the selected year! Disable the last dropdown
 				siteSelect.disabled = true;
             }
         }
@@ -663,6 +677,9 @@
 				optionElement.textContent = option.text;
 				siteDropdown.appendChild(optionElement);
 			});
+			
+			//Select the first option by default
+			siteDropdown.options[0].selected = true;
 		}
 
 		function checkFileExists(url) {
@@ -725,9 +742,11 @@
 		//Initialization of the dropdowns
 		populateSites('Continuous');
 		updateYear('Continuous');
+		updateSite('Continuous'); //Must do this initially
 		
 		populateSites('Integrated');
 		updateYear('Integrated');
+		updateSite('Integrated');
     </script>
 </body>
 </html>

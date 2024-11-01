@@ -69,7 +69,7 @@ public class Utils {
             sb.append("},");
         }
         sb.setLength(sb.length() - 1); //Remove the last comma
-        sb.append("}");
+        sb.append("};");
         return sb.toString();
     }
     
