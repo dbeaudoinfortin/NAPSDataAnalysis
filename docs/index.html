@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Download Canadian air quality data provided by the National Air Pollution Surveillance (NAPS) program of Environment and Climate Change Canada.">
     <meta name="keywords" content="naps data, naps, air quality data, air pollution data, Canada air quality, aqhi, data analysis">
-    <title>NAPS Air Quality Data Downloader</title>
+    <title>NAPS Canadian Air Quality Data Downloader</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +16,7 @@
 		select {
 			flex: 1;
 			 min-width: 50px;
-			 max-width: 90%;
+			 max-width: 80%;
 		}
         select, button {
             margin: 10px;
@@ -38,7 +38,7 @@
 			border-radius: 10px;
 			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 			max-width: 800px;
-			min-width: 230px;
+			min-width: 280px;
 			margin: auto;
 			margin-bottom: 50px;
         }
@@ -68,7 +68,7 @@
 			<img src="splash.jpg" alt="Logo" class="logo">
 			<h1>NAPS Continuous Data Downloader</h1>
 		</div>
-        <p>Select the Pollutant, Year, and Site to download continuous air quality data.</p>
+        <p>Select the Pollutant, Year, and Site to download continuous Canadian air quality data.</p>
 		<div class="dropdowns">
 		Pollutant&nbsp;<select id="pollutantContinuous" onchange="clearMessage('Continuous');updateYear('Continuous')">
             <option value="CO">CO</option>
@@ -145,7 +145,7 @@
 			<img src="splash.jpg" alt="Logo" class="logo">
 			<h1>NAPS Integrated Data Downloader</h1>
 		</div>
-        <p>Select the Pollutant, Year, and Site to download integrated air quality data.</p>
+        <p>Select the Pollutant, Year, and Site to download integrated Canadian air quality data.</p>
 		<div class="dropdowns">
         Pollutant&nbsp;<select id="pollutantIntegrated" onchange="clearMessage('Integrated');updateYear('Integrated')">
             <option value="PM2.5">PM2.5</option>
