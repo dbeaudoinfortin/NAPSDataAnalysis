@@ -74,7 +74,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 				//Generate a multi-dimensional lookup table
 				Map<String, Map<Integer, Set<Integer>>> dataMap = new HashMap<String, Map<Integer, Set<Integer>>>();
 				dataGroups.stream().forEach(r->{
-					dataMap.computeIfAbsent(r.getPollutantName(), p->new HashMap<Integer, Set<Integer>>())
+					dataMap.computeIfAbsent(r.getPollutantName().replace("/", "_"), p->new HashMap<Integer, Set<Integer>>())
 						.computeIfAbsent(r.getYear(), y->new TreeSet<Integer>())
 						.add(r.getSiteID());
 				});
