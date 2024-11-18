@@ -15,6 +15,7 @@ import com.dbf.naps.data.db.mappers.PollutantMapper;
 import com.dbf.naps.data.db.mappers.SiteMapper;
 import com.dbf.naps.data.globals.PollutantMapping;
 import com.dbf.naps.data.utilities.DataCleaner;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public abstract class FileLoaderRunner extends DBRunner<LoaderOptions> {
 	
@@ -42,7 +43,7 @@ public abstract class FileLoaderRunner extends DBRunner<LoaderOptions> {
 		try {
 			processFile();
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR loading file " + getRawFile() + " into the database.", t);
+			 log.error(getThreadId() + ":: ERROR loading file " + getRawFile() + " into the database.\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return; //Don't throw a runtime exception, let the other threads run
 		 }
 		log.info(getThreadId() + ":: Done loading file " + getRawFile() + " into the database.");

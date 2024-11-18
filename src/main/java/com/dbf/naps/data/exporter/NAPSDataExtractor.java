@@ -21,6 +21,7 @@ import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.DataCleaner;
 import com.dbf.naps.data.utilities.Utils;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPSDBAction<O> {
 
@@ -41,7 +42,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 			super.run();
 			exportData();
 		} catch (Throwable t) {
-			log.error("Unexpected failure.", t);
+			log.error("Unexpected failure.\n" + StackTraceCompactor.getCompactStackTrace(t));
 		}
 		
 		log.info("Goodbye! 🙂");

@@ -111,6 +111,11 @@
 	    <artifactId>gson</artifactId>
 	    <version>2.10.1</version>
 	</dependency>
+	<dependency>
+	  <groupId>io.github.dbeaudoinfortin</groupId>
+	  <artifactId>stack-trace-compactor</artifactId>
+	  <version>0.0.5</version>
+	</dependency>
   </dependencies>
   <distributionManagement>
     <repository>

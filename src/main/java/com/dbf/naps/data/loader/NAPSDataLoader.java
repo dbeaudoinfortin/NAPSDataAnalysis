@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.db.NAPSDBAction;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public abstract class NAPSDataLoader extends NAPSDBAction<LoaderOptions> {
 
@@ -29,7 +30,7 @@ public abstract class NAPSDataLoader extends NAPSDBAction<LoaderOptions> {
 			super.run();
 			loadFiles();
 		} catch (Throwable t) {
-			log.error("Unexpected failure.", t);
+			log.error("Unexpected failure.\n" + StackTraceCompactor.getCompactStackTrace(t));
 		}
 		
 		log.info("Goodbye! 🙂");

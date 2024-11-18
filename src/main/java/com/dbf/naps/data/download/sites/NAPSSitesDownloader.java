@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.dbf.naps.data.NAPSActionBase;
 import com.dbf.naps.data.download.NAPSDataDownloader;
 import com.dbf.naps.data.download.options.DownloaderOptions;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 
@@ -31,7 +32,7 @@ public class NAPSSitesDownloader extends NAPSActionBase<DownloaderOptions> {
 		{
 			downloadSiteFile();
 		} catch (Throwable t) {
-			log.error("Unexpected failure.", t);
+			log.error("Unexpected failure.\n" + StackTraceCompactor.getCompactStackTrace(t));
 		}
 
 		log.info("Goodbye! 🙂");

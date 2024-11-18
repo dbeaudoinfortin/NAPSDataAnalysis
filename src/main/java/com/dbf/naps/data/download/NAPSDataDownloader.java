@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.NAPSActionBase;
 import com.dbf.naps.data.download.options.YearlyDownloaderOptions;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public abstract class NAPSDataDownloader extends NAPSActionBase<YearlyDownloaderOptions> {
 
@@ -26,7 +27,7 @@ public abstract class NAPSDataDownloader extends NAPSActionBase<YearlyDownloader
 		{
 			downloadFiles();
 		} catch (Throwable t) {
-			log.error("Unexpected failure.", t);
+			log.error("Unexpected failure.\n" + StackTraceCompactor.getCompactStackTrace(t));
 		}
 
 		log.info("Goodbye! 🙂");

@@ -36,8 +36,7 @@ public abstract class NAPSDBAction<O extends DBOptions> extends NAPSActionBase<O
 		{
 			initDB();
 		} catch (Throwable t) {
-			log.error("Unexpected failure initializing the DB.", t);
-			throw new RuntimeException(t);
+			throw new RuntimeException("Unexpected failure initializing the DB.", t);
 		}
 	}
 	

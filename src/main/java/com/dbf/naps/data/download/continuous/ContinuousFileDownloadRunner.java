@@ -10,6 +10,7 @@ import com.dbf.naps.data.download.YearlyFileDownloadRunner;
 import com.dbf.naps.data.download.options.YearlyDownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.globals.continuous.Compound;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public class ContinuousFileDownloadRunner extends YearlyFileDownloadRunner {
 	
@@ -45,7 +46,7 @@ public class ContinuousFileDownloadRunner extends YearlyFileDownloadRunner {
 			
 			downloadFile(uri, resolveFilePath(fileName.toString()));
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR downloading file for year " + getYear() + " and compound " + compound, t);
+			 log.error(getThreadId() + ":: ERROR downloading file for year " + getYear() + " and compound " + compound + "\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return; //Don't throw a runtime exception, let the other threads run
 		 }
 	}

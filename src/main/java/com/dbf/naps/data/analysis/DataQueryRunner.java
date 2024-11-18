@@ -27,6 +27,7 @@ import com.dbf.naps.data.globals.SiteTypeMapping;
 import com.dbf.naps.data.globals.Urbanization;
 import com.dbf.naps.data.globals.UrbanizationMapping;
 import com.dbf.naps.data.utilities.Utils;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRunner<O> {
 	
@@ -56,14 +57,14 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			records = queryData();
 			if(records.isEmpty()) return;
 		} catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR executing data query for file " + getDataFile() + ".", t);
+			 log.error(getThreadId() + ":: ERROR executing data query for file " + getDataFile() + ".\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return;
 		}
 		
 		try {
 			writeToFile(records, queryUnits, title, getDataFile());
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR writing to file " + getDataFile() + ".", t);
+			 log.error(getThreadId() + ":: ERROR writing to file " + getDataFile() + ".\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return;
 		 }
 	}

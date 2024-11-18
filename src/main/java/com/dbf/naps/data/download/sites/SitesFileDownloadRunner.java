@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.dbf.naps.data.download.FileDownloadRunner;
 import com.dbf.naps.data.download.options.DownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public class SitesFileDownloadRunner extends FileDownloadRunner<DownloaderOptions> {
 	
@@ -28,7 +29,7 @@ public class SitesFileDownloadRunner extends FileDownloadRunner<DownloaderOption
 			
 			downloadFile(uri, resolveFilePath("sites.csv"));
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR downloading sites file.", t);
+			 log.error(getThreadId() + ":: ERROR downloading sites file.\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return;
 		 }
 	}

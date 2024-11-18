@@ -15,6 +15,7 @@ import com.dbf.naps.data.download.YearlyFileDownloadRunner;
 import com.dbf.naps.data.download.options.YearlyDownloaderOptions;
 import com.dbf.naps.data.globals.Constants;
 import com.dbf.naps.data.utilities.ZipUtil;
+import com.dbf.utils.stacktrace.StackTraceCompactor;
 
 public class IntegratedFileDownloadRunner extends YearlyFileDownloadRunner {
 	
@@ -71,7 +72,7 @@ public class IntegratedFileDownloadRunner extends YearlyFileDownloadRunner {
 			}
 			
 		 } catch (Throwable t) {
-			 log.error(getThreadId() + ":: ERROR downloading file " + fileName + " for year " + getYear() + " at path " + urlPath, t);
+			 log.error(getThreadId() + ":: ERROR downloading file " + fileName + " for year " + getYear() + " at path " + urlPath + "\n" + StackTraceCompactor.getCompactStackTrace(t));
 			return; //Don't throw a runtime exception, let the other threads run
 		 }
 	}	
