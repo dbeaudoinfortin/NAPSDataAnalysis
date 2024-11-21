@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
 
-public class DataQueryRecord {
+import com.dbf.heatmaps.data.DataRecord;
+
+public class DataQueryRecord implements DataRecord {
 	private Object field_0;
 	private Object field_1;
 	private Object field_2;
@@ -39,9 +41,21 @@ public class DataQueryRecord {
 		printer.printRecord(values.toArray());
 	}
 
-	public BigDecimal getValue() {
-		return value;
+	@Override
+	public Object getX() {
+		return field_0;
 	}
+
+	@Override
+	public Object getY() {
+		return field_1;
+	}
+	
+	@Override
+	public Double getValue() {
+		return value.doubleValue();
+	}
+	
 	public void setValue(BigDecimal value) {
 		this.value = value;
 	}

@@ -6,6 +6,7 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dbf.heatmaps.HeatMapGradient;
 import com.dbf.naps.data.analysis.DataQueryOptions;
 
 public abstract class HeatMapOptions extends DataQueryOptions {
@@ -30,7 +31,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		
 		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
-		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getGradientCount()) + " (inclusive).");
+		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getCannedGradientCount()) + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
 		getOptions().addOption("gl","gridlines", false, "Include grid lines.");	
 	}
@@ -59,8 +60,8 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private void loadGradient(CommandLine cmd) {
 		if(cmd.hasOption("colourGradient")) {
 			colourGradient = Integer.parseInt(cmd.getOptionValue("colourGradient"));
-			if (colourGradient < 1 || colourGradient > HeatMapGradient.getGradientCount()) {
-				throw new IllegalArgumentException("Heat map colour gradient : " + colourGradient + ". Must be between 1 and " + HeatMapGradient.getGradientCount() + " (inclusive).");
+			if (colourGradient < 1 || colourGradient > HeatMapGradient.getCannedGradientCount()) {
+				throw new IllegalArgumentException("Heat map colour gradient : " + colourGradient + ". Must be between 1 and " + HeatMapGradient.getCannedGradientCount() + " (inclusive).");
 			}
 			log.info("Using heat map colour gradient " + colourGradient + ".");
 		} else {
