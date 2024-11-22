@@ -53,6 +53,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 			.withOptions(com.dbf.heatmaps.HeatMapOptions.builder()
 					.withColourScaleLowerBound(getConfig().getColourLowerBound())
 					.withColourScaleUpperBound(getConfig().getColourUpperBound())
+					.withLegendTextFormat("0.####")
 					.withGradient(HeatMapGradient.getCannedGradient(getConfig().getColourGradient()-1)) //Command options starts at one
 					.build())
 			.build()
