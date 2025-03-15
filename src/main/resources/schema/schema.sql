@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS naps.methods
    id SERIAL PRIMARY KEY,
    dataset VARCHAR(15) NOT NULL,
    report_type VARCHAR(15) NOT NULL,
-   method VARCHAR(20) NULL,
+   method VARCHAR(20) NOT NULL,
    units VARCHAR(10) NOT NULL,
    UNIQUE NULLS NOT DISTINCT (dataset, report_type, method, units)
 );
