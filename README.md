@@ -184,6 +184,12 @@ The seasonal differences between Ontario and Quebec become more apparent when lo
  <img src="https://github.com/user-attachments/assets/14f63809-3ea6-42d7-bcc5-7e79a3ee40d1" width="400" />
 </p>
 
+Here are two different colour gradients showing the average concentration (ppb) of O3 for all NAPS sites, spanning all available years.
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/a9d9ec31-6ca6-4d40-a598-b8ff7df48927" width="400" />
+ <img src="https://github.com/user-attachments/assets/425e73c5-eeac-4927-a21b-7614bbc3a9ad" width="400" />
+</p>
+
 The queries used to generate these heat maps are fully dynamic and there are several colour palettes to choose from. The minimum and maximum values that determine the colour scale are calculated automatically, but there are also options to clamp/limit the values to a lower and an upper bound to prevent outliers from shifting the entire scale. The titles, axis labels, legends and file names are all automatically generated. There is also an option to produce an accompanying CSV table containing all of the data used to render the heat map. 
 
 For more details on how to generate custom heat maps, see the [continuous](#napscontinuousheatmap) and [integrated](#napsintegratedheatmap) heat map sections below.
