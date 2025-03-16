@@ -444,7 +444,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P95, P98, P99, NONE).
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99, NONE).
  -cn,  --cityName <arg>           City name, partial match.
  -ct,  --title <arg>              Chart title. Will be automatically generated if not defined.
  -d,   --days <arg>               Comma-separated list of days of the month.
@@ -492,9 +492,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 ```
 
 **Aggregation Rules:**
-- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM, P95, P98, P99, NONE`.
+- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99, NONE`.
 - The default aggregation function, if not specified, is `AVG`.
 - P95, P98, and P99 represent the 95<sup>th</sup>, 98<sup>th</sup>, and 99<sup>th</sup> percentiles of concentration values, respectively.
+- P50 represents the 50<sup>th</sup> percentile of concentration values, which is equivalent to the median for non-discrete data.
 - The possible values for `group1` through `group5` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - The use of an aggregation function does not require the use of grouping (options `group1` through `group5`). This will effectively aggregate all of the data points into a single value. Use the option `--showSampleCount` to include the number of data points that were aggregated.
 - The aggregation function cannot be set to `NONE` when specifying grouping using the options `group1` through `group5`. It is possible to set the aggregation function to `NONE` if no groups are specified, but this has limited usefulness since it will produce a table with a single column containing only the raw values (sample data points).
@@ -572,7 +573,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P95, P98, P99).
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99).
  -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-9 (inclusive).
  -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
  -cn,  --cityName <arg>           City name, partial match.
@@ -643,10 +644,11 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 ![Continuous_By Day of the Month and Month_C9](https://github.com/user-attachments/assets/a9f9100e-dfbe-4a39-8dce-1da1bd0e222f)
 
 **Aggregation Rules:**
-- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM, P95, P98, P99`.
+- The possible values for the aggregation function are `AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99`.
 - The use of an aggregation function is mandatory to generate the heat map.
 - The default aggregation function, if not specified, is `AVG`.
 - P95, P98, and P99 represent the 95<sup>th</sup>, 98<sup>th</sup>, and 99<sup>th</sup> percentiles of concentration values, respectively.
+- P50 represents the 50<sup>th</sup> percentile of concentration values, which is equivalent to the median for non-discrete data.
 - Both the `group1` and `group2` options are mandatory since they represent the x-axis and y-axis of the chart, respectively. 
 - The possible values for `group1` and `group2` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
@@ -739,7 +741,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P95, P98, P99, NONE).
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99, NONE).
  -cn,  --cityName <arg>           City name, partial match.
  -d,   --days <arg>               Comma-separated list of days of the month.
  -dbh, --dbHost <arg>             Hostname for the PostgreSQL database. Default: localhost
@@ -797,7 +799,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P95, P98, P99).
+ -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99).
  -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-8 (inclusive).
  -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
  -cn,  --cityName <arg>           City name, partial match.

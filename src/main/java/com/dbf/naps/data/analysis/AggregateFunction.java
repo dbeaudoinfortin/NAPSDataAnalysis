@@ -9,6 +9,7 @@ public enum AggregateFunction {
 	MAX,
 	COUNT,
 	SUM,
+	P50,
 	P95,
 	P98,
 	P99,

@@ -185,6 +185,9 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		case SUM:
 			title.append("Sum of Concentration");
 			break;
+		case P50:
+			title.append("50th Percentile of Concentration");
+			break;
 		case P95:
 			title.append("95th Percentile of Concentration");
 			break;
