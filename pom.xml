@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dbf.naps</groupId>
   <artifactId>naps_data</artifactId>
-  <version>0.2.6</version>
+  <version>0.2.7</version>
   <name>NAPS Data Downloader</name>
   <build>
 	 <finalName>${project.artifactId}</finalName>
@@ -119,7 +119,7 @@
 	<dependency>
 	  <groupId>io.github.dbeaudoinfortin</groupId>
 	  <artifactId>heatmaps</artifactId>
-	  <version>0.0.3</version>
+	  <version>0.0.4</version>
 	</dependency>
   </dependencies>
   <distributionManagement>

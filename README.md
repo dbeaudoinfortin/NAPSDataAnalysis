@@ -59,7 +59,7 @@ If you are simply looking to download NAPS air quality data, I have created a [s
 
 # Clean Data Exports
 
-**Last Updated October 2024**
+**Last Updated March 2025**
 
 The NAPS data is messy; the data files contain many inconsistencies in structure, formatting, labelling, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
 
@@ -382,7 +382,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.sites.
 
 ## NAPSSitesLoader
 
-A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. This tool looks for a single file named "sites.csv" in the provided directory. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 789 rows of data (as of October 2024) in the sites table of your database. 
+A Java tool that loads all of the sites (sampling stations) for the NAPS program (downloaded by the NAPSContinuousDataDownloader) from the provided directory into a PostgreSQL database, as specified. This tool looks for a single file named "sites.csv" in the provided directory. The database schema is automatically created when the tool runs. Once all the data is loaded, there should be 793 rows of data (as of March 2025) in the sites table of your database. 
 
 You can invoke this tool by running the class `com.dbf.naps.data.loader.sites.NAPSSitesLoader`. Note that the threadCount argument is meaningless since there is only one file to process.
 
@@ -420,7 +420,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.contin
 
 ## NAPSContinuousDataLoader
 
-A Java tool that loads all of the raw continuous data, previously downloaded by the NAPSContinuousDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 275 million rows of data (as of October 2024) in the continuous_data table of your database.
+A Java tool that loads all of the raw continuous data, previously downloaded by the NAPSContinuousDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 285 million rows of data (as of March 2025) in the continuous_data table of your database.
 
 You can invoke this tool by running the class `com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader`.
 
@@ -715,7 +715,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.download.integr
 
 ## NAPSIntegratedDataLoader
 
-A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 14 million rows of data (as of October 2024) in the integrated_data table of your database.
+A Java tool that loads all of the raw integrated data, previously downloaded by the NAPSIntegratedDataDownloader, from the provided directory into a PostgreSQL database, as specified. The database schema is automatically created when the tool runs. This tool automatically cleans-up and fixes data inconsistencies as it finds them. Once all the data is loaded, there should be about 15 million rows of data (as of March 2025) in the integrated_data table of your database.
 
 You can invoke this tool by running the class `com.dbf.naps.data.loader.integrated.NAPSIntegratedDataLoader`.
 
