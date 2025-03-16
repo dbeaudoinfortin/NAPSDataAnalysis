@@ -123,17 +123,19 @@ public abstract class FileLoaderRunner extends DBRunner<LoaderOptions> {
 	}
 	
 	protected Integer getMethodID(String dataset, String reportType, String method, String units) {
-		String lookupKey = dataset + "_" + reportType + "_" + method + "_" + units;
+		final String finalMethod = (null == method) ?  "N/A" : method;
+		
+		String lookupKey = dataset + "_" + reportType + "_" + finalMethod + "_" + units;
 		
 		//If one thread stamps overrides the data of another it's no big deal
 		return methodIDLookup.computeIfAbsent(lookupKey, key -> {
 			Integer methodID = null;
-
+			
 			//May or may not insert, let the DB manage contention
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				MethodMapper mapper = session.getMapper(MethodMapper.class);
-				mapper.insertMethod(dataset, reportType, method, units);
-				methodID = mapper.getMethodID(dataset, reportType, method, units);
+				mapper.insertMethod(dataset, reportType, finalMethod, units);
+				methodID = mapper.getMethodID(dataset, reportType, finalMethod, units);
 			}
 			if(null == methodID) { //Sanity check, should be impossible
 				throw new IllegalArgumentException("Could not find a matching method ID using lookup key: " + key);

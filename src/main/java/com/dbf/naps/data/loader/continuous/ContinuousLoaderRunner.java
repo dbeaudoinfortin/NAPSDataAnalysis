@@ -75,8 +75,6 @@ public class ContinuousLoaderRunner extends FileLoaderRunner {
 				if(isPM25) {
 					//Only PM25 has a specific method
 					method = line.get(1); 
-				} else {
-					method = "N/A";
 				}
 				
 				//The units are expected to be consistent for each compound type

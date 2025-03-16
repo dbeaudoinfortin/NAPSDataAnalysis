@@ -185,6 +185,15 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		case SUM:
 			title.append("Sum of Concentration");
 			break;
+		case P95:
+			title.append("95th Percentile of Concentration");
+			break;
+		case P98:
+			title.append("98th Percentile of Concentration");
+			break;
+		case P99:
+			title.append("99th Percentile of Concentration");
+			break;
 		}
 		
 		if(units != null && !units.isEmpty()

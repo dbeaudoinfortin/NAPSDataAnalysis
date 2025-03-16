@@ -9,6 +9,9 @@ public enum AggregateFunction {
 	MAX,
 	COUNT,
 	SUM,
+	P95,
+	P98,
+	P99,
 	NONE;
 	
 	public static final String ALL_VALUES = Arrays.stream(values()).map(f->f.name()).collect(Collectors.joining(", "));

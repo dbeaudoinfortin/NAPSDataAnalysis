@@ -38,13 +38,13 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	@Override
 	public void writeToFile(List<DataQueryRecord> records, String queryUnits, String title, File dataFile) throws IOException {
 		
-		log.info("Analyzing heatmap data for " + dataFile + "...");
+		log.info("Analyzing heat map data for " + dataFile + "...");
 		//Determine the bounds of the X & Y dimension
 		Axis<?> xAxis = determineAxis(records, 0);
 		Axis<?> yAxis = determineAxis(records, 1);
 		log.info("Analysis complete for " + dataFile + ".");
 		
-		log.info("Rendering heatmap graphics for " + dataFile + "...");
+		log.info("Rendering heat map graphics for " + dataFile + "...");
 		String shortTitle = getReportTitle(queryUnits, false);
 		 HeatMap.builder()
 			.withTitle(shortTitle)
