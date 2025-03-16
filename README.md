@@ -198,7 +198,7 @@ We can further separate the data out between rural and urban sites. Rural data i
  <img src="https://github.com/user-attachments/assets/8264db3d-e469-49df-afa8-0dee88eaef55" width="400" />
 </p>
 
-To reduce the impact of difference in sampling sites over the years, the following shows just rural Ontario locations.
+To reduce the impact of different sampling sites over the years, the following shows just rural Ontario locations. The colour scale has been adjusted to fit this data compared to the previous graphs.
 <p align="center">
  <img src="https://github.com/user-attachments/assets/3a66bd45-29d0-497a-844d-ce3c21486f89" width="400" />
 </p>
