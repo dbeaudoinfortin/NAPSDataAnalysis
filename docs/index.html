@@ -598,10 +598,11 @@
             const pollutant = document.getElementById('pollutant' + dataSet).value;
             const data = dataSet == 'Continuous' ? continuousDataMap : integratedDataMap;
 			
-            if (data[pollutant]) {
+			const yearMap = data[pollutant];
+            if (yearMap) {
 				var selectionChanged = false;
 				for (const option of yearSelect.options) {
-					if (!data[pollutant][option.value]) {
+					if (!yearMap[option.value]) {
 						//Disable years that don't have data
 						option.disabled = true; 
 						option.style.color = 'lightgray';
@@ -619,9 +620,10 @@
 				if(selectionChanged) {
 					//Select the first non-disabled option. Should never be null.
 					yearSelect.querySelector('option:not([disabled])').selected = true;
-					//We now have to update the site because the selection changed
-					updateSite(dataSet);
 				}
+					//We need to update the site regardless of the year selection change
+					//because the pollutant has changed.
+					updateSite(dataSet);
             } else {
 				//No years for the selected pollutant! Disable the other two dropdowns
                 yearSelect.disabled = true; 
