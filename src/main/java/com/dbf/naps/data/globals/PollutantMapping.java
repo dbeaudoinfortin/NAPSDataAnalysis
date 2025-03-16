@@ -136,6 +136,10 @@ public class PollutantMapping {
 		POLLUTANT_LOOKUP.put("13c12-TCDD", "13C12-TCDD");
 		POLLUTANT_LOOKUP.put("3-Me-ChOLanthrene", "3-Me-Cholanthrene");
 		POLLUTANT_LOOKUP.put("3-Methyl-1-butene", "3-Methyl-1-Butene");
+		POLLUTANT_LOOKUP.put("2-Methyl-1-butene", "2-Methyl-1-Butene");
+		POLLUTANT_LOOKUP.put("2-Methyl-2-butene", "2-Methyl-2-Butene");
+		POLLUTANT_LOOKUP.put("3-Methyl-1-pentene", "3-Methyl-1-Pentene");
+		POLLUTANT_LOOKUP.put("4-Methyl-1-pentene", "4-Methyl-1-Pentene");
 		POLLUTANT_LOOKUP.put("cis-3-Methyl-2-pentene", "cis-3-Methyl-2-Pentene");
 		POLLUTANT_LOOKUP.put("d-Limonene", "D-Limonene");
 		POLLUTANT_LOOKUP.put("Iso-Propylbenzene", "iso-Propylbenzene");

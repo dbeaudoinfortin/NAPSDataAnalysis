@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Future;
 import org.apache.ibatis.session.SqlSession;
@@ -75,9 +76,9 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 				log.info("Generating JS data map to " + exportPath);
 				
 				//Generate a multi-dimensional JavaScript lookup table
-				Map<String, Map<Integer, Set<Integer>>> dataMap = new HashMap<String, Map<Integer, Set<Integer>>>();
+				Map<String, Map<Integer, Set<Integer>>> dataMap = new TreeMap<String, Map<Integer, Set<Integer>>>();
 				dataGroups.stream().forEach(r->{
-					dataMap.computeIfAbsent(r.getPollutantName().replace("/", "_"), p->new HashMap<Integer, Set<Integer>>())
+					dataMap.computeIfAbsent(r.getPollutantName().replace("/", "_"), p->new TreeMap<Integer, Set<Integer>>())
 						.computeIfAbsent(r.getYear(), y->new TreeSet<Integer>())
 						.add(r.getSiteID());
 				});

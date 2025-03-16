@@ -60,8 +60,9 @@ public class Utils {
             sb.append(entry.getKey()); //Pollutant
             sb.append("\":{");
             for (Map.Entry<Integer, Set<Integer>> yearEntry : entry.getValue().entrySet()) {
-                sb.append(yearEntry.getKey()); //year
-                sb.append(":");
+            	sb.append("\"");
+            	sb.append(yearEntry.getKey()); //Year
+                sb.append("\":");
                 stringifyCollection(sb, yearEntry.getValue()); //site ids, without spaces
                 sb.append(",");
             }
