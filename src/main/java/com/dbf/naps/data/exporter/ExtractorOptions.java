@@ -79,7 +79,7 @@ public class ExtractorOptions extends DBOptions {
 		filePerSite = cmd.hasOption("filePerSite");
 		log.info("Will" + (filePerSite ? "" : " not") +  " create a file per site.");
 		
-		generateJSDataMap = cmd.hasOption("generateJSDataMap") && filePerYear && filePerPollutant && filePerSite;
+		generateJSDataMap = cmd.hasOption("generateJSDataMap") && filePerYear && filePerPollutant && filePerSite; //Secret option
 		log.info("Will" + (generateJSDataMap ? "" : " not") +  " generate the data map file.");
 	}
 	

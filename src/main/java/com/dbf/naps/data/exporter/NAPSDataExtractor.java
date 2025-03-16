@@ -67,12 +67,14 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 		}
 		
 		log.info("Calculating file data groups based on the provided arguments.");
-		if(getOptions().isGenerateJSDataMap())
+		if(getOptions().isFilePerYear() || getOptions().isFilePerPollutant() || getOptions().isFilePerSite())
 		{
-			List<DataRecordGroup> dataGroups = getDataGroups();
+			final List<DataRecordGroup> dataGroups = getDataGroups();
 			
-			if(getOptions().isFilePerYear() && getOptions().isFilePerPollutant() && getOptions().isFilePerSite()) {
-				//Generate a multi-dimensional lookup table
+			if(getOptions().isGenerateJSDataMap() && getOptions().isFilePerYear() && getOptions().isFilePerPollutant() && getOptions().isFilePerSite()) {
+				log.info("Generating JS data map to " + exportPath);
+				
+				//Generate a multi-dimensional JavaScript lookup table
 				Map<String, Map<Integer, Set<Integer>>> dataMap = new HashMap<String, Map<Integer, Set<Integer>>>();
 				dataGroups.stream().forEach(r->{
 					dataMap.computeIfAbsent(r.getPollutantName().replace("/", "_"), p->new HashMap<Integer, Set<Integer>>())
@@ -82,7 +84,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 				
 				String jsFormattedDataMap = Utils.convertToJsObjectNotation(getDataset().toLowerCase() + "DataMap", dataMap);
 				if(getOptions().isVerbose()) {
-					log.debug("Data Groups:");
+					log.debug("JavaScript Data Map:");
 					log.debug(jsFormattedDataMap);
 				}
 				
