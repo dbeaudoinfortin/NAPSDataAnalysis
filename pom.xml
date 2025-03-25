@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dbf.naps</groupId>
   <artifactId>naps_data</artifactId>
-  <version>0.2.7</version>
+  <version>0.2.8</version>
   <name>NAPS Data Downloader</name>
   <build>
 	 <finalName>${project.artifactId}</finalName>
