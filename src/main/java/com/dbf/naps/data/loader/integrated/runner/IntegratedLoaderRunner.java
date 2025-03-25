@@ -118,7 +118,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 		for (row = 0; row < sheet.rowCount(); row++) {
 			
 			//We need to find the actual column header row, which may be the second or third (or more) row
-			if(null == headerRowNumber) {
+			if(null == headerRowNumber) { //The header row isn't located yet
 				if(!matchesFirstColumnHeaders(sheet.getCellContents(0, row))) continue;
 				headerRowNumber = row; //We can now start processing data on the next row
 				
@@ -148,8 +148,9 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 					throw new IllegalArgumentException("Could not locate the NAPS ID column.");
 				}
 				
+				//Done with header validation, run sheet-wide pre-processing once
 				preProcessRows();
-				//Done with header validation, ready to process the first row of data
+				//Ready to process the first row of data
 				continue;
 			}
 			
