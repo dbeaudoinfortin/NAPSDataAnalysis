@@ -477,7 +477,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      result set.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
- -st, --siteType <arg>            NAPS site type classification (PE, RB, T, PS).
+ -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
+ -m,   --methods <arg>            Comma-separated list of method names.
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -607,6 +608,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
+ -m,   --methods <arg>            Comma-separated list of method names.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
@@ -774,6 +776,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
+ -m,   --methods <arg>            Comma-separated list of method names.
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -832,6 +835,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
+ -m,   --methods <arg>            Comma-separated list of method names.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
