@@ -81,12 +81,13 @@ public class ContinuousLoaderRunner extends FileLoaderRunner {
 				String units = null;
 				if (compoudString.equals(Compound.CO.name())) {
 					units = "ppm";
-				} else if (compoudString.equals(Compound.SO2.name()) || compoudString.equals(Compound.O3.name())) {
+				} else if (compoudString.equals(Compound.SO2.name())
+						|| compoudString.equals(Compound.O3.name())
+						|| compoudString.equals(Compound.NOX.name())
+				        || compoudString.equals(Compound.NO2.name())
+				        || compoudString.equals(Compound.NO.name())) {
 					units = "ppb";
-				} else if(isPM25 || compoudString.equals(Compound.PM10.name()) 
-						         || compoudString.equals(Compound.NOX.name())
-						         || compoudString.equals(Compound.NO2.name())
-						         || compoudString.equals(Compound.NO.name())) {
+				} else if(isPM25 || compoudString.equals(Compound.PM10.name())) {
 					units = "µg/m³";
 				}
 				
