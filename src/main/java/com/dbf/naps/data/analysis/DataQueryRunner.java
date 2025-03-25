@@ -87,6 +87,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 					//Per-file filters
 					years, pollutants, sites,
 					//Basic filters
+					getConfig().getMethods(),
 					getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 					getConfig().getSiteName(), getConfig().getCityName(),
 					getConfig().getProvTerr().stream().map(p->p.name()).toList(),
@@ -140,6 +141,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				//Per-file filters
 				years, pollutants, sites,
 				//Basic filters
+				getConfig().getMethods(),
 				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
@@ -204,6 +206,11 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				&& !getConfig().getAggregateFunction().equals(AggregateFunction.COUNT)) {
 			title.append(" (");
 			title.append(units);
+			
+			if(getConfig().getMethods() != null && !getConfig().getMethods().isEmpty()) {
+				title.append(" by ");
+				Utils.prettyPrintStringList(getConfig().getMethods(), title);
+			}
 			title.append(")");
 		}
 		

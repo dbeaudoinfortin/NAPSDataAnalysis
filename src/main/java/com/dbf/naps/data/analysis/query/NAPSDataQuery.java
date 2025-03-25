@@ -23,6 +23,7 @@ public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSData
 			return session.getMapper(DataMapper.class).getExportDataGroups(
 					getOptions().getYearStart(), getOptions().getYearEnd(), getOptions().getPollutants(),  getOptions().getSites(),			//Per-file filters
 					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite(),							//Grouping
+					getOptions().getMethods(),                                                                                              //Basic filters
 					getOptions().getMonths(), getOptions().getDaysOfMonth(), getOptions().getDaysOfWeek(),									//Basic filters
 					getOptions().getSiteName(), getOptions().getCityName(), getOptions().getProvTerr().stream().map(p->p.name()).toList(),  //Basic filters
 					getOptions().getSiteType().stream().map(s->s.name()).toList(),															//Advanced site filters

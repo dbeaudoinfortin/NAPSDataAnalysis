@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,7 +111,7 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 			return session.getMapper(DataMapper.class).getExportDataGroups(
 					getOptions().getYearStart(), getOptions().getYearEnd(), getOptions().getPollutants(),  getOptions().getSites(), //Per-file filters
 					getOptions().isFilePerYear(), getOptions().isFilePerPollutant(), getOptions().isFilePerSite(), //Grouping
-					null, null, null, null, null, null, null, null, null, null,	//Filtering
+					null, null, null, null, null, null, null, null, null, null, null,	//Filtering
 					getDataset());
 		}
 	}

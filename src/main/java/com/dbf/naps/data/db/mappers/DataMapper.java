@@ -22,6 +22,7 @@ public interface DataMapper {
 			+ " <if test=\"dataset.equals(&quot;Continuous&quot;)\">from naps.continuous_data d</if>"
 			+ " <if test=\"dataset.equals(&quot;Integrated&quot;)\">from naps.integrated_data d</if>"
 			+ " <if test=\"groupByPollutant || (pollutants != null &amp;&amp; !pollutants.isEmpty())\">inner join naps.pollutants p on d.pollutant_id = p.id</if>"
+			+ " <if test=\"methods != null &amp;&amp; !methods.isEmpty()\">inner join naps.methods m on d.method_id = m.id</if>"
 			+ " <if test=\"groupBySite || (sites != null &amp;&amp; !sites.isEmpty()) || (provTerr != null &amp;&amp; !provTerr.isEmpty()) "
 			+ "|| (cityName != null &amp;&amp; !cityName.isEmpty()) || (siteName != null &amp;&amp; !siteName.isEmpty())"
 			+ "|| (siteType != null &amp;&amp; !siteType.isEmpty()) || (urbanization != null &amp;&amp; !urbanization.isEmpty())\">inner join naps.sites s on d.site_id = s.id</if>"
@@ -43,6 +44,9 @@ public interface DataMapper {
 			+ "<if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">"
 			+ " and p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach>"
 			+ "</if>"
+			+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">"
+			+ " and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach>"
+			+ "</if>"
 			+ " group by"
 			+ " <if test=\"groupByYear\">d.year</if>"
 			+ " <if test=\"groupByPollutant\"><if test=\"groupByYear\">,</if>p.name</if>"
@@ -51,6 +55,7 @@ public interface DataMapper {
 	public List<DataRecordGroup> getExportDataGroups(
 			int startYear, int endYear, Collection<String> pollutants, Collection<Integer> sites,		 //Per-file filters
 			boolean groupByYear, boolean groupByPollutant, boolean groupBySite,							 //Grouping
+			Collection<String> methods,																	 //Basic filter
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek, //Basic filters
 			String siteName, String cityName, Collection<String> provTerr,								 //Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 //Advanced site filters
@@ -82,9 +87,11 @@ public interface DataMapper {
 			+ "<if test=\"years  != null &amp;&amp; !years.isEmpty()\">and d.year in <foreach collection='years' item='year' index='index' open='(' separator = ',' close=')'>#{year}</foreach></if>"
 			+ "<if test=\"sites  != null &amp;&amp; !sites.isEmpty()\">and s.naps_id in <foreach collection='sites' item='site' index='index' open='(' separator = ',' close=')'>#{site}</foreach></if>"
 			+ "<if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">and p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach></if>"
+			+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach></if>"
 			+ "</script>")
 	public List<String> getDistinctUnits(
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
+			Collection<String> methods,                                                                             //Basic filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters
@@ -132,6 +139,7 @@ public interface DataMapper {
 			+ "<if test=\"dataset.equals(&quot;Integrated&quot;)\">from naps.integrated_data d</if>"
 			+ " inner join naps.pollutants p on d.pollutant_id = p.id"
 			+ " inner join naps.sites s on d.site_id = s.id"
+			+ " <if test=\"methods != null &amp;&amp; !methods.isEmpty()\">inner join naps.methods m on d.method_id = m.id</if>"
 			+ " where 1=1"
 			+ "<if test=\"valueUpperBound != null\">and d.data &lt;= #{valueUpperBound}</if>"
 			+ "<if test=\"valueLowerBound != null\">and d.data &gt;= #{valueLowerBound}</if>"
@@ -146,6 +154,7 @@ public interface DataMapper {
 			+ "<if test=\"years  != null &amp;&amp; !years.isEmpty()\">and d.year in <foreach collection='years' item='year' index='index' open='(' separator = ',' close=')'>#{year}</foreach></if>"
 			+ "<if test=\"sites  != null &amp;&amp; !sites.isEmpty()\">and s.naps_id in <foreach collection='sites' item='site' index='index' open='(' separator = ',' close=')'>#{site}</foreach></if>"
 			+ "<if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">and p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach></if>"
+			+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach></if>"
 			+ "<if test=\"fields != null &amp;&amp; !fields.isEmpty()\">"
 				+ "group by <foreach collection='fields' item='field' index='index' open='' separator = ',' close=''>field_${index}</foreach>"
 			+ "</if>"
@@ -187,6 +196,7 @@ public interface DataMapper {
 			+ "</script>")
 	public List<DataQueryRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, 		//Grouping
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
+			Collection<String> methods,                                                                             //Basic filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters

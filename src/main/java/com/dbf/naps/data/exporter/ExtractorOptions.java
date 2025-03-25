@@ -37,7 +37,7 @@ public class ExtractorOptions extends DBOptions {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the data.");
 		getOptions().addOption("ys","yearStart", true, "Start year (inclusive).");
 		getOptions().addOption("ye","yearEnd", true, "End year (inclusive).");
-		getOptions().addOption("pn","pollutants", true, "Comma-separated list of pollutant names.");	
+		getOptions().addOption("pn","pollutants", true, "Comma-separated list of pollutant names.");
 		getOptions().addOption("sid","sites", true, "Comma-separated list of site IDs.");
 		getOptions().addOption("fn","fileName", true, "Custom file name without the extension. Will be automatically generated if not defined.");
 		getOptions().addOption("fy","filePerYear", false, "Create a separate file for each year.");

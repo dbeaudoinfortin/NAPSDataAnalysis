@@ -32,6 +32,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	private final Set<ProvTerr> provTerr = new HashSet<ProvTerr>();
 	private final Set<Urbanization> urbanization = new HashSet<Urbanization>();
 	private final Set<SiteType> siteType = new HashSet<SiteType>();
+	private final Set<String>  methods = new HashSet<String>();
 	
 	private String siteName;
 	private String cityName;
@@ -56,6 +57,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		getOptions().addOption("st","siteType", true, "NAPS site type classification (" + SiteType.ALL_VALUES + ").");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
+		getOptions().addOption("mtd","methods", true, "Comma-separated list of method names.");
 		getOptions().addOption("ct","title", true, "Chart/report title. Will be automatically generated if not defined.");
 		getOptions().addOption("scm","minSampleCount", true, "Minimum sample count (number of samples or data points) in order to be included in the result set.");
 		getOptions().addOption("vub","valueUpperBound", true, "Upper bound (inclusive) of pre-aggregated raw values to include. "
@@ -92,6 +94,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadSiteType(cmd);
 		loadSiteName(cmd);
 		loadCityName(cmd);
+		loadMethods(cmd);
 		loadTitle(cmd);
 		
 		loadValueLowerBound(cmd); //Check me first!
@@ -100,6 +103,22 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadResultUpperBound(cmd);
 		
 		loadMinSampleCount(cmd); //Check me last
+	}
+	
+	private void loadMethods(CommandLine cmd) {
+		if(cmd.hasOption("methods")) {
+			for(String method : cmd.getOptionValue("methods").split(",")) {
+				method = method.trim();
+				if (method.isEmpty()) continue;
+				methods.add(method);
+			}
+			if(methods.isEmpty()) 
+				throw new IllegalArgumentException("Must specify at least one method.");
+			
+			log.info("Using only the following methods: " + methods);
+		} else {
+			log.info("Using all methods.");
+		}
 	}
 	
 	private void loadMinSampleCount(CommandLine cmd) {
@@ -500,5 +519,9 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 
 	public Set<SiteType> getSiteType() {
 		return siteType;
+	}
+	
+	public Set<String> getMethods() {
+		return methods;
 	}
 }
