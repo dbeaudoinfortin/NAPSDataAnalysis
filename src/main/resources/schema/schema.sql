@@ -81,7 +81,8 @@ CREATE INDEX IF NOT EXISTS idx_continuous_data_hour ON naps.continuous_data (hou
 CREATE INDEX IF NOT EXISTS idx_continuous_data_day_of_week ON naps.continuous_data (day_of_week ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_day_of_year ON naps.continuous_data (day_of_year ASC);
 CREATE INDEX IF NOT EXISTS idx_continuous_data_week_of_year ON naps.continuous_data (week_of_year ASC);
-
+CREATE INDEX IF NOT EXISTS idx_continuous_data_aqhi ON naps.continuous_data (pollutant_id, site_id, date_time);
+  
 CREATE TABLE IF NOT EXISTS naps.samples
 (
    id SERIAL PRIMARY KEY,

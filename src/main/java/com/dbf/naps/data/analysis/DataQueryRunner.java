@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.poi.ss.formula.functions.Count;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,18 +72,19 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	
 	private String determineUnits() {
 		log.info(getThreadId() + ":: Determining units for file " + getDataFile() + ".");
-
-		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
-			//Only allow mixing unit if we are not aggregating data or we are grouping by pollutant
-			//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
-			//However, in practise the units are consistent for all of the pollutants.
-			if(!getConfig().getAggregateFunction().equals(AggregateFunction.COUNT) && !getConfig().getAggregateFunction().equals(AggregateFunction.NONE) 
-					&& getConfig().getFields().stream().filter(f->f.equals(AggregationField.POLLUTANT)).count() == 0) {
-				
-				Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
-				Collection <String> pollutants = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
-				Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
-				
+		//Only allow mixing unit if we are not aggregating data, or we are grouping by pollutant, or we are calculating AQHI (which uses mixed units by design).
+		//Note: The schema makes it possible for two different data points measuring the same pollutant to use two different methods with two different unit.
+		//However, in practise the units are consistent for all of the pollutants.
+		if(!getConfig().isAQHI() 
+				&& !getConfig().getAggregateFunction().equals(AggregateFunction.COUNT)
+				&& !getConfig().getAggregateFunction().equals(AggregateFunction.NONE) 
+				&& getConfig().getFields().stream().filter(f->f.equals(AggregationField.POLLUTANT)).count() == 0) {
+			
+			Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
+			Collection <String> pollutants = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
+			Collection <Integer> sites = getSpecificSite() != null ? List.of(getSpecificSite()) : getConfig().getSites();
+			
+			try(SqlSession session = getSqlSessionFactory().openSession(true)) {	
 				List<String> allUnits = session.getMapper(DataMapper.class).getDistinctUnits(
 					//Per-file filters
 					years, pollutants, sites,
@@ -155,7 +157,9 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				//Having conditions
 				getConfig().getResultUpperBound(), getConfig().getResultLowerBound(), getConfig().getMinSampleCount(),
 				//Continuous vs. Integrated
-				getDataset());
+				getDataset(),
+				//AQHI
+				getConfig().isAQHI());
 	}
 	
 	protected String getReportTitle(String units, boolean longTitle) {
@@ -168,40 +172,51 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		
 		StringBuilder title = new StringBuilder();
 		
-		switch(getConfig().getAggregateFunction()) {
-		case AVG:
-			title.append("Average Concentration");
-			break;
-		case COUNT:
-			title.append("Number of Samples");
-			break;
-		case MAX:
-			title.append("Maximum Concentration");
-			break;
-		case MIN:
-			title.append("Minimum Concentration");
-			break;
-		case NONE:
-			title.append("Concentration");
-			break;
-		case SUM:
-			title.append("Sum of Concentration");
-			break;
-		case P50:
-			title.append("50th Percentile of Concentration");
-			break;
-		case P95:
-			title.append("95th Percentile of Concentration");
-			break;
-		case P98:
-			title.append("98th Percentile of Concentration");
-			break;
-		case P99:
-			title.append("99th Percentile of Concentration");
-			break;
+		if(AggregateFunction.COUNT.equals(getConfig().getAggregateFunction())) {
+			if(getConfig().isAQHI()) {
+				title.append("Count of AQHI Records");
+			} else {
+				title.append("Number of Samples");
+			}
+		} else {
+			switch(getConfig().getAggregateFunction()) {
+			case COUNT: //Handled above
+				break;
+			case AVG:
+				title.append("Average ");
+				break;
+			case MAX:
+				title.append("Maximum ");
+				break;
+			case MIN:
+				title.append("Minimum ");
+				break;
+			case SUM:
+				title.append("Sum of ");
+				break;
+			case P50:
+				title.append("50th Percentile of ");
+				break;
+			case P95:
+				title.append("95th Percentile of ");
+				break;
+			case P98:
+				title.append("98th Percentile of ");
+				break;
+			case P99:
+				title.append("99th Percentile of ");
+				break;
+			case NONE:
+				break; //Handled below
+			}
+			if(getConfig().isAQHI()) {
+				title.append("AQHI");
+			} else {
+				title.append("Concentration");
+			}
 		}
 		
-		if(units != null && !units.isEmpty()
+		if(!getConfig().isAQHI() && units != null && !units.isEmpty()
 				&& !getConfig().getAggregateFunction().equals(AggregateFunction.NONE)
 				&& !getConfig().getAggregateFunction().equals(AggregateFunction.COUNT)) {
 			title.append(" (");
@@ -214,14 +229,16 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 			title.append(")");
 		}
 		
-		title.append(" of ");
-		
-		if(getSpecificPollutant() != null) {
-			title.append(getSpecificPollutant());
-		} else if(getConfig().getPollutants() == null || getConfig().getPollutants().isEmpty()) {
-			title.append("All Pollutants");
-		} else {
-			Utils.prettyPrintStringList(getConfig().getPollutants(), title);
+		if(!getConfig().isAQHI()) {
+			title.append(" of ");
+			
+			if(getSpecificPollutant() != null) {
+				title.append(getSpecificPollutant());
+			} else if(getConfig().getPollutants() == null || getConfig().getPollutants().isEmpty()) {
+				title.append("All Pollutants");
+			} else {
+				Utils.prettyPrintStringList(getConfig().getPollutants(), title);
+			}
 		}
 		
 		title.append(" for ");

@@ -43,10 +43,13 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	private Double		resultUpperBound;
 	private Double		resultLowerBound;
 	
+	private boolean aqhi = false;
+	
 	private String title;
 	
 	static {
 		getOptions().addOption("a","aggregateFunction", true, "Data aggregation function (" + AggregateFunction.ALL_VALUES + ").");
+		getOptions().addOption("aqhi","aqhi", false, "Calculate the AQHI value from its component pollutants.");
 		getOptions().addOption("g1","group1", true, "Data field for level 1 grouping.");
 		getOptions().addOption("g2","group2", true, "Data field for optional level 2 grouping.");
 		getOptions().addOption("m","months", true, "Comma-separated list of months of the year, starting at 1 for January.");
@@ -102,7 +105,42 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadResultLowerBound(cmd); //Check me first!
 		loadResultUpperBound(cmd);
 		
+		loadAQHI(cmd);
+		
 		loadMinSampleCount(cmd); //Check me last
+		
+	}
+	
+	private void loadAQHI(CommandLine cmd) {
+		if(cmd.hasOption("aqhi")) {
+			
+			if(!supportsAQHI()) 
+				throw new IllegalArgumentException("AQHI calculations are only supported for the continuous data set.");
+			
+			if(isFilePerPollutant()) 
+				throw new IllegalArgumentException("Data cannot be broken out into a single file per pollutant when calculating the AQHI values.");
+			
+			if(!getPollutants().isEmpty())
+				throw new IllegalArgumentException("Pollutants cannot be specified when calculating the AQHI values. AQHI is based on the O3, NO2, and PM2.5 pollutants.");
+			
+			if(!getMethods().isEmpty())
+				throw new IllegalArgumentException("Methods cannot be specified when calculating the AQHI values. AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.");
+			
+			checkAQHIFields();
+			
+			aqhi = true;
+			log.info("AQHI values will be calculated.");
+		} else {
+			log.info("AQHI values will not be calculated.");
+		}
+	}
+	
+	protected void checkAQHIFields() {
+		for(AggregationField field : getFields()) {
+			if (AggregationField.POLLUTANT.equals(field)) {
+				throw new IllegalArgumentException("Data cannot be aggregated (grouped) by pollutant when calculating the AQHI values. AQHI is based on the O3, NO2, and PM2.5 pollutants.");
+			}
+		}
 	}
 	
 	private void loadMethods(CommandLine cmd) {
@@ -447,6 +485,10 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		}
 	}
 	
+	public boolean supportsAQHI() {
+		return true;
+	}
+	
 	public abstract boolean isAggregationMandatory();
 	
 	public abstract boolean allowAggregateFunctionNone();
@@ -523,5 +565,9 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	
 	public Set<String> getMethods() {
 		return methods;
+	}
+
+	public boolean isAQHI() {
+		return aqhi;
 	}
 }

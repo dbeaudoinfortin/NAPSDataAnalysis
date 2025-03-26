@@ -29,7 +29,8 @@ public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSData
 					getOptions().getSiteType().stream().map(s->s.name()).toList(),															//Advanced site filters
 					getOptions().getUrbanization().stream().map(u->u.name()).toList(),														//Advanced site filters
 					getOptions().getValueUpperBound(), getOptions().getValueLowerBound(), 													//Advanced data filters
-					getDataset());
+					getDataset(),
+					getOptions().isAQHI());
 		}
 	}
 	

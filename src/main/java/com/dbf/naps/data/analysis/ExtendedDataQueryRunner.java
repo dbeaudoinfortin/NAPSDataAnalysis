@@ -47,7 +47,9 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 				//Having conditions
 				getConfig().getResultUpperBound(), getConfig().getResultLowerBound(), getConfig().getMinSampleCount(),
 				//Continuous vs. Integrated
-				getDataset());
+				getDataset(),
+				//AQHI
+				getConfig().isAQHI());
 	}
 	
 	@Override

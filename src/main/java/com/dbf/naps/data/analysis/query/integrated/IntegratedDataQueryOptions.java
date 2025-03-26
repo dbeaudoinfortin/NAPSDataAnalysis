@@ -12,4 +12,9 @@ public class IntegratedDataQueryOptions extends ExtendedDataQueryOptions {
 	public boolean allowAggregationFieldHour() {
 		return false;
 	}
+	
+	@Override
+	public boolean supportsAQHI() {
+		return false;
+	}
 }

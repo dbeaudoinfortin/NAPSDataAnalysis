@@ -47,6 +47,8 @@ public abstract class ExtendedDataQueryOptions extends DataQueryOptions {
 		loadStdDevPop(cmd);
 		loadStdDevSmp(cmd);
 		
+		checkAQHIFields(); //Need to re-check to support g3-g5
+		
 		sampleCount = cmd.hasOption("showSampleCount");
 		log.info("Will" + (sampleCount ? "" : " not") +  " include sample count in the result set.");
 	}

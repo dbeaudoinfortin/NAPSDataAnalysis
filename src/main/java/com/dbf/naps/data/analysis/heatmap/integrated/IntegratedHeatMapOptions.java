@@ -12,4 +12,9 @@ public class IntegratedHeatMapOptions extends HeatMapOptions {
 	public boolean allowAggregationFieldHour() {
 		return true;
 	}
+	
+	@Override
+	public boolean supportsAQHI() {
+		return false;
+	}
 }
