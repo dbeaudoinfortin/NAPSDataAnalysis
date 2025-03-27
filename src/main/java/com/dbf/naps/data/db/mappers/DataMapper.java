@@ -78,7 +78,7 @@ public interface DataMapper {
 			Collection<String> siteType, Collection<String> urbanization,								 //Advanced site filters
 			BigDecimal valueUpperBound, BigDecimal valueLowerBound,										 //Advanced data filters
 			String dataset,																				 //Continuous vs. Integrated
-			boolean AQHI);																			 	 //AQHI
+			boolean aqhi);																			 	 //AQHI
 
 	public List<? extends ExportDataRecord> getExportData(Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites, int offset , int limit);
 
