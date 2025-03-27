@@ -56,6 +56,7 @@ public class NAPSIntegratedDataLoader extends NAPSDataLoader {
 		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "PAH", Pattern.compile("S[0-9]+_PAH_[0-9]{4}(_EN)?\\.XLSX"), "ng/m³")); //Match S90121_PAH_2010.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "PM2.5", Pattern.compile("S[0-9]+_PM25_[0-9]{4}(_EN)?\\.XLSX"))); //Match S40103_PM25_2010.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "PM2.5-10", Pattern.compile("S[0-9]+_PM25\\-10_[0-9]{4}(_EN)?\\.XLSX"))); //Match S30113_PM25-10_2010.XLSX
+		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "PM10", Pattern.compile("S[0-9]+_PM10_[0-9]{4}(_EN)?\\.XLSX"))); //Match S30113_PM10_2019.XLSX
 
 		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "CARB", Pattern.compile("S[0-9]+_CARBONYLS_[0-9]{4}(_EN)?\\.XLSX"))); //Match S070119_CARBONYLS_2018_EN.XLSX
 		mappings.add(new IntegratedRunnerMapping(XLSX_LoaderRunner.class, "VOC", Pattern.compile("S[0-9]+_VOC_[0-9]{4}(_EN)?\\.XLSX"))); //Match S070119_VOC_2018_EN.XLSX

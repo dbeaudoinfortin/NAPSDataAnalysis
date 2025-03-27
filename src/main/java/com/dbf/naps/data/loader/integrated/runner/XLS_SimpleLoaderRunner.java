@@ -18,8 +18,8 @@ import com.dbf.naps.data.records.SampleRecord;
  */
 public class XLS_SimpleLoaderRunner extends IntegratedLoaderRunner {
 
-	public XLS_SimpleLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
-		super(threadId, config, sqlSessionFactory, rawFile, method, units);
+	public XLS_SimpleLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String reportType, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, reportType, units);
 	}
 	
 	//Store these column indexes so we only have to look them up once for the entire sheet 

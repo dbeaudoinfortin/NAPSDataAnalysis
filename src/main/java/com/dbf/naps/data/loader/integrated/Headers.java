@@ -37,11 +37,11 @@ public class Headers {
 		DEFAULT_IGNORED_HEADERS.add("MEDIA"); //Media
 		DEFAULT_IGNORED_HEADERS.add("FRACTION"); //Fraction
 		DEFAULT_IGNORED_HEADERS.add("DICH"); //Dich/Partisol Mass (ug/m3)
-		DEFAULT_IGNORED_HEADERS.add("PRES"); //PRESS, Pres.
-		DEFAULT_IGNORED_HEADERS.add("TEMP"); //TEMP, Temp.
-		DEFAULT_IGNORED_HEADERS.add("WS"); //WS
-		DEFAULT_IGNORED_HEADERS.add("HUM"); //HUM
-		DEFAULT_IGNORED_HEADERS.add("TDP"); //TDP
+		DEFAULT_IGNORED_HEADERS.add("PRES"); //PRESS, Pres, average daily pressure (kPA) from nearest meteorological site
+		DEFAULT_IGNORED_HEADERS.add("TEMP"); //TEMP, Temp, average daily temperature 
+		DEFAULT_IGNORED_HEADERS.add("WS"); //WS average daily wind speed 
+		DEFAULT_IGNORED_HEADERS.add("HUM"); //HUM average daily relative humidity
+		DEFAULT_IGNORED_HEADERS.add("TDP"); //TDP point temperature
 		DEFAULT_IGNORED_HEADERS.add("WD"); //WD
 		DEFAULT_IGNORED_HEADERS.add("-VFLAG"); //Validation Flag
 		DEFAULT_IGNORED_HEADERS.add("VOLUME"); //Actual Volume

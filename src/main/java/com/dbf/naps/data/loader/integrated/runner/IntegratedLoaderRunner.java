@@ -38,7 +38,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	//Attributes applying to the entire sheet
 	private final Set<String> validDataColumnHeaders = new HashSet<String>(50);
 	private final Set<Integer> duplicateDataColumnIndexes = new HashSet<Integer>(5);
-	private final String fileType;
+	private final String reportType;
 	private Integer siteID; //Track the site id to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer siteIDColumn; //Track when we have reached the NAPS ID which represents the last column
@@ -51,9 +51,9 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	protected String defaultUnits;
 	protected int miniumColIndex = 0;
 
-	public IntegratedLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String fileType, String units) {
+	public IntegratedLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String reportType, String units) {
 		super(threadId, config, sqlSessionFactory, rawFile);
-		this.fileType = fileType;
+		this.reportType = reportType;
 		this.defaultUnits = units;
 	}
 	
@@ -77,7 +77,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	 * Provided as a method so that it can be overridden by sub-classes
 	 */
 	protected List<String> getMatchingSheetNames() {
-		return Collections.singletonList(fileType);
+		return Collections.singletonList(reportType);
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 				
 				if(null == siteIDColumn) {
 					//Some of the PM25 files are just quick summaries and don't contain full data. Add a quick sanity check.
-					if(fileType.equals("PM2.5") && sheet.getCellContents(0, 0).toUpperCase().startsWith("SAMPLING DATE")) {
+					if(reportType.equals("PM2.5") && sheet.getCellContents(0, 0).toUpperCase().startsWith("SAMPLING DATE")) {
 						return;
 					}
 					throw new IllegalArgumentException("Could not locate the NAPS ID column.");
@@ -370,7 +370,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
     		}
     		units = "µg/m³";
     	}
-    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(columnHeader), units));
+    	record.setMethodId(getMethodID("Integrated", reportType, getMethod(columnHeader), units));
         return record;
 	}
 	
@@ -444,5 +444,9 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	
 	protected String getUnits() {
 		return defaultUnits;
+	}
+
+	public String getReportType() {
+		return reportType;
 	}
 }

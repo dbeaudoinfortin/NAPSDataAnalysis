@@ -27,6 +27,7 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 		//Note: must be in all upper-case to match correctly
 		VALID_SHEETS.add("PAH");
 		VALID_SHEETS.add("PM2.5");
+		VALID_SHEETS.add("PM10");
 		VALID_SHEETS.add("ELEMENTS");
 		VALID_SHEETS.add("METALS");
 		VALID_SHEETS.add("IONS");
@@ -40,7 +41,7 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 		VALID_SHEETS.add("VOC");
 		
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("VOC","GC-FID"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("OCEC","TOR(OC/EC)"));
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("OCEC","TOR"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("PM2.5","Microbalance"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("CARBONYLS","HPLC"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(TP)","Microbalance"));
@@ -54,8 +55,8 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_IC","IC"));
 	}
 	
-	public XLSX_LoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
-		super(threadId, config, sqlSessionFactory, rawFile, method, units);
+	public XLSX_LoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String reportType, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, reportType, units);
 	}
 	
 	private Integer samplerRow;

@@ -16,11 +16,12 @@ import com.dbf.naps.data.utilities.DataCleaner;
 
 /**
  * Extends the base IntegratedFileLoadRunner class to add support for common sample metadata column
+ * Includes PAH, HCB, VOC, PCDD, PCB, CARB, IC, ICPMS, etc.
  */
 public class SampleMetaDataLoaderRunner extends IntegratedLoaderRunner {
 
-	public SampleMetaDataLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
-		super(threadId, config, sqlSessionFactory, rawFile, method, units);
+	public SampleMetaDataLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String reportType, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, reportType, units);
 	}
 
 	//Store these column indexes so we only have to look them up once for the entire sheet
@@ -156,10 +157,41 @@ public class SampleMetaDataLoaderRunner extends IntegratedLoaderRunner {
 		
 		String cartridge = (null == cartridgeCol) ? "" : getSheet().getCellContents(cartridgeCol, getRow());
 		if("FB".equals(cartridge.toUpperCase())) return Collections.emptyList(); //Field blank
+		if("CARB".equals(getReportType()) && "B".equals(cartridge.toUpperCase())) return Collections.emptyList(); //Dynamic blank
 		
 		String media = (null == mediaCol) ? "" : getSheet().getCellContents(mediaCol, getRow());
 		if("FB".equals(media.toUpperCase())) return Collections.emptyList(); //Field blank
 		
 		return super.processRow(date);
+	}
+	
+	@Override
+	protected String getMethod(String rawPollutantName) {
+		switch(getReportType()) {
+		case "PCDD":
+		case "PAH":
+		case "HCB":
+		case "PCB":
+			return "GC-MS";
+		case "CARB":
+			return "TOR";
+		case "IC":
+		case "NH4":
+		case "NA":
+			return "IC";
+		case "WICPMS":
+			return "WICPMS";
+		case "ICPMS":
+			return "ICPMS";
+		case "VOC":
+		case "VOC_4HR":
+			return rawPollutantName.equals("Ethane") || rawPollutantName.equals("Acetylene") || rawPollutantName.equals("Ethylene")  ? "GC-FID" : "GC-MS";
+		case "SPEC":
+			return rawPollutantName.contains("OC") || rawPollutantName.contains("EC") ? "TOR" : "IC";  
+		default:
+			return null; //"N/A"
+		}
+
+		
 	}
 }

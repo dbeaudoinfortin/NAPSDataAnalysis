@@ -13,8 +13,8 @@ import com.dbf.naps.data.utilities.DataCleaner;
 
 public class XLS_NewerLoaderRunner extends SampleMetaDataLoaderRunner {
 
-	public XLS_NewerLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String method, String units) {
-		super(threadId, config, sqlSessionFactory, rawFile, method, units);
+	public XLS_NewerLoaderRunner(int threadId, LoaderOptions config, SqlSessionFactory sqlSessionFactory, File rawFile, String reportType, String units) {
+		super(threadId, config, sqlSessionFactory, rawFile, reportType, units);
 	}
 	
 	@Override
