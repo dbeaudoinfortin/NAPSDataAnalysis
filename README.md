@@ -897,396 +897,396 @@ The following table lists all of the compounds (pollutants) and how many data po
 <details>
 <summary>Table of Compounds</summary>
 
-### As of October 2024
+### As of March 2025
 
-|Compound|Continuous Data Points|Integrated Data Points|
-|:--- | :---: | :---: |
-|CO|22,515,492||
-|NO|38,711,270||
-|NO2|41,663,301||
-|NOX|30,910,885||
-|O3|57,283,903||
-|PM10|9,785,097||
-|PM2.5|35,593,881|39120|
-|SO2|37,398,018|5354|
-|1-Bromopropane||1209|
-|1-Butene/Isobutene||76502|
-|1-Butyne||54678|
-|1-Decene||31484|
-|1-Heptene||30900|
-|1-Hexene||56593|
-|1-Hexene/2-Methyl-1-Pentene||15836|
-|1-Me-Pyrene||6532|
-|1-Methylcyclohexene||34763|
-|1-Methylcyclopentene||34771|
-|1-Methylpyrene||3357|
-|1-Nonene||31173|
-|1-Octene||32108|
-|1-Pentene||77107|
-|1-Propyne||48033|
-|1-Undecene||23655|
-|1,1-Dichloroethane||50692|
-|1,1-Dichloroethylene||52542|
-|1,1,1-Trichloroethane||75177|
-|1,1,2-Trichloroethane||69481|
-|1,1,2,2-Tetrachloroethane||52405|
-|1,2-Dichlorobenzene||52550|
-|1,2-Dichloroethane||70470|
-|1,2-Dichloropropane||52561|
-|1,2-Diethylbenzene||39184|
-|1,2,3-Trimethylbenzene||76829|
-|1,2,4-Trichlorobenzene||52097|
-|1,2,4-Trimethylbenzene||77070|
-|1,3-Butadiene||77121|
-|1,3-Dichlorobenzene||52576|
-|1,3-Diethylbenzene||76850|
-|1,3,5-Trimethylbenzene||77072|
-|1,4-Dichlorobenzene||77075|
-|1,4-Dichlorobutane||37265|
-|1,4-Diethylbenzene||75956|
-|1234678-H7CDD||3076|
-|1234678-H7CDF||3076|
-|123478-H6CDD||3076|
-|123478-H6CDF||3076|
-|1234789-H7CDF||3076|
-|123678-H6CDD||3076|
-|123678-H6CDF||3076|
-|12378-P5CDD||3076|
-|12378-P5CDF||3076|
-|123789-H6CDD||3076|
-|123789-H6CDF||3076|
-|13C12-H6CDD||3076|
-|13C12-H6CDF||3049|
-|13C12-H7CDD||3076|
-|13C12-H7CDF||3049|
-|13C12-OCDD||3076|
-|13C12-P5CDD||3076|
-|13C12-P5CDF||3049|
-|13C12-TCDD||3076|
-|13C12-TCDF||3076|
-|13C6-HCB||1609|
-|13C6-PCP||1602|
-|2-Ethyl-1-Butene||21807|
-|2-Ethyltoluene||77108|
-|2-Me-Fluorene||6534|
-|2-Methyl-1-butene||73846|
-|2-Methyl-1-Pentene||5574|
-|2-Methyl-2-butene||73822|
-|2-methyl-2-Pentene||993|
-|2-Methylfluorene||3355|
-|2-Methylheptane||77014|
-|2-Methylhexane||77075|
-|2-Methylpentane||76936|
-|2-Pentanone||864|
-|2-Pentanone/Isovaleraldehyde||7091|
-|2,2-Dimethylbutane||76968|
-|2,2-Dimethylhexane||46134|
-|2,2-Dimethylpentane||59357|
-|2,2-Dimethylpropane||54681|
-|2,2,3-Trimethylbutane||35097|
-|2,2,4-Trimethylpentane||77106|
-|2,2,5-Trimethylhexane||58259|
-|2,3-Dimethylbutane||77118|
-|2,3-Dimethylpentane||77110|
-|2,3,4-Trimethylpentane||77114|
-|2,4-Dimethylhexane||77088|
-|2,4-Dimethylpentane||77110|
-|2,5-Dimethylbenzaldehyde||7237|
-|2,5-Dimethylheptane||1304|
-|2,5-Dimethylhexane||77078|
-|234678-H6CDF||3076|
-|23478-P5CDF||3076|
-|2378-TCDD||3076|
-|2378-TCDF||3076|
-|3-Ethyltoluene||77111|
-|3-Me-Cholanthrene||6525|
-|3-Methyl-1-Butene||37045|
-|3-Methyl-1-pentene||54388|
-|3-Methylcholanthrene||3357|
-|3-Methylheptane||77062|
-|3-Methylhexane||77113|
-|3-Methyloctane||1281|
-|3-Methylpentane||76733|
-|3,6-Dimethyloctane||37365|
-|4-Ethyltoluene||77109|
-|4-Methyl-1-pentene||53818|
-|4-Methylheptane||77079|
-|4-Methyloctane||1294|
-|7-Me-Benz(a)Anthracene||6527|
-|7-Methylbenz(a)Anthracene||3357|
-|A-Pinene||51592|
-|Acenaphthene||9886|
-|Acenaphthylene||9877|
-|Acetaldehyde||13399|
-|Acetate||34557|
-|Acetone||13374|
-|Acetylene||75905|
-|Acrolein||9442|
-|Aluminum||111612|
-|Ammonia||30530|
-|Ammonium||45360|
-|Anthanthrene||9886|
-|Anthracene||9869|
-|Antimony||114301|
-|Arabitol||12662|
-|Arsenic||34532|
-|B-Pinene||51096|
-|Barium||140508|
-|Benz(a)Anthracene||9888|
-|Benzaldehyde||10294|
-|Benzene||77064|
-|Benzo(a)Fluorene||9889|
-|Benzo(a)Pyrene||9861|
-|Benzo(b)&(k)Fluoranthene||1981|
-|Benzo(b)Chrysene||9891|
-|Benzo(b)Fluoranthene||7965|
-|Benzo(b)Fluorene||9886|
-|Benzo(e)Pyrene||9890|
-|Benzo(g,h,i)Fluoranthene||9889|
-|Benzo(g,h,i)Perylene||9886|
-|Benzo(k)Fluoranthene||7969|
-|Benzylchloride||41318|
-|Beryllium||29991|
-|Bismuth||3138|
-|Bromide||40544|
-|Bromine||87462|
-|Bromodichloromethane||38568|
-|Bromoform||70330|
-|Bromomethane||68617|
-|Bromotrichloromethane||10550|
-|Butane||77109|
-|Butyraldehyde/Iso-Butyraldehyde||1790|
-|Cadmium||119962|
-|Calcium||119604|
-|Camphene||51214|
-|Carbontetrachloride||77085|
-|Cerium||36931|
-|Cesium||54465|
-|Chloride||39433|
-|Chlorobenzene||69924|
-|Chloroethane||68614|
-|Chloroform||76803|
-|Chloromethane||75181|
-|Chromium||119568|
-|Chrysene||7965|
-|Chrysene & Triphenylene||2000|
-|cis-1,2-Dichloroethylene||36928|
-|cis-1,2-Dimethylcyclohexane||64142|
-|cis-1,3-Dichloropropene||39194|
-|cis-1,3-Dimethylcyclohexane||61191|
-|cis-1,4/t-1,3-Dimethylcyclohexane||57679|
-|cis-2-Butene||77119|
-|cis-2-Heptene||35862|
-|cis-2-Hexene||76758|
-|cis-2-Octene||9755|
-|cis-2-Pentene||77094|
-|cis-3-Heptene||8941|
-|cis-3-Methyl-2-Pentene||74116|
-|cis-4-Methyl-2-pentene||65305|
-|Cl-||29562|
-|Cobalt||34532|
-|Copper||40297|
-|Crotonaldehyde||10294|
-|Cyclohexane||77119|
-|Cyclohexene||34678|
-|Cyclopentane||76972|
-|Cyclopentene||56770|
-|D-Limonene||51242|
-|Decane||77086|
-|Dibenz(a,c)&(a,h)Anthracene||9819|
-|Dibromochloromethane||39061|
-|Dibromomethane||39198|
-|Dodecane||75811|
-|EC||5871|
-|EC(A)||12298|
-|EC(B)||6305|
-|EC_R||11781|
-|EC_T||11783|
-|EC1||11783|
-|EC1(A)||12298|
-|EC1(B)||6305|
-|EC2||11783|
-|EC2(A)||12298|
-|EC2(B)||6305|
-|EC3||11783|
-|EC3(A)||12298|
-|EC3(B)||6305|
-|EDB||38570|
-|Ethane||76167|
-|Ethylbenzene||77078|
-|Ethylbromide||37371|
-|Ethylene||74819|
-|Fluoranthene||9891|
-|Fluorene||9887|
-|Fluoride||42340|
-|Formaldehyde||13402|
-|Formate||34559|
-|Freon 11||76991|
-|Freon 113||42474|
-|Freon 114||70298|
-|Freon 12||64825|
-|Freon 22||76867|
-|Galactosan||12663|
-|Gallium||3138|
-|H6CDD||3076|
-|H6CDF||3076|
-|H7CDD||3076|
-|H7CDF||3076|
-|HCB||1566|
-|Heptane||77020|
-|Hexachlorobutadiene||52067|
-|Hexanal||10291|
-|Hexane||76090|
-|Hexylbenzene||35788|
-|Indane||76685|
-|Indeno(1,2,3-cd)Fluoranthene||5899|
-|Indeno(1,2,3-cd)Pyrene||9877|
-|Iron||119582|
-|iso-Butylbenzene||54583|
-|iso-Propylbenzene||77093|
-|Isobutane||77086|
-|Isopentane||77015|
-|Isoprene||76826|
-|Isovaleraldehyde||2654|
-|Lanthanum||11662|
-|Lead||121968|
-|Levoglucosan||12662|
-|Lithium||42260|
-|m-Tolualdehyde||9080|
-|m and p-Xylene||77086|
-|Magnesium||42385|
-|Manganese||126621|
-|Mannitol||11798|
-|Mannosan||12662|
-|MEK||12501|
-|MEK/Butyraidehyde||864|
-|Methylcyclohexane||77097|
-|Methylcyclopentane||77119|
-|MIBK||10234|
-|Molybdenum||34532|
-|MSA||34567|
-|MTBE||34606|
-|n-Butylbenzene||61104|
-|n-Propylbenzene||77108|
-|N_NO3||5986|
-|Na+||29470|
-|Naphthalene||71450|
-|NH4+||29562|
-|Nickel||120129|
-|Nitrate||63095|
-|Nitric Acid||17728|
-|Nitrite||58221|
-|Nitrous Acid||12318|
-|NO3||39241|
-|Nonane||76954|
-|o-Tolualdehyde||7290|
-|o-Xylene||77082|
-|OC||5871|
-|OC(A)||12298|
-|OC(B)||12298|
-|OC(corr)||12297|
-|OC_R||11783|
-|OC_RA||5872|
-|OC_RB||5871|
-|OC_T||11783|
-|OC1||11783|
-|OC1(A)||12298|
-|OC1(B)||12298|
-|OC2||11783|
-|OC2(A)||12298|
-|OC2(B)||12298|
-|OC3||11783|
-|OC3(A)||12298|
-|OC3(B)||12298|
-|OC4||11783|
-|OC4(A)||12298|
-|OC4(B)||12298|
-|OCDD||3076|
-|OCDF||3075|
-|OCS||1614|
-|Octane||77112|
-|Oxalate||42383|
-|p-Cymene||76878|
-|p-Tolualdehyde||9080|
-|P5CDD||3076|
-|P5CDF||3076|
-|PCB-105||302|
-|PCB-114||302|
-|PCB-118||302|
-|PCB-123||302|
-|PCB-126||302|
-|PCB-156||302|
-|PCB-157||302|
-|PCB-167||302|
-|PCB-169||302|
-|PCB-189||302|
-|PCB-77||302|
-|PCB-81||302|
-|PCP||1598|
-|Pentane||77097|
-|Perylene||9877|
-|Phenanthrene||9889|
-|Phosphate||39032|
-|PM2.5-10||14424|
-|POC(A)||12298|
-|POC(B)||6305|
-|POC_R||11783|
-|POC_T||11783|
-|Potassium||119604|
-|Propane||77034|
-|Propionaldehyde||13399|
-|Propionate||34567|
-|Propylene||77061|
-|Pyrene||9891|
-|Retene||6779|
-|Rubidium||82705|
-|sec-Butylbenzene||54663|
-|Selenium||119549|
-|Silicon||85595|
-|Silver||34470|
-|SO4||39246|
-|Sodium||33456|
-|Strontium||140551|
-|Styrene||74513|
-|Sulfur||47350|
-|Sulphate||50837|
-|Sulphur||38250|
-|Sulphur Dioxide||24502|
-|T_NO3||5993|
-|TC||11783|
-|TC(A)||12298|
-|TC(B)||6305|
-|TC(corr)||12297|
-|TCDD||3076|
-|TCDF||3076|
-|TEQ||3076|
-|tert-Butylbenzene||37364|
-|Tetrachloroethylene||70497|
-|Thallium||29991|
-|Tin||114287|
-|Titanium||111408|
-|Toluene||77097|
-|trans-1,2-Dichloroethylene||39208|
-|trans-1,2-Dimethylcyclohexane||54626|
-|trans-1,3-Dichloropropene||39022|
-|trans-1,4-Dimethylcyclohexane||56374|
-|trans-2-Butene||77114|
-|trans-2-Heptene||36398|
-|trans-2-Hexene||76863|
-|trans-2-Octene||44719|
-|trans-2-Pentene||77090|
-|trans-3-Heptene||34355|
-|trans-3-Methyl-2-Pentene||74810|
-|trans-4-Methyl-2-Pentene||45767|
-|Trichloroethylene||76930|
-|Triphenylene||7965|
-|Tungsten||3138|
-|Undecane||77077|
-|Uranium||20905|
-|Valeraldehyde||10292|
-|Vanadium||120111|
-|Vinylchloride||70498|
-|Zinc||120132|
+|Compound|Continuous Data Points|
+|:--- | :---: |
+| O3	|| 59212333 |
+| NO2	|| 43286990 |
+| NO	|| 40336561 |
+| SO2	|| 38562169 |
+| PM2.5|| 37529024 |
+| NOX	|| 32531756 |
+| CO	|| 22996259 |
+| PM10	|| 10049428 |
+
+
+|Compound|Integrated Data Points|
+|:--- | :---: |
+|	1-Bromopropane	||	3024	|
+|	1-Butene/Isobutene	||	78317	|
+|	1-Butyne	||	54678	|
+|	1-Decene	||	31484	|
+|	1-Heptene	||	32715	|
+|	1-Hexene	||	56593	|
+|	1-Hexene/2-Methyl-1-Pentene	||	17651	|
+|	1-Me-Pyrene	||	6532	|
+|	1-Methylcyclohexene	||	34763	|
+|	1-Methylcyclopentene	||	34771	|
+|	1-Methylpyrene	||	3357	|
+|	1-Nonene	||	31173	|
+|	1-Octene	||	32108	|
+|	1-Pentene	||	78922	|
+|	1-Propyne	||	48033	|
+|	1-Undecene	||	23655	|
+|	1,1-Dichloroethane	||	52507	|
+|	1,1-Dichloroethylene	||	54357	|
+|	1,1,1-Trichloroethane	||	76992	|
+|	1,1,2-Trichloroethane	||	71296	|
+|	1,1,2,2-Tetrachloroethane	||	54220	|
+|	1,2-Dichlorobenzene	||	54365	|
+|	1,2-Dichloroethane	||	72285	|
+|	1,2-Dichloropropane	||	54376	|
+|	1,2-Diethylbenzene	||	39184	|
+|	1,2,3-Trimethylbenzene	||	78644	|
+|	1,2,4-Trichlorobenzene	||	53912	|
+|	1,2,4-Trimethylbenzene	||	78885	|
+|	1,3-Butadiene	||	78936	|
+|	1,3-Dichlorobenzene	||	54391	|
+|	1,3-Diethylbenzene	||	78665	|
+|	1,3,5-Trimethylbenzene	||	78887	|
+|	1,4-Dichlorobenzene	||	78890	|
+|	1,4-Dichlorobutane	||	37265	|
+|	1,4-Diethylbenzene	||	77771	|
+|	1234678-H7CDD	||	3076	|
+|	1234678-H7CDF	||	3076	|
+|	123478-H6CDD	||	3076	|
+|	123478-H6CDF	||	3076	|
+|	1234789-H7CDF	||	3076	|
+|	123678-H6CDD	||	3076	|
+|	123678-H6CDF	||	3076	|
+|	12378-P5CDD	||	3076	|
+|	12378-P5CDF	||	3076	|
+|	123789-H6CDD	||	3076	|
+|	123789-H6CDF	||	3076	|
+|	13C12-H6CDD	||	3076	|
+|	13C12-H6CDF	||	3049	|
+|	13C12-H7CDD	||	3076	|
+|	13C12-H7CDF	||	3049	|
+|	13C12-OCDD	||	3076	|
+|	13C12-P5CDD	||	3076	|
+|	13C12-P5CDF	||	3049	|
+|	13C12-TCDD	||	3076	|
+|	13C12-TCDF	||	3076	|
+|	13C6-HCB	||	1609	|
+|	13C6-PCP	||	1602	|
+|	2-Ethyl-1-Butene	||	21807	|
+|	2-Ethyltoluene	||	78923	|
+|	2-Me-Fluorene	||	6534	|
+|	2-Methyl-1-Butene	||	75660	|
+|	2-Methyl-1-Pentene	||	5574	|
+|	2-Methyl-2-Butene	||	75637	|
+|	2-methyl-2-Pentene	||	993	|
+|	2-Methylfluorene	||	3355	|
+|	2-Methylheptane	||	78829	|
+|	2-Methylhexane	||	78890	|
+|	2-Methylpentane	||	78751	|
+|	2-Pentanone	||	864	|
+|	2-Pentanone/Isovaleraldehyde	||	7091	|
+|	2,2-Dimethylbutane	||	78783	|
+|	2,2-Dimethylhexane	||	46134	|
+|	2,2-Dimethylpentane	||	59357	|
+|	2,2-Dimethylpropane	||	54681	|
+|	2,2,3-Trimethylbutane	||	35097	|
+|	2,2,4-Trimethylpentane	||	78921	|
+|	2,2,5-Trimethylhexane	||	58259	|
+|	2,3-Dimethylbutane	||	78933	|
+|	2,3-Dimethylpentane	||	78925	|
+|	2,3,4-Trimethylpentane	||	78929	|
+|	2,4-Dimethylhexane	||	78903	|
+|	2,4-Dimethylpentane	||	78925	|
+|	2,5-Dimethylbenzaldehyde	||	7237	|
+|	2,5-Dimethylheptane	||	1304	|
+|	2,5-Dimethylhexane	||	78893	|
+|	234678-H6CDF	||	3076	|
+|	23478-P5CDF	||	3076	|
+|	2378-TCDD	||	3076	|
+|	2378-TCDF	||	3076	|
+|	3-Ethyltoluene	||	78926	|
+|	3-Me-Cholanthrene	||	6525	|
+|	3-Methyl-1-Butene	||	38860	|
+|	3-Methyl-1-Pentene	||	54388	|
+|	3-Methylcholanthrene	||	3357	|
+|	3-Methylheptane	||	78877	|
+|	3-Methylhexane	||	78928	|
+|	3-Methyloctane	||	1281	|
+|	3-Methylpentane	||	78548	|
+|	3,6-Dimethyloctane	||	37365	|
+|	4-Ethyltoluene	||	78924	|
+|	4-Methyl-1-Pentene	||	53818	|
+|	4-Methylheptane	||	78894	|
+|	4-Methyloctane	||	1294	|
+|	7-Me-Benz(a)Anthracene	||	6527	|
+|	7-Methylbenz(a)Anthracene	||	3357	|
+|	A-Pinene	||	53407	|
+|	Acenaphthene	||	9886	|
+|	Acenaphthylene	||	9877	|
+|	Acetaldehyde	||	13910	|
+|	Acetate	||	34557	|
+|	Acetone	||	13885	|
+|	Acetylene	||	77720	|
+|	Acrolein	||	9442	|
+|	Aluminum	||	119434	|
+|	Ammonia	||	32528	|
+|	Ammonium	||	76889	|
+|	Anthanthrene	||	9886	|
+|	Anthracene	||	9869	|
+|	Antimony	||	116846	|
+|	Arabitol	||	13660	|
+|	Arsenic	||	37016	|
+|	B-Pinene	||	52911	|
+|	Barium	||	143053	|
+|	Benz(a)Anthracene	||	9888	|
+|	Benzaldehyde	||	10805	|
+|	Benzene	||	78879	|
+|	Benzo(a)Fluorene	||	9889	|
+|	Benzo(a)Pyrene	||	9861	|
+|	Benzo(b)&(k)Fluoranthene	||	1981	|
+|	Benzo(b)Chrysene	||	9891	|
+|	Benzo(b)Fluoranthene	||	7965	|
+|	Benzo(b)Fluorene	||	9886	|
+|	Benzo(e)Pyrene	||	9890	|
+|	Benzo(g,h,i)Fluoranthene	||	9889	|
+|	Benzo(g,h,i)Perylene	||	9886	|
+|	Benzo(k)Fluoranthene	||	7969	|
+|	Benzylchloride	||	43133	|
+|	Beryllium	||	29991	|
+|	Bismuth	||	4131	|
+|	Bromide	||	40544	|
+|	Bromine	||	93793	|
+|	Bromodichloromethane	||	38568	|
+|	Bromoform	||	72145	|
+|	Bromomethane	||	70432	|
+|	Bromotrichloromethane	||	10550	|
+|	Butane	||	78924	|
+|	Butyraldehyde/Iso-Butyraldehyde	||	2301	|
+|	Cadmium	||	128777	|
+|	Calcium	||	127900	|
+|	Camphene	||	53029	|
+|	Carbontetrachloride	||	78900	|
+|	Cerium	||	37924	|
+|	Cesium	||	54526	|
+|	Chloride	||	70959	|
+|	Chlorobenzene	||	71739	|
+|	Chloroethane	||	70429	|
+|	Chloroform	||	78618	|
+|	Chloromethane	||	76996	|
+|	Chromium	||	128383	|
+|	Chrysene	||	7965	|
+|	Chrysene & Triphenylene	||	2000	|
+|	cis-1,2-Dichloroethylene	||	36928	|
+|	cis-1,2-Dimethylcyclohexane	||	65957	|
+|	cis-1,3-Dichloropropene	||	39194	|
+|	cis-1,3-Dimethylcyclohexane	||	61191	|
+|	cis-1,4/t-1,3-Dimethylcyclohexane	||	57679	|
+|	cis-2-Butene	||	78934	|
+|	cis-2-Heptene	||	35862	|
+|	cis-2-Hexene	||	78573	|
+|	cis-2-Octene	||	9755	|
+|	cis-2-Pentene	||	78909	|
+|	cis-3-Heptene	||	8941	|
+|	cis-3-Methyl-2-Pentene	||	75931	|
+|	cis-4-Methyl-2-pentene	||	65305	|
+|	Cobalt	||	37016	|
+|	Copper	||	49051	|
+|	Crotonaldehyde	||	10805	|
+|	Cyclohexane	||	78934	|
+|	Cyclohexene	||	34678	|
+|	Cyclopentane	||	78787	|
+|	Cyclopentene	||	56770	|
+|	D-Limonene	||	53057	|
+|	Decane	||	78901	|
+|	Dibenz(a,c)&(a,h)Anthracene	||	9819	|
+|	Dibromochloromethane	||	39061	|
+|	Dibromomethane	||	39198	|
+|	Dodecane	||	77626	|
+|	EC	||	5871	|
+|	EC(A)	||	13320	|
+|	EC(B)	||	6305	|
+|	EC_R	||	5900	|
+|	EC_T	||	5900	|
+|	EC1	||	5900	|
+|	EC1(A)	||	13320	|
+|	EC1(B)	||	6305	|
+|	EC2	||	5900	|
+|	EC2(A)	||	13320	|
+|	EC2(B)	||	6305	|
+|	EC3	||	5900	|
+|	EC3(A)	||	13320	|
+|	EC3(B)	||	6305	|
+|	EDB	||	38570	|
+|	Ethane	||	77982	|
+|	Ethylbenzene	||	78893	|
+|	Ethylbromide	||	37371	|
+|	Ethylene	||	76634	|
+|	Fluoranthene	||	9891	|
+|	Fluorene	||	9887	|
+|	Fluoride	||	44302	|
+|	Formaldehyde	||	13913	|
+|	Formate	||	34559	|
+|	Freon 11	||	78806	|
+|	Freon 113	||	42474	|
+|	Freon 114	||	72113	|
+|	Freon 12	||	66640	|
+|	Freon 22	||	78682	|
+|	Galactosan	||	13661	|
+|	Gallium	||	4131	|
+|	H6CDD	||	3076	|
+|	H6CDF	||	3076	|
+|	H7CDD	||	3076	|
+|	H7CDF	||	3076	|
+|	HCB	||	1566	|
+|	Heptane	||	78835	|
+|	Hexachlorobutadiene	||	53882	|
+|	Hexanal	||	10802	|
+|	Hexane	||	77905	|
+|	Hexylbenzene	||	35788	|
+|	Indane	||	78500	|
+|	Indeno(1,2,3-cd)Fluoranthene	||	5899	|
+|	Indeno(1,2,3-cd)Pyrene	||	9877	|
+|	Iron	||	128397	|
+|	iso-Butylbenzene	||	54583	|
+|	iso-Propylbenzene	||	78908	|
+|	Isobutane	||	78901	|
+|	Isopentane	||	78830	|
+|	Isoprene	||	78641	|
+|	Isovaleraldehyde	||	3165	|
+|	Lanthanum	||	12655	|
+|	Lead	||	130783	|
+|	Levoglucosan	||	13660	|
+|	Lithium	||	44208	|
+|	m-Tolualdehyde	||	9591	|
+|	m and p-Xylene	||	78901	|
+|	Magnesium	||	44352	|
+|	Manganese	||	135436	|
+|	Mannitol	||	12223	|
+|	Mannosan	||	13660	|
+|	MEK	||	13012	|
+|	MEK/Butyraidehyde	||	864	|
+|	Methanesulphonic Acid	||	34567	|
+|	Methylcyclohexane	||	78912	|
+|	Methylcyclopentane	||	78934	|
+|	MIBK	||	10745	|
+|	Molybdenum	||	37016	|
+|	MTBE	||	36421	|
+|	n-Butylbenzene	||	61104	|
+|	n-Propylbenzene	||	78923	|
+|	N_NO3	||	5986	|
+|	Naphthalene	||	73265	|
+|	Nickel	||	128944	|
+|	Nitrate	||	105295	|
+|	Nitric Acid	||	18728	|
+|	Nitrite	||	59213	|
+|	Nitrous Acid	||	13318	|
+|	Nonane	||	78769	|
+|	o-Tolualdehyde	||	7290	|
+|	o-Xylene	||	78897	|
+|	OC	||	5871	|
+|	OC(A)	||	13320	|
+|	OC(B)	||	13320	|
+|	OC(corr)	||	13284	|
+|	OC_R	||	5900	|
+|	OC_RA	||	5872	|
+|	OC_RB	||	5871	|
+|	OC_T	||	5900	|
+|	OC1	||	5900	|
+|	OC1(A)	||	13320	|
+|	OC1(B)	||	13320	|
+|	OC2	||	5900	|
+|	OC2(A)	||	13320	|
+|	OC2(B)	||	13320	|
+|	OC3	||	5900	|
+|	OC3(A)	||	13320	|
+|	OC3(B)	||	13320	|
+|	OC4	||	5900	|
+|	OC4(A)	||	13320	|
+|	OC4(B)	||	13320	|
+|	OCDD	||	3076	|
+|	OCDF	||	3075	|
+|	OCS	||	1614	|
+|	Octane	||	78927	|
+|	Oxalate	||	44349	|
+|	p-Cymene	||	78693	|
+|	p-Tolualdehyde	||	9591	|
+|	P5CDD	||	3076	|
+|	P5CDF	||	3076	|
+|	PCB-105	||	302	|
+|	PCB-114	||	302	|
+|	PCB-118	||	302	|
+|	PCB-123	||	302	|
+|	PCB-126	||	302	|
+|	PCB-156	||	302	|
+|	PCB-157	||	302	|
+|	PCB-167	||	302	|
+|	PCB-169	||	302	|
+|	PCB-189	||	302	|
+|	PCB-77	||	302	|
+|	PCB-81	||	302	|
+|	PCP	||	1598	|
+|	Pentane	||	78910	|
+|	Perylene	||	9877	|
+|	Phenanthrene	||	9889	|
+|	Phosphate	||	39032	|
+|	PM10	||	1560	|
+|	PM2.5	||	78284	|
+|	PM2.5-10	||	45397	|
+|	POC(A)	||	13320	|
+|	POC(B)	||	6305	|
+|	POC_R	||	5900	|
+|	POC_T	||	5900	|
+|	Potassium	||	127902	|
+|	Propane	||	78849	|
+|	Propionaldehyde	||	13910	|
+|	Propionate	||	34567	|
+|	Propylene	||	78876	|
+|	Pyrene	||	9891	|
+|	Retene	||	6779	|
+|	Rubidium	||	83759	|
+|	sec-Butylbenzene	||	54663	|
+|	Selenium	||	128364	|
+|	Silicon	||	91926	|
+|	Silver	||	36954	|
+|	Sodium	||	64891	|
+|	Strontium	||	143096	|
+|	Styrene	||	76328	|
+|	Sulphate	||	92050	|
+|	Sulphur	||	91931	|
+|	Sulphur Dioxide	||	31856	|
+|	T_NO3	||	5993	|
+|	TC	||	5900	|
+|	TC(A)	||	13320	|
+|	TC(B)	||	6305	|
+|	TC(corr)	||	13284	|
+|	TCDD	||	3076	|
+|	TCDF	||	3076	|
+|	TEQ	||	3076	|
+|	tert-Butylbenzene	||	37364	|
+|	Tetrachloroethylene	||	72312	|
+|	Thallium	||	29991	|
+|	Tin	||	116832	|
+|	Titanium	||	119230	|
+|	Toluene	||	78912	|
+|	trans-1,2-Dichloroethylene	||	39208	|
+|	trans-1,2-Dimethylcyclohexane	||	54626	|
+|	trans-1,3-Dichloropropene	||	39022	|
+|	trans-1,4-Dimethylcyclohexane	||	56374	|
+|	trans-2-Butene	||	78929	|
+|	trans-2-Heptene	||	36398	|
+|	trans-2-Hexene	||	78678	|
+|	trans-2-Octene	||	46534	|
+|	trans-2-Pentene	||	78905	|
+|	trans-3-Heptene	||	34355	|
+|	trans-3-Methyl-2-Pentene	||	76625	|
+|	trans-4-Methyl-2-Pentene	||	47582	|
+|	Trichloroethylene	||	78745	|
+|	Triphenylene	||	7965	|
+|	Tungsten	||	4131	|
+|	Undecane	||	78892	|
+|	Uranium	||	20905	|
+|	Valeraldehyde	||	10803	|
+|	Vanadium	||	128926	|
+|	Vinylchloride	||	72313	|
+|	Zinc	||	128947	|
 </details>
 
 # Database Design
