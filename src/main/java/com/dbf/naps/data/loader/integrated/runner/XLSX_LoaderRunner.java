@@ -46,8 +46,8 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(TP)","Microbalance"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(G)","GC-MS"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(TP+G)","GC-MS TP+G"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EDXRF", "ED-XRF"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EXDXRF", "ED-XRF"));
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EDXRF", "EDXRF"));
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EXDXRF", "EDXRF"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Water-Soluble)", "ICPMS Water")); 
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Near-Total)", "ICPMS Acid")); 
 		//Needs to come last so we don't match "IC" on "ICPMS"
@@ -177,13 +177,13 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 	}
 	
 	@Override
-	protected String getMethod() {
+	protected String getMethod(String pollutantName) {
 		//Several sheets may have data for the same pollutant but analysed using different methods.
 		return columnMethods.computeIfAbsent(getColumn(), col-> {
 			if(null == methodRow) return defaultMethod;			
 			String method = getSheet().getCellContents(col, methodRow).trim();
 			if(method.isEmpty()) {
-				throw new IllegalArgumentException("Unable to locate the method for column " + col);
+				throw new IllegalArgumentException("Unable to locate the method for column " + col + ", pollutant " + pollutantName);
 			}
 			method = method.replace("_", "-"); //Not always consistent
 			return method;

@@ -92,7 +92,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	 * Allows sub-classes to implement their own logic to determine the method.
 	 * By default the method is null, so this does nothing here.
 	 */
-	protected String getMethod() {
+	protected String getMethod(String pollutantName) {
 		return null;
 	}
 	
@@ -370,7 +370,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
     		}
     		units = "µg/m³";
     	}
-    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(), units));
+    	record.setMethodId(getMethodID("Integrated", fileType, getMethod(columnHeader), units));
         return record;
 	}
 	
