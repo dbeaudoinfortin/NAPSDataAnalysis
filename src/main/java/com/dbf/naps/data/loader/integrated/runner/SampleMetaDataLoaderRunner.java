@@ -173,11 +173,14 @@ public class SampleMetaDataLoaderRunner extends IntegratedLoaderRunner {
 		case "HCB":
 		case "PCB":
 			return "GC-MS";
+		case "CARBONYLS":
+			return "HPLC";
 		case "CARB":
 			return "TOR";
 		case "IC":
 		case "NH4":
 		case "NA":
+		case "LEV":
 			return "IC";
 		case "WICPMS":
 			return "WICPMS";

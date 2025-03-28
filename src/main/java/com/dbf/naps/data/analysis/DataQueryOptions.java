@@ -32,7 +32,8 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	private final Set<ProvTerr> provTerr = new HashSet<ProvTerr>();
 	private final Set<Urbanization> urbanization = new HashSet<Urbanization>();
 	private final Set<SiteType> siteType = new HashSet<SiteType>();
-	private final Set<String>  methods = new HashSet<String>();
+	private final Set<String>   methods = new HashSet<String>();
+	private final Set<String>   reportTypes = new HashSet<String>();
 	
 	private String siteName;
 	private String cityName;
@@ -60,7 +61,8 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		getOptions().addOption("st","siteType", true, "NAPS site type classification (" + SiteType.ALL_VALUES + ").");
 		getOptions().addOption("sn","siteName", true, "NAPS site (station) name, partial match.");
 		getOptions().addOption("cn","cityName", true, "City name, partial match.");
-		getOptions().addOption("mtd","methods", true, "Comma-separated list of method names.");
+		getOptions().addOption("mtd","methods", true, "Comma-separated list of method names. (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)");
+		getOptions().addOption("rt","reportTypes", true, "Comma-separated list of report types. This represents the origin of the data. (CARB, CARBONYLS, CO, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, NO, NO2, NOX, O3, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SO2, SPEC, VOC, VOC_4HR, WICPMS)");
 		getOptions().addOption("ct","title", true, "Chart/report title. Will be automatically generated if not defined.");
 		getOptions().addOption("scm","minSampleCount", true, "Minimum sample count (number of samples or data points) in order to be included in the result set.");
 		getOptions().addOption("vub","valueUpperBound", true, "Upper bound (inclusive) of pre-aggregated raw values to include. "
@@ -98,6 +100,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 		loadSiteName(cmd);
 		loadCityName(cmd);
 		loadMethods(cmd);
+		loadReportTypes(cmd);
 		loadTitle(cmd);
 		
 		loadValueLowerBound(cmd); //Check me first!
@@ -125,6 +128,9 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			
 			if(!getMethods().isEmpty())
 				throw new IllegalArgumentException("Methods cannot be specified when calculating the AQHI values. AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.");
+			
+			if(!getReportTypes().isEmpty())
+				throw new IllegalArgumentException("Report types cannot be specified when calculating the AQHI values. AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.");
 			
 			checkAQHIFields();
 			
@@ -156,6 +162,22 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			log.info("Using only the following methods: " + methods);
 		} else {
 			log.info("Using all methods.");
+		}
+	}
+	
+	private void loadReportTypes(CommandLine cmd) {
+		if(cmd.hasOption("reportTypes")) {
+			for(String report : cmd.getOptionValue("reportTypes").split(",")) {
+				report = report.trim();
+				if (report.isEmpty()) continue;
+				reportTypes.add(report);
+			}
+			if(reportTypes.isEmpty()) 
+				throw new IllegalArgumentException("Must specify at least one report type.");
+			
+			log.info("Using only the following report type: " + reportTypes);
+		} else {
+			log.info("Using all report types.");
 		}
 	}
 	
@@ -565,6 +587,10 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 	
 	public Set<String> getMethods() {
 		return methods;
+	}
+	
+	public Set<String> getReportTypes() {
+		return reportTypes;
 	}
 
 	public boolean isAQHI() {

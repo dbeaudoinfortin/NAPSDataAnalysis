@@ -47,10 +47,10 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(TP)","Microbalance"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(G)","GC-MS"));
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("(TP+G)","GC-MS TP+G"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EDXRF", "EDXRF"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EXDXRF", "EDXRF"));
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Water-Soluble)", "ICPMS Water")); 
-		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Near-Total)", "ICPMS Acid")); 
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EDXRF", "ED-XRF"));
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_EXDXRF", "ED-XRF"));
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Water-Soluble)", "WICPMS")); 
+		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_ICPMS (Near-Total)", "ICPMS")); 
 		//Needs to come last so we don't match "IC" on "ICPMS"
 		DEFAULT_SHEET_METHODS.add(new AbstractMap.SimpleEntry<String, String>("_IC","IC"));
 	}
@@ -186,7 +186,9 @@ public class XLSX_LoaderRunner extends SampleMetaDataLoaderRunner {
 			if(method.isEmpty()) {
 				throw new IllegalArgumentException("Unable to locate the method for column " + col + ", pollutant " + pollutantName);
 			}
+			if("TOR(OC/EC)".equals(method)) method = "TOR"; //Inconsistent, OC/EC is just carbon, TOR is the actual method
 			method = method.replace("_", "-"); //Not always consistent
+			method = method.replace("/", "-"); //Not always consistent
 			return method;
 		});
 	}

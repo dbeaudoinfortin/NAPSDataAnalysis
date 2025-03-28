@@ -74,7 +74,9 @@ public class ContinuousLoaderRunner extends FileLoaderRunner {
 				String method = null;
 				if(isPM25) {
 					//Only PM25 has a specific method
-					method = line.get(1); 
+					method = line.get(1);
+					//Standardise the PM25 name to PM2.5
+					compoudString = "PM2.5";
 				}
 				
 				//The units are expected to be consistent for each compound type

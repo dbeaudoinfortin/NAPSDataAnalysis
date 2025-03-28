@@ -125,7 +125,7 @@ public class XLS_SimpleLoaderRunner extends IntegratedLoaderRunner {
 		}
 		
 		if (EDXRF_POLLUTANTS.contains(pollutantName))
-			return "EDXRF";
+			return "ED-XRF";
 		if (IC_POLLUTANTS.contains(pollutantName))
 			return "IC";
 		return null; //"N/A"

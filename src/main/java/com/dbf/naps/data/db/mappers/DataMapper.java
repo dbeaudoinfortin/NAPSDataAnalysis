@@ -14,6 +14,8 @@ import com.dbf.naps.data.records.ExportDataRecord;
 
 public interface DataMapper {
 
+	static final String AQHI_SQL = "(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))";
+	
 	@Select("<script>"
 			+ "select"
 			+ " <if test=\"groupByYear\">d.year as year</if>"
@@ -22,7 +24,7 @@ public interface DataMapper {
 			+ " <if test=\"dataset.equals(&quot;Continuous&quot;)\">from naps.continuous_data d</if>"
 			+ " <if test=\"dataset.equals(&quot;Integrated&quot;)\">from naps.integrated_data d</if>"
 			+ " <if test=\"groupByPollutant || (pollutants != null &amp;&amp; !pollutants.isEmpty())\">inner join naps.pollutants p on d.pollutant_id = p.id</if>"
-			+ " <if test=\"methods != null &amp;&amp; !methods.isEmpty()\">inner join naps.methods m on d.method_id = m.id</if>"
+			+ " <if test=\"(methods != null &amp;&amp; !methods.isEmpty()) || (reportTypes != null &amp;&amp; !reportTypes.isEmpty())\">inner join naps.methods m on d.method_id = m.id</if>"
 			+ " <if test=\"groupBySite || (sites != null &amp;&amp; !sites.isEmpty()) || (provTerr != null &amp;&amp; !provTerr.isEmpty()) "
 			+ "|| (cityName != null &amp;&amp; !cityName.isEmpty()) || (siteName != null &amp;&amp; !siteName.isEmpty())"
 			+ "|| (siteType != null &amp;&amp; !siteType.isEmpty()) || (urbanization != null &amp;&amp; !urbanization.isEmpty())\">inner join naps.sites s on d.site_id = s.id</if>"
@@ -38,12 +40,12 @@ public interface DataMapper {
 				+ " and d3.pollutant_id = (select id from naps.pollutants where name = 'PM2.5')"
 			+ "</if>"
 			+ "<if test=\"valueUpperBound != null\">and "
-				+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
+				+ "<if test=\"aqhi\">" + AQHI_SQL + "</if>"
 				+ "<if test=\"!aqhi\">d.data</if>"
 				+ " &lt;= #{valueUpperBound}"
 			+ "</if>"
 			+ "<if test=\"valueLowerBound != null\">and "
-				+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
+				+ "<if test=\"aqhi\">" + AQHI_SQL + "</if>"
 				+ "<if test=\"!aqhi\">d.data</if>"
 				+ " &gt;= #{valueLowerBound}"
 			+ "</if>"
@@ -64,6 +66,9 @@ public interface DataMapper {
 			+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">"
 			+ " and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach>"
 			+ "</if>"
+			+ "<if test=\"reportTypes != null &amp;&amp; !reportTypes.isEmpty()\">"
+			+ " and m.report_type in <foreach collection='reportTypes' item='reportType' index='index' open='(' separator = ',' close=')'>#{reportType}</foreach>"
+			+ "</if>"
 			+ " group by"
 			+ " <if test=\"groupByYear\">d.year</if>"
 			+ " <if test=\"groupByPollutant\"><if test=\"groupByYear\">,</if>p.name</if>"
@@ -72,7 +77,7 @@ public interface DataMapper {
 	public List<DataRecordGroup> getExportDataGroups(
 			int startYear, int endYear, Collection<String> pollutants, Collection<Integer> sites,		 //Per-file filters
 			boolean groupByYear, boolean groupByPollutant, boolean groupBySite,							 //Grouping
-			Collection<String> methods,																	 //Basic filter
+			Collection<String> methods, Collection<String> reportTypes,									 //Method filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek, //Basic filters
 			String siteName, String cityName, Collection<String> provTerr,								 //Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 //Advanced site filters
@@ -106,16 +111,29 @@ public interface DataMapper {
 			+ "<if test=\"sites  != null &amp;&amp; !sites.isEmpty()\">and s.naps_id in <foreach collection='sites' item='site' index='index' open='(' separator = ',' close=')'>#{site}</foreach></if>"
 			+ "<if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">and p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach></if>"
 			+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach></if>"
+			+ "<if test=\"reportTypes != null &amp;&amp; !reportTypes.isEmpty()\">and m.report_type in <foreach collection='reportTypes' item='reportType' index='index' open='(' separator = ',' close=')'>#{reportType}</foreach></if>"
 			+ "</script>")
 	public List<String> getDistinctUnits(
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
-			Collection<String> methods,                                                                             //Basic filters
+			Collection<String> methods, Collection<String> reportTypes,                                             //Method filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters
 			BigDecimal valueUpperBound, BigDecimal valueLowerBound,													//Advanced data filters			
 			String dataset);																						//Continuous vs. Integrated
 	
+	static final String AGG_FUNC_SQL = 	  "<if test=\"function.name() == 'AVG'\">avg(</if>"
+										+ "<if test=\"function.name() == 'MIN'\">min(</if>"
+										+ "<if test=\"function.name() == 'MAX'\">max(</if>"
+										+ "<if test=\"function.name() == 'COUNT'\">count(</if>"
+										+ "<if test=\"function.name() == 'SUM'\">sum(</if>"
+										+ "<if test=\"function.name() == 'P50'\">percentile_cont(0.50) within group (order by </if>"
+										+ "<if test=\"function.name() == 'P95'\">percentile_cont(0.95) within group (order by </if>"
+										+ "<if test=\"function.name() == 'P98'\">percentile_cont(0.98) within group (order by </if>"
+										+ "<if test=\"function.name() == 'P99'\">percentile_cont(0.99) within group (order by </if>"
+											+ "<if test=\"aqhi\">" + AQHI_SQL + "</if>"
+											+ "<if test=\"!aqhi\">d.data</if>"
+										+ "<if test=\"function.name() != 'NONE'\">)</if>";
 	@Select("<script>"
 			+ "select"
 				+"<foreach collection='fields' item='field' index='index' open='' separator = ',' close=','>"
@@ -136,19 +154,7 @@ public interface DataMapper {
 					+ "</if>"
 					+ "as field_${index}"
 				+"</foreach>"
-				+ "<if test=\"function.name() == 'AVG'\">avg(</if>"
-				+ "<if test=\"function.name() == 'MIN'\">min(</if>"
-				+ "<if test=\"function.name() == 'MAX'\">max(</if>"
-				+ "<if test=\"function.name() == 'COUNT'\">count(</if>"
-				+ "<if test=\"function.name() == 'SUM'\">sum(</if>"
-				+ "<if test=\"function.name() == 'P50'\">percentile_cont(0.50) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P95'\">percentile_cont(0.95) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P98'\">percentile_cont(0.98) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P99'\">percentile_cont(0.99) within group (order by </if>"
-					+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
-					+ "<if test=\"!aqhi\">d.data</if>"
-				+ "<if test=\"function.name() != 'NONE'\">)</if>"
-				+ "as value"
+				+ AGG_FUNC_SQL + "as value"
 				+ "<if test=\"sampleCount\">, "
 					+ "<if test=\"function.name() != 'NONE'\">count(d.data)</if>"
 					+ "<if test=\"function.name() == 'NONE'\">1</if>"
@@ -159,21 +165,21 @@ public interface DataMapper {
 			+ "<if test=\"dataset.equals(&quot;Integrated&quot;)\">from naps.integrated_data d</if>"
 				+ " inner join naps.pollutants p on d.pollutant_id = p.id"
 				+ " inner join naps.sites s on d.site_id = s.id"
-				+ " <if test=\"methods != null &amp;&amp; !methods.isEmpty()\">inner join naps.methods m on d.method_id = m.id</if>"
+				+ " <if test=\"(methods != null &amp;&amp; !methods.isEmpty()) || (reportTypes != null &amp;&amp; !reportTypes.isEmpty())\">inner join naps.methods m on d.method_id = m.id</if>"
 				+ " <if test=\"aqhi\">"
 				+ "   inner join naps.continuous_data d2 on d.site_id = d2.site_id and d.date_time = d2.date_time"
 				+ "   inner join naps.continuous_data d3 on d.site_id = d3.site_id and d.date_time = d3.date_time"
 				+ "</if>"
 			+ "<where>"
 				+ "<if test=\"valueUpperBound != null\">"
-					+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
+					+ "<if test=\"aqhi\">" + AQHI_SQL + "</if>"
 					+ "<if test=\"!aqhi\">d.data</if>"
-					+ " &lt;= #{valueUpperBound}"
+					+ " &lt;= #{valueUpperBound} "
 				+ "</if>"
-				+ "<if test=\"valueLowerBound != null\"> and "
-					+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
+				+ "<if test=\"valueLowerBound != null\">and "
+					+ "<if test=\"aqhi\">" + AQHI_SQL + "</if>"
 					+ "<if test=\"!aqhi\">d.data</if>"
-					+ " &gt;= #{valueLowerBound}"
+					+ " &gt;= #{valueLowerBound} "
 				+ "</if>"
 				+ "<if test=\"siteName != null &amp;&amp; !siteName.isEmpty()\">and s.station_name LIKE '%' || #{siteName} || '%'</if>"
 				+ "<if test=\"cityName != null &amp;&amp; !cityName.isEmpty()\">and s.city_name LIKE '%' || #{cityName} || '%'</if>"
@@ -187,6 +193,7 @@ public interface DataMapper {
 				+ "<if test=\"sites  != null &amp;&amp; !sites.isEmpty()\">and s.naps_id in <foreach collection='sites' item='site' index='index' open='(' separator = ',' close=')'>#{site}</foreach></if>"
 				+ "<if test=\"pollutants != null &amp;&amp; !pollutants.isEmpty()\">and p.name in <foreach collection='pollutants' item='pollutant' index='index' open='(' separator = ',' close=')'>#{pollutant}</foreach></if>"
 				+ "<if test=\"methods != null &amp;&amp; !methods.isEmpty()\">and m.method in <foreach collection='methods' item='method' index='index' open='(' separator = ',' close=')'>#{method}</foreach></if>"
+				+ "<if test=\"reportTypes != null &amp;&amp; !reportTypes.isEmpty()\">and m.report_type in <foreach collection='reportTypes' item='reportType' index='index' open='(' separator = ',' close=')'>#{reportType}</foreach></if>"
 				+ "<if test=\"aqhi\">"
 					+ " and d.pollutant_id =  (select id from naps.pollutants where name = 'O3') "
 					+ " and d2.pollutant_id = (select id from naps.pollutants where name = 'NO2')"
@@ -197,50 +204,22 @@ public interface DataMapper {
 				+ " group by <foreach collection='fields' item='field' index='index' open='' separator = ',' close=''>field_${index}</foreach>"
 			+ "</if>"
 			+ "<if test=\"resultUpperBound != null || resultLowerBound != null || minSampleCount != null\">"
-			+ " having 1=1"
-			+ "<if test=\"resultUpperBound != null\">and"
-				+ "<if test=\"function.name() == 'AVG'\">avg(</if>"
-				+ "<if test=\"function.name() == 'MIN'\">min(</if>"
-				+ "<if test=\"function.name() == 'MAX'\">max(</if>"
-				+ "<if test=\"function.name() == 'COUNT'\">count(</if>"
-				+ "<if test=\"function.name() == 'SUM'\">sum(</if>"
-				+ "<if test=\"function.name() == 'P50'\">percentile_cont(0.50) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P95'\">percentile_cont(0.95) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P98'\">percentile_cont(0.98) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P99'\">percentile_cont(0.99) within group (order by </if>"
-					+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
-					+ "<if test=\"!aqhi\">d.data</if>"
-				+ ")"
-				+ "&lt;= #{resultUpperBound}"
-			+ "</if>"
-			+ "<if test=\"resultLowerBound != null\">and"
-				+ "<if test=\"function.name() == 'AVG'\">avg(</if>"
-				+ "<if test=\"function.name() == 'MIN'\">min(</if>"
-				+ "<if test=\"function.name() == 'MAX'\">max(</if>"
-				+ "<if test=\"function.name() == 'COUNT'\">count(</if>"
-				+ "<if test=\"function.name() == 'SUM'\">sum(</if>"
-				+ "<if test=\"function.name() == 'P50'\">percentile_cont(0.50) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P95'\">percentile_cont(0.95) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P98'\">percentile_cont(0.98) within group (order by </if>"
-				+ "<if test=\"function.name() == 'P99'\">percentile_cont(0.99) within group (order by </if>"
-					+ "<if test=\"aqhi\">(96.15385*((EXP(0.000537*d.data)-1)+(EXP(0.000871*d2.data)-1)+(EXP(0.000487*d3.data)-1)))</if>"
-					+ "<if test=\"!aqhi\">d.data</if>"
-				+ ")"
-				+ "&gt;= #{resultLowerBound}"
-			+ "</if>"
-			+ "<if test=\"minSampleCount != null\">and count(d.data) &gt;= #{minSampleCount}</if>"
+				+ " having 1=1"
+				+ "<if test=\"resultUpperBound != null\">and" + AGG_FUNC_SQL + " &lt;= #{resultUpperBound} </if>"
+				+ "<if test=\"resultLowerBound != null\">and" + AGG_FUNC_SQL + " &gt;= #{resultLowerBound} </if>"
+				+ "<if test=\"minSampleCount != null\">and count(d.data) &gt;= #{minSampleCount}</if>"
 			+ "</if>"
 			+ "order by"
 				+ "<if test=\"fields != null &amp;&amp; !fields.isEmpty()\">"
-				+ "<foreach collection='fields' item='field' index='index' open='' separator = ',' close=''>field_${index}</foreach>"
+					+ "<foreach collection='fields' item='field' index='index' open='' separator = ',' close=''>field_${index}</foreach>"
 				+ "</if>"
 				+ "<if test=\"fields == null || fields.isEmpty()\">"
-				+ "value desc"
+					+ "value desc"
 				+ "</if>"
 			+ "</script>")
 	public List<DataQueryRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, 		//Grouping
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
-			Collection<String> methods,                                                                             //Basic filters
+			Collection<String> methods, Collection<String> reportTypes,                                             //Method filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters
 			String siteName, String cityName, Collection<String> provTerr,											//Basic filters
 			Collection<String> siteType, Collection<String> urbanization,								 			//Advanced site filters

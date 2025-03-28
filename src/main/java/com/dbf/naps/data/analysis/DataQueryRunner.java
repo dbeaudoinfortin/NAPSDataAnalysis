@@ -87,8 +87,9 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				List<String> allUnits = session.getMapper(DataMapper.class).getDistinctUnits(
 					//Per-file filters
 					years, pollutants, sites,
+					//Method filters
+					getConfig().getMethods(), getConfig().getReportTypes(),
 					//Basic filters
-					getConfig().getMethods(),
 					getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 					getConfig().getSiteName(), getConfig().getCityName(),
 					getConfig().getProvTerr().stream().map(p->p.name()).toList(),
@@ -141,8 +142,9 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				getConfig().getFields(), getConfig().getAggregateFunction(),
 				//Per-file filters
 				years, pollutants, sites,
+				//Method filters
+				getConfig().getMethods(), getConfig().getReportTypes(),
 				//Basic filters
-				getConfig().getMethods(),
 				getConfig().getMonths(), getConfig().getDaysOfMonth(), getConfig().getDaysOfWeek(),
 				getConfig().getSiteName(), getConfig().getCityName(),
 				getConfig().getProvTerr().stream().map(p->p.name()).toList(),
