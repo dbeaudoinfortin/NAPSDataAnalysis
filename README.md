@@ -445,6 +445,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 **Command line usage:**
 ```
  -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99, NONE).
+ -aqhi,--aqhi                     Calculate the AQHI value from its component pollutants.
  -cn,  --cityName <arg>           City name, partial match.
  -ct,  --title <arg>              Chart title. Will be automatically generated if not defined.
  -d,   --days <arg>               Comma-separated list of days of the month.
@@ -478,7 +479,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -m,   --methods <arg>            Comma-separated list of method names.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -505,6 +509,16 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - Both the population standard deviation and the sample standard deviation cannot be used when the aggregate function is set to `NONE`.
 - A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
 
+**AQHI Rules:**
+- Setting the option `aqhi` will return AQHI values calculated from its component pollutants (O3, NO2, PM2.5), rather than the usual concentration value. This value can be used with all of the possible aggregation functions listed above.
+- AQHI values are calculated using the standard formula:
+![aqhi_formula](https://github.com/user-attachments/assets/8be19495-3dcd-4ea2-a506-af8fd215efb8)
+- AQHI values are calculated for each hour and require all three component pollutants (O3, NO2, PM2.5) to be present. This differs from the typical approach used for real-time reporting, which uses a rolling 3 hour average and only requires 2 of the 3 component pollutents to be present.
+- AQHI values are only supported for the continuous data set.
+- It is not possible for the results broken out into a single file per pollutant when calculating the AQHI values.
+- It is not possible to filter by pollutant when calculating the AQHI values because the AQHI is only based on the O3, NO2, and PM2.5 pollutants.
+- It is not possible to filter by method or filter by report type when calculating the AQHI values. The AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.
+
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
@@ -512,6 +526,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
 
 **Other Notes:**
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
@@ -574,7 +590,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 
 **Command line usage:**
 ```
- -a,   --aggregateFunction <arg>  Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99).
+ -a,    --aggregateFunction <arg> Data aggregation function (AVG, MIN, MAX, COUNT, SUM, P50, P95, P98, P99).
+ -aqhi, --aqhi                    Calculate the AQHI value from its component pollutants.
  -cg,  --colourGradient <arg>     Heat map colour gradient choice. Values are 1-9 (inclusive).
  -clb, --colourLowerBound <arg>   Heat map colour lower bound (inclusive).
  -cn,  --cityName <arg>           City name, partial match.
@@ -608,7 +625,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -m,   --methods <arg>            Comma-separated list of method names.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
@@ -655,6 +675,16 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `group1` and `group2` are `YEAR, MONTH, DAY, HOUR, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - A check is performed to prevent the aggregation of data from different pollutants with different units of measurement. For example, it would not make sense to calculate the average of data points measured in a mix of µg/m³ and ppb.
 
+**AQHI Rules:**
+- Setting the option `aqhi` will return AQHI values calculated from its component pollutants (O3, NO2, PM2.5), rather than the usual concentration value. This value can be used with all of the possible aggregation functions listed above.
+- AQHI values are calculated using the standard formula:
+![aqhi_formula](https://github.com/user-attachments/assets/8be19495-3dcd-4ea2-a506-af8fd215efb8)
+- AQHI values are calculated for each hour and require all three component pollutants (O3, NO2, PM2.5) to be present. This differs from the typical approach used for real-time reporting, which uses a rolling 3 hour average and only requires 2 of the 3 component pollutents to be present.
+- AQHI values are only supported for the continuous data set.
+- It is not possible for the results broken out into a single file per pollutant when calculating the AQHI values.
+- It is not possible to filter by pollutant when calculating the AQHI values because the AQHI is only based on the O3, NO2, and PM2.5 pollutants.
+- It is not possible to filter by method or filter by report type when calculating the AQHI values. The AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.
+- 
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
@@ -662,7 +692,9 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
-- 
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
+  
 **Notes:**
 - The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
 - The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically. 
@@ -776,7 +808,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -m,   --methods <arg>            Comma-separated list of method names.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -790,9 +825,12 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -ys,  --yearStart <arg>          Start year (inclusive).
 ```
 
-Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
-
-All of the same rules and restrictions of the [NAPSContinuousDataQuery](#napscontinuousdataquery) apply.
+**Notes:**
+- Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
+- AQHI values are not supported for the integrated data set.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced.
+- With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousDataQuery](#napscontinuousdataquery) apply.
 
 ## NAPSIntegratedHeatMap
 
@@ -835,7 +873,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -m,   --methods <arg>            Comma-separated list of method names.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
@@ -847,9 +888,12 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -ys,  --yearStart <arg>          Start year (inclusive).
 ```
 
-Possible values for `group1` and `group2` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
-
-All of the same rules and restrictions of the [NAPSContinuousHeatMap](#napscontinuousheatmap) apply.
+**Notes:**
+- Possible values for `group1` and `group2` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
+- AQHI values are not supported for the integrated data set.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced.
+- With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousHeatMap](#napscontinuousheatmap) apply.
 
 ## NAPSIntegratedDataExporter
 
