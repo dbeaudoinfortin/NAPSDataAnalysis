@@ -464,6 +464,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 			String rawValue = cmd.getOptionValue(field);
 			if("DAY_OF_MONTH".equals(rawValue.toUpperCase())) rawValue = "DAY"; //Allow both forms
 			if("PROVINCE".equals(rawValue.toUpperCase())) rawValue = "PROVINCE_TERRITORY";
+			if("SITE".equals(rawValue.toUpperCase())) rawValue = "NAPS_ID";
 			
 			try {
 				aggregationField = AggregationField.valueOf(rawValue.toUpperCase()); 
