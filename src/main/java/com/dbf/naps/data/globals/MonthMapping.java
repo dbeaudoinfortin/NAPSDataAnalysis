@@ -24,6 +24,18 @@ public class MonthMapping {
 		monthMap.put("OCTOBER", 10);
 		monthMap.put("NOVEMBER", 11);
 		monthMap.put("DECEMBER", 12);
+		monthMap.put("JAN", 1);
+		monthMap.put("FEB", 2);
+		monthMap.put("MAR", 3);
+		monthMap.put("APR", 4);
+		monthMap.put("MAY", 5);
+		monthMap.put("JUN", 6);
+		monthMap.put("JUL", 7);
+		monthMap.put("AUG", 8);
+		monthMap.put("SEP", 9);
+		monthMap.put("OCT", 10);
+		monthMap.put("NOV", 11);
+		monthMap.put("DEC", 12);
 
 		months.add("January");
 		months.add("February");

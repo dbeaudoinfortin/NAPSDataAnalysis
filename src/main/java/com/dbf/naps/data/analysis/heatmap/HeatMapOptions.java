@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.heatmaps.HeatMapGradient;
-import com.dbf.naps.data.analysis.DataQueryOptions;
+import com.dbf.naps.data.analysis.DataAnalysisOptions;
 
-public abstract class HeatMapOptions extends DataQueryOptions {
+public abstract class HeatMapOptions extends DataAnalysisOptions {
 
 	private static final Logger log = LoggerFactory.getLogger(HeatMapOptions.class);
 
@@ -18,6 +18,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private int colourGradient = 1;
 	
 	private boolean generateCSV = false;
+	private boolean generateJSON = false;
 	private boolean gridlines = false;
 	
 	static {
@@ -32,7 +33,8 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		getOptions().addOption("cub","colourUpperBound", true, "Heat map colour upper bound (inclusive).");
 		getOptions().addOption("clb","colourLowerBound", true, "Heat map colour lower bound (inclusive).");
 		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getCannedGradientCount()) + " (inclusive).");
-		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");	
+		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");
+		getOptions().addOption("json","generateJSON", false, "Generate a corresponding JSON file containing the raw data for each heat map.");	
 		getOptions().addOption("gl","gridlines", false, "Include grid lines.");	
 	}
 
@@ -53,6 +55,7 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 		loadColourLowerBound(cmd); //Check me first!
 		loadColourUpperBound(cmd);
 		loadGenerateCSV(cmd);
+		loadGenerateJSON(cmd);
 		loadGridLines(cmd);
 		loadGradient(cmd);
 	}
@@ -72,6 +75,11 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 	private void loadGenerateCSV(CommandLine cmd) {
 		generateCSV = cmd.hasOption("generateCSV");
 		log.info("Generate CSV file flag is set to " + generateCSV);
+	}
+	
+	private void loadGenerateJSON(CommandLine cmd) {
+		generateJSON = cmd.hasOption("generateJSON");
+		log.info("Generate JSON file flag is set to " + generateJSON);
 	}
 	
 	private void loadGridLines(CommandLine cmd) {
@@ -108,6 +116,10 @@ public abstract class HeatMapOptions extends DataQueryOptions {
 
 	public boolean isGenerateCSV() {
 		return generateCSV;
+	}
+
+	public boolean isGenerateJSON() {
+		return generateJSON;
 	}
 
 	public Double getColourLowerBound() {

@@ -18,8 +18,8 @@ import com.dbf.heatmaps.axis.Axis;
 import com.dbf.heatmaps.axis.IntegerAxis;
 import com.dbf.heatmaps.axis.StringAxis;
 import com.dbf.heatmaps.data.DataRecord;
-import com.dbf.naps.data.analysis.DataQueryRecord;
-import com.dbf.naps.data.analysis.DataQueryRunner;
+import com.dbf.naps.data.analysis.DataAnalysisRecord;
+import com.dbf.naps.data.analysis.DataAnalysisRunner;
 import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
 import com.dbf.naps.data.globals.SiteType;
@@ -27,7 +27,7 @@ import com.dbf.naps.data.globals.SiteTypeMapping;
 import com.dbf.naps.data.globals.Urbanization;
 import com.dbf.naps.data.globals.UrbanizationMapping;
 
-public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
+public abstract class HeatMapRunner extends DataAnalysisRunner<HeatMapOptions> {
 	
 	private static final Logger log = LoggerFactory.getLogger(HeatMapRunner.class);
 	
@@ -36,7 +36,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	}
 	
 	@Override
-	public void writeToFile(List<DataQueryRecord> records, String queryUnits, String title, File dataFile) throws IOException {
+	public void writeToFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
 		
 		log.info("Analyzing heat map data for " + dataFile + "...");
 		//Determine the bounds of the X & Y dimension
@@ -61,13 +61,19 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 		log.info("Rendering complete for " + dataFile + ".");
 		
 		if (getConfig().isGenerateCSV()) {
-			File csvFile = new File(dataFile.getParent(), dataFile.getName().replace("png", "csv"));
+			File csvFile = new File(dataFile.getParent(), dataFile.getName().replace(".png", ".csv"));
 			this.checkFile(csvFile);
-			super.writeToFile(records, queryUnits, title, csvFile);
+			super.writeToCSVFile(records, queryUnits, title, csvFile);
+		}
+		
+		if (getConfig().isGenerateJSON()) {
+			File jsonFile = new File(dataFile.getParent(), dataFile.getName().replace(".png", ".json"));
+			this.checkFile(jsonFile);
+			super.writeToJSONFile(records, queryUnits, title, jsonFile, false);
 		}
 	}
 	
-	private <T> Axis<?> determineAxis(List<DataQueryRecord> records, int index) {
+	private <T> Axis<?> determineAxis(List<DataAnalysisRecord> records, int index) {
 		String prettyName = getConfig().getFields().get(index).getPrettyName();
 		
 		switch (getConfig().getFields().get(index)) {
@@ -121,7 +127,7 @@ public abstract class HeatMapRunner extends DataQueryRunner<HeatMapOptions> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T> Set<T> sortAxisEntries(List<DataQueryRecord> records, int index) {
+	private <T> Set<T> sortAxisEntries(List<DataAnalysisRecord> records, int index) {
 		Set<T> sortedEntries = new TreeSet<T>(); //Need to order the entries
 		records.stream().forEach(r->sortedEntries.add((T) (index == 0 ? r.getField_0() : r.getField_1())));
 		return sortedEntries;
