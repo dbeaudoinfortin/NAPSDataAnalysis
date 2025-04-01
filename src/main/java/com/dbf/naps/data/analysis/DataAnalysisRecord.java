@@ -2,14 +2,17 @@ package com.dbf.naps.data.analysis;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
 
 import com.dbf.heatmaps.data.DataRecord;
+import com.dbf.naps.data.analysis.query.json.JsonSingleRecord;
 
-public class DataQueryRecord implements DataRecord {
+public class DataAnalysisRecord implements DataRecord {
 	private Object field_0;
 	private Object field_1;
 	private Object field_2;
@@ -21,7 +24,7 @@ public class DataQueryRecord implements DataRecord {
 	private Double stdDevPop;
 	private Double stdDevSmp;
 	
-	public DataQueryRecord() {}
+	public DataAnalysisRecord() {}
 	
 	public void printToCSV(CSVPrinter printer, int fieldCount) throws IOException {
 		printToCSV(printer, fieldCount, false, false, false);
@@ -40,7 +43,24 @@ public class DataQueryRecord implements DataRecord {
 		if(hasStdDevSmp) values.add(stdDevSmp);
 		printer.printRecord(values.toArray());
 	}
-
+	
+	public Object getField(int fieldIndex) {
+		if(fieldIndex == 0) return field_0;
+		if(fieldIndex == 1) return field_1;
+		if(fieldIndex == 2) return field_2;
+		if(fieldIndex == 3) return field_3;
+		if(fieldIndex == 4) return field_4;
+		return null;
+	}
+	
+	public JsonSingleRecord toJsonSingleRecord() {
+		return new JsonSingleRecord(value, sampleCount, stdDevPop, stdDevSmp);
+	}
+	
+	public JsonSingleRecord toJsonSingleRecord(String name) {
+		return new JsonSingleRecord(name, value, sampleCount, stdDevPop, stdDevSmp);
+	}
+	
 	@Override
 	public Object getX() {
 		return field_0;
@@ -54,6 +74,11 @@ public class DataQueryRecord implements DataRecord {
 	@Override
 	public Double getValue() {
 		return value.doubleValue();
+	}
+	
+	public BigDecimal getPreciseValue(int significantDigits) {
+		if (value.equals(BigDecimal.ZERO)) return BigDecimal.ZERO;
+        return value.round(new MathContext(significantDigits, RoundingMode.HALF_UP)).stripTrailingZeros();
 	}
 	
 	public void setValue(BigDecimal value) {

@@ -1,17 +1,21 @@
-package com.dbf.naps.data.analysis;
+package com.dbf.naps.data.analysis.query;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import com.dbf.naps.data.analysis.query.ExtendedDataQueryOptions;
+
+import com.dbf.naps.data.analysis.DataAnalysisRecord;
+import com.dbf.naps.data.analysis.DataAnalysisRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.utilities.Utils;
 
-public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOptions> {
+public class ExtendedDataQueryRunner extends DataAnalysisRunner<ExtendedDataQueryOptions> {
 	
 	private final String dataSet;
 	
@@ -21,7 +25,7 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 	}
 	
 	@Override
-	public List<DataQueryRecord> runQuery(SqlSession session){
+	public List<DataAnalysisRecord> runQuery(SqlSession session){
 		
 		Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
 		Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
@@ -54,7 +58,38 @@ public class ExtendedDataQueryRunner extends DataQueryRunner<ExtendedDataQueryOp
 	}
 	
 	@Override
-	public void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
+	protected void writeToFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
+		
+		final Set<QueryOutputTypes> outputTypes = getConfig().getOutputTypes();
+		
+		if(outputTypes == null || outputTypes.isEmpty()) {
+			//The default it to write a CSV file
+			writeToCSVFile(records, queryUnits, title, dataFile);
+		} else {
+			for (QueryOutputTypes output : outputTypes) {
+				switch (output) {
+				case CSV:
+					writeToCSVFile(records, queryUnits, title, dataFile);
+					break;
+				case JSON:
+					File jsonFile = new File(dataFile.getParent(), dataFile.getName().replace(".csv", ".json"));
+					this.checkFile(jsonFile);
+					writeToJSONFile(records, queryUnits, title, jsonFile, false);
+					break;
+				case JSON_SLIM:
+					File jsonSlimFile = new File(dataFile.getParent(), dataFile.getName().replace(".csv", outputTypes.contains(QueryOutputTypes.JSON) ? "_slim.json" : ".json"));
+					this.checkFile(jsonSlimFile);
+					writeToJSONFile(records, queryUnits, title, jsonSlimFile, true);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void printRecordToCSV(DataAnalysisRecord record, CSVPrinter printer) throws IOException {
 		record.printToCSV(printer, getConfig().getFields().size(), getConfig().isSampleCount(), getConfig().isStdDevPop(), getConfig().isStdDevSmp());
 	}
 	

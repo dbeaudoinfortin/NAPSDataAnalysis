@@ -3,20 +3,31 @@ package com.dbf.naps.data.analysis;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.FileRunner;
+import com.dbf.naps.data.analysis.query.json.JsonListRecord;
+import com.dbf.naps.data.analysis.query.json.JsonMapRecord;
+import com.dbf.naps.data.analysis.query.json.JsonMultiRecord;
+import com.dbf.naps.data.analysis.query.json.JsonRecord;
+import com.dbf.naps.data.analysis.query.json.JsonReport;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.globals.DayOfWeekMapping;
 import com.dbf.naps.data.globals.MonthMapping;
@@ -28,12 +39,18 @@ import com.dbf.naps.data.globals.Urbanization;
 import com.dbf.naps.data.globals.UrbanizationMapping;
 import com.dbf.naps.data.utilities.Utils;
 import com.dbf.utils.stacktrace.StackTraceCompactor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRunner<O> {
+public abstract class DataAnalysisRunner<O extends DataAnalysisOptions> extends FileRunner<O> {
 	
-	private static final Logger log = LoggerFactory.getLogger(DataQueryRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(DataAnalysisRunner.class);
 	
-	public DataQueryRunner(int threadId, O config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
+	private static final int JSON_SLIM_DATA_PRECISION = 4;
+	private static final Gson gsonPretty  = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson gsonCompact = new GsonBuilder().create();
+	
+	public DataAnalysisRunner(int threadId, O config, SqlSessionFactory sqlSessionFactory, File dataFile, Integer specificYear, String specificPollutant, Integer specificSite) {
 		super(threadId, config, sqlSessionFactory, dataFile, specificYear, specificPollutant, specificSite);
 	}
 	
@@ -41,7 +58,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 	public void run() {
 		String queryUnits = null;
 		String title = null;
-		List<DataQueryRecord> records = null;
+		List<DataAnalysisRecord> records = null;
 		try {
 			checkFile();
 			
@@ -115,10 +132,10 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		return "";
 	}
 	
-	private List<DataQueryRecord> queryData() {
+	private List<DataAnalysisRecord> queryData() {
 		log.info(getThreadId() + ":: Starting data query for file " + getDataFile() + ".");
 		
-		List<DataQueryRecord> records;
+		List<DataAnalysisRecord> records;
 		try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 			records = runQuery(session);
 		}
@@ -131,7 +148,7 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		return records;
 	}
 	
-	public List<DataQueryRecord> runQuery(SqlSession session){
+	public List<DataAnalysisRecord> runQuery(SqlSession session){
 		
 		Collection <Integer> years = getSpecificYear() != null ? List.of(getSpecificYear()) : Utils.getYearList(getConfig().getYearStart(), getConfig().getYearEnd());
 		Collection <String> pollutants  = getSpecificPollutant() != null ? List.of(getSpecificPollutant()) : getConfig().getPollutants();
@@ -352,9 +369,12 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 		return title.toString();
 	}
 	
-	protected void writeToFile(List<DataQueryRecord> records, String queryUnits, String title, File dataFile) throws IOException {
-		log.info(getThreadId() + ":: Starting writing to file " + dataFile + ".");
-		
+	protected void writeToFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
+		writeToCSVFile(records, queryUnits, title, dataFile);	
+	}
+	
+	protected void writeToCSVFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
+		log.info(getThreadId() + ":: Starting writing to CSV file " + dataFile + ".");
 		List<String> headers = buildCSVHeader();
 		CSVFormat format = CSVFormat.EXCEL
 				.builder()
@@ -362,46 +382,154 @@ public abstract class DataQueryRunner<O extends DataQueryOptions> extends FileRu
 				.setHeader(headers.toArray(new String[headers.size()]))
 				.setSkipHeaderRecord(false)
 				.build();
-			try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
-				writer.write('\ufeff'); //Manually print the UTF-8 BOM
-				try (CSVPrinter titlePrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) { //No header!
-			        if(title != null && !title.isEmpty()) {
-			        	titlePrinter.printRecord(title);
-			        	writer.newLine();
-			        }
-			        try(CSVPrinter printer = new CSVPrinter(writer, format)){
-						for(DataQueryRecord record : records) {
-							printRecordToCSV(record, printer);
-						}
+		try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)) {
+			writer.write('\ufeff'); //Manually print the UTF-8 BOM
+			try (CSVPrinter titlePrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) { //No header!
+		        if(title != null && !title.isEmpty()) {
+		        	titlePrinter.printRecord(title);
+		        	writer.newLine();
+		        }
+		        try(CSVPrinter printer = new CSVPrinter(writer, format)){
+					for(DataAnalysisRecord record : records) {
+						printRecordToCSV(record, printer);
 					}
-			    }
-				
-			}
-			
-		log.info(getThreadId() + ":: Completed writing to file " + dataFile + ".");
+				}
+		    }
+		}
+		log.info(getThreadId() + ":: Completed writing to CSV file " + dataFile + ".");
 	}
 	
-	protected void printRecordToCSV(DataQueryRecord record, CSVPrinter printer) throws IOException {
+	protected void writeToJSONFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile, boolean slim) throws IOException {
+		log.info(getThreadId() + ":: Starting writing to JSON file " + dataFile + ".");
+		
+		String jsonOutput = null;
+		if(slim) {
+			jsonOutput = gsonCompact.toJson(writeToSlimJsonFile(records, dataFile));
+		} else {
+			jsonOutput = gsonPretty.toJson(writeToFatJsonFile(records, queryUnits, title, dataFile));
+		}
+		
+		if(getConfig().isVerbose()) {
+			log.info(getThreadId() + ":: Converted data to JSON:\n" + (jsonOutput.length() > 2000 ? jsonOutput.substring(0,2000) : jsonOutput));
+		}
+		
+		FileUtils.writeStringToFile(dataFile, jsonOutput, Charset.defaultCharset());
+		log.info(getThreadId() + ":: Completed writing to JSON file " + dataFile + ".");
+	}
+
+	//TODO: Great candidate for a unit test
+	@SuppressWarnings("unchecked")
+	private Object writeToSlimJsonFile(List<DataAnalysisRecord> records, File dataFile) throws IOException {
+		final int fieldCount = getConfig().getFields().size();
+		
+		if(fieldCount == 0) {  //There is no top-level aggregation
+			if(records.size() == 1) {
+				return records.get(0).getPreciseValue(JSON_SLIM_DATA_PRECISION); //Since we are aggregating with no group, there us only one value
+			}
+			return records.stream().map(r->r.getPreciseValue(JSON_SLIM_DATA_PRECISION)).toList();
+		} 
+			
+		final HashMap<Object, Object> baseJSON = new HashMap<Object, Object>();
+		for(DataAnalysisRecord dataRecord: records) {
+			//Reset to the tree root of the data for each data record
+			Object jsonRecord = baseJSON;
+			
+			//Iterate through all of the layers of the tree until we find the leaf node,
+			//which is a List that we can add our data to.
+			for(int fieldIndex = 0; fieldIndex <= fieldCount; fieldIndex++) {
+				if(fieldIndex == fieldCount) {
+					//We have reached the leaf node and we are ready to add the value to the list
+					((ArrayList<Object>) jsonRecord).add(dataRecord.getPreciseValue(JSON_SLIM_DATA_PRECISION));
+				} else {
+					final Object dataField = dataRecord.getField(fieldIndex);
+					//There is another layer of grouping and we need to locate the sub map
+					final Map<Object, Object> jsonMapRecord = ((Map<Object, Object>) jsonRecord);
+					jsonRecord = jsonMapRecord.get(dataField);
+					if(null == jsonRecord) {
+						//The sub-map doesn't exist because this is time we have seen this data group
+						if(fieldIndex == fieldCount -1)  {
+							//This is the last grouping so we need to put the actual data
+							jsonMapRecord.put(dataField, dataRecord.getPreciseValue(JSON_SLIM_DATA_PRECISION)); //Don't include too many digits);
+							break;
+						} 
+						//There are more levels of grouping, create a sub-map
+						jsonRecord = new HashMap<Object, Object>();
+						jsonMapRecord.put(dataField, jsonRecord);
+					}
+				}
+			}
+		}
+		return baseJSON;
+	}
+	
+	//TODO: Great candidate for a unit test
+	@SuppressWarnings("unchecked")
+	private Object writeToFatJsonFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
+		final JsonReport baseJSON = new JsonReport();
+		if(StringUtils.isNotEmpty(title)) baseJSON.setTitle(title);
+		if(StringUtils.isNotEmpty(queryUnits)) baseJSON.setUnits(queryUnits);
+		
+		final List<AggregationField> fields = getConfig().getFields();
+		final int fieldCount = fields.size();
+		
+		if(fieldCount == 0) { //There is no top-level aggregation
+			if(records.size() == 1) { //There is only a single data point
+				baseJSON.setData(records.get(0).toJsonSingleRecord(getValueFieldName())); //Since we are aggregating with no grouping, there us only one value
+			} else {
+				baseJSON.setData(new JsonListRecord(getValueFieldName(), records.stream().map(r->r.toJsonSingleRecord()).toList()));
+			}
+			return baseJSON;
+		}
+		
+		baseJSON.setData(new JsonMapRecord<Object>(fields.get(0).name()));
+		for(DataAnalysisRecord dataRecord: records) {
+			//Reset to the tree root of the data for each data record
+			JsonRecord jsonRecord = baseJSON.getData();
+			
+			//Iterate through all of the layers of the tree until we find the leaf node,
+			//which is a List that we can add our data to.
+			for(int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
+				final Object dataField = dataRecord.getField(fieldIndex);
+				//There is another layer of grouping and we need to locate the sub map
+				final Map<Object, JsonRecord> jsonMapRecord = ((JsonMapRecord<Object>) jsonRecord).getValues();
+				jsonRecord = (JsonMultiRecord) jsonMapRecord.get(dataField);
+				if(null == jsonRecord) {
+					//The sub-map doesn't exist because this is time we have seen this data group
+					if(fieldIndex == fieldCount -1)  {
+						//This is the last grouping so we need to set the actual data
+						jsonRecord = dataRecord.toJsonSingleRecord(getValueFieldName());
+					} else {
+						//There are more levels of grouping, create a sub-map
+						jsonRecord = new JsonMapRecord<Object>(fields.get(fieldIndex+1).name());
+					}
+					jsonMapRecord.put(dataField, jsonRecord);
+				}
+			}
+		}
+		return baseJSON;	
+	}
+	
+	protected void printRecordToCSV(DataAnalysisRecord record, CSVPrinter printer) throws IOException {
 		record.printToCSV(printer, getConfig().getFields().size());
 	}
 	
 	protected List<String> buildCSVHeader() {
 		//Dynamically build the CSV header based on the configuration
 		List<String> headerStrings = getConfig().getFields().stream().map(f->f.name()).collect(Collectors.toList());
-		
+		headerStrings.add(getValueFieldName());
+		return headerStrings;
+	}
+	
+	private String getValueFieldName() {
 		switch (getConfig().getAggregateFunction()) {
 		case NONE:
-			headerStrings.add("VALUE");
-			break;
+			return "VALUE";
 		case COUNT:
-			headerStrings.add("SAMPLE COUNT");
-			break;
+			return "SAMPLE COUNT";
 		default:
 			final String functionString = getConfig().getAggregateFunction().name();
-			headerStrings.add(functionString+ "(VALUES)");
-			break;
+			return functionString+ "(VALUES)";
 		}
-		return headerStrings;
 	}
 
 	protected abstract String getDataset();

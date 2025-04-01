@@ -1,7 +1,6 @@
 package com.dbf.naps.data.analysis.query;
 
 import java.io.File;
-import com.dbf.naps.data.analysis.ExtendedDataQueryRunner;
 
 public abstract class NAPSExtendedDataQuery<O extends ExtendedDataQueryOptions> extends NAPSDataQuery<O> {
 

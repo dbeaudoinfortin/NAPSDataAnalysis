@@ -5,13 +5,13 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 
 import com.dbf.naps.data.analysis.AggregateFunction;
-import com.dbf.naps.data.analysis.DataQueryOptions;
+import com.dbf.naps.data.analysis.DataAnalysisOptions;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.exporter.NAPSDataExtractor;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.utilities.Utils;
 
-public abstract class NAPSDataQuery<O extends DataQueryOptions> extends NAPSDataExtractor<O> {
+public abstract class NAPSDataQuery<O extends DataAnalysisOptions> extends NAPSDataExtractor<O> {
 
 	public NAPSDataQuery(String[] args) {
 		super(args);

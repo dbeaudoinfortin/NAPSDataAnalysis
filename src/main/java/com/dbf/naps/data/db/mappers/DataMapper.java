@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import com.dbf.naps.data.analysis.AggregateFunction;
 import com.dbf.naps.data.analysis.AggregationField;
-import com.dbf.naps.data.analysis.DataQueryRecord;
+import com.dbf.naps.data.analysis.DataAnalysisRecord;
 import com.dbf.naps.data.records.DataRecordGroup;
 import com.dbf.naps.data.records.ExportDataRecord;
 
@@ -202,7 +202,7 @@ public interface DataMapper {
 					+ "value desc"
 				+ "</if>"
 			+ "</script>")
-	public List<DataQueryRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, 		//Grouping
+	public List<DataAnalysisRecord> getQueryData(Collection<AggregationField> fields, AggregateFunction function, 		//Grouping
 			Collection<Integer> years, Collection<String> pollutants, Collection<Integer> sites,					//Per-file filters
 			Collection<String> methods, Collection<String> reportTypes,                                             //Method filters
 			Collection<Integer> months, Collection<Integer> daysOfMonth, Collection<Integer> daysOfWeek,			//Basic filters

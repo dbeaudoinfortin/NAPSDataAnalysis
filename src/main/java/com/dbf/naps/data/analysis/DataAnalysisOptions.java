@@ -19,9 +19,9 @@ import com.dbf.naps.data.globals.ProvinceTerritoryMapping;
 import com.dbf.naps.data.globals.SiteType;
 import com.dbf.naps.data.globals.Urbanization;
 
-public abstract class DataQueryOptions extends ExtractorOptions {
+public abstract class DataAnalysisOptions extends ExtractorOptions {
 
-	private static final Logger log = LoggerFactory.getLogger(DataQueryOptions.class);
+	private static final Logger log = LoggerFactory.getLogger(DataAnalysisOptions.class);
 
 	private AggregateFunction aggregateFunction = AggregateFunction.AVG;
 	private final List<AggregationField> fields = new ArrayList<AggregationField>();
@@ -75,7 +75,7 @@ public abstract class DataQueryOptions extends ExtractorOptions {
 				+ "Results less than this threshold will be filtered out of the result set after aggregation.");
 	}
 
-	public DataQueryOptions(String[] args) throws IllegalArgumentException {
+	public DataAnalysisOptions(String[] args) throws IllegalArgumentException {
 		super(args);
 		loadFromArgs(args);
 	}
