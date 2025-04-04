@@ -465,12 +465,16 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -g4,  --group4 <arg>             Data field for optional level 4 grouping
  -g5,  --group5 <arg>             Data field for optional level 5 grouping
  -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
  -o,   --overwriteFiles           Replace existing files.
  -p,   --dataPath <arg>           Local path to save the data.
  -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
  -sc,  --showSampleCount          Include the sample count (number of samples or data points) in the result set.
@@ -479,10 +483,6 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -mtd, --methods <arg>            Comma-separated list of analytical method names.
-                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
- -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
-                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -526,6 +526,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
+- See the [section below](#pollutants) for a list of all supported pollutants.
 - The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
 - The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
 
@@ -608,16 +609,25 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant         Create a separate file for each pollutant.
  -fs,  --filePerSite              Create a separate file for each site.
+ -fts, --fontScale                Relative font size. Must be greater than 0 and no more than 10. Default is 1.
  -fy,  --filePerYear              Create a separate file for each year.
  -g1,  --group1 <arg>             Data field for the heat map X-axis.
  -g2,  --group2 <arg>             Data field for the heat map Y-axis.
+ -gl,  --gridLines                Include grid lines on the heat map.
+ -gv,  --gridValues               Include grid values on the heat map.
+ -json,--generateJSON             Generate a corresponding JSON file containing the raw data for each heat map.
+ -ls,  --legendDecimals <arg>     Number of decimal digits to use for the legend, 0 to 20 (inclusive). Default is 4.
  -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
  -o,   --overwriteFiles           Replace existing files.
  -p,   --dataPath <arg>           Local path to save the data.
  -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
  -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
@@ -625,10 +635,6 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -mtd, --methods <arg>            Comma-separated list of analytical method names.
-                                     (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
- -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
-                                     (CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2)
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
@@ -692,11 +698,13 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `siteType` are `PE, RB, T, PS`, representing `General Population, Regional Background, Transportation, Point Source` (respectively).
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
+- See the [section below](#pollutants) for a list of all supported pollutants.
 - The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
 - The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
   
 **Notes:**
 - The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
+- Similarly, the `generateJSON` option will output a JSON file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.json` file extension instead of a `.png` file extension. Both the `generateCSV` option and the `generateJSON` option can be used at the same time.
 - The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically. 
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
 
@@ -800,6 +808,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
  -sc,  --showSampleCount          Include the sample count (number of samples or data points) in the result set.
@@ -810,8 +820,6 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
  -mtd, --methods <arg>            Comma-separated list of analytical method names.
                                      (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
- -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
-                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
@@ -856,16 +864,25 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -fn,  --fileName <arg>           Custom file name without the extension. Will be automatically generated if not defined.
  -fp,  --filePerPollutant         Create a separate file for each pollutant.
  -fs,  --filePerSite              Create a separate file for each site.
+ -fts, --fontScale                Relative font size. Must be greater than 0 and no more than 10. Default is 1.
  -fy,  --filePerYear              Create a separate file for each year.
  -g1,  --group1 <arg>             Data field for the heat map X-axis.
  -g2,  --group2 <arg>             Data field for the heat map Y-axis.
+ -gl,  --gridLines                Include grid lines on the heat map.
+ -gv,  --gridValues               Include grid values on the heat map.
+ -json,--generateJSON             Generate a corresponding JSON file containing the raw data for each heat map.
+ -ls,  --legendDecimals <arg>     Number of decimal digits to use for the legend, 0 to 20 (inclusive). Default is 4.
  -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
  -o,   --overwriteFiles           Replace existing files.
  -p,   --dataPath <arg>           Local path to save the data.
  -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
  -rlb, --resultLowerBound <arg>   Lower bound (inclusive) of post-aggregated results to include. Results less than this
                                      threshold will be filtered out of the result set after aggregation.
+ -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
+                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -rub, --resultUpperBound <arg>   Upper bound (inclusive) of post-aggregated results to include. Results greater than
                                      this threshold will be filtered out of the result set after aggregation.
  -scm, --minSampleCount <arg>     Minimum sample count (number of samples or data points) in order to be included in the
@@ -873,10 +890,6 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -mtd, --methods <arg>            Comma-separated list of analytical method names.
-                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
- -rt,  --reportTypes <arg>        Comma-separated list of report types. This represents the origin of the data.
-                                     (CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS)
  -t,   --threadCount <arg>        Maximum number of parallel threads.
  -u,   --urbanization <arg>       NAPS site urbanization classification (LU, MU, SU, NU).
  -v,   --verbose                  Make logging more verbose.
@@ -924,7 +937,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.integr
 
 # How To Run Individual Tools
 
-You can find the latest package [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/packages). Alternatively, in the [/target](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/target) directory you can find the pre-compiled jar file naps_data.jar. This is a shaded jar file which means that it contains all of the 3rd party dependencies inside of it. Assuming you have Java 17 installed and 
+You can find the latest package [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/packages). Alternatively, in the [/target](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/tree/main/target) directory you can find the pre-compiled jar file naps_data.jar. This is a shaded jar file which means that it contains all of the 3rd party dependencies inside of it. Assuming you have Java 21 installed and 
 part of your system path you can simply invoke the class by running the following:
 ```
  java -cp naps_data.jar com.dbf.naps.data.loader.continuous.NAPSContinuousDataLoader -p C:\temp\NAPSData\RawFiles -t 24
