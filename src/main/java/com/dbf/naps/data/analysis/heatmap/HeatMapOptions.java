@@ -19,7 +19,10 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 	
 	private boolean generateCSV = false;
 	private boolean generateJSON = false;
-	private boolean gridlines = false;
+	private boolean gridLines = false;
+	private boolean gridValues = false;
+	private int digits = 4;
+	private double fontScale = 1.0;
 	
 	static {
 		//The parent class' static initialiser will be called first.
@@ -35,7 +38,10 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getCannedGradientCount()) + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");
 		getOptions().addOption("json","generateJSON", false, "Generate a corresponding JSON file containing the raw data for each heat map.");	
-		getOptions().addOption("gl","gridlines", false, "Include grid lines.");	
+		getOptions().addOption("gl","gridLines", false, "Include grid lines.");
+		getOptions().addOption("gv","gridValues", false, "Include grid values.");	
+		getOptions().addOption("ld","legendDecimals", true, "Number of decimal digit to use for the legend, 0 to 20 (inclusive).");
+		getOptions().addOption("fs","fontScale", true, "Relative font size. Must be greater than zero and no more than 10.");	
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
@@ -57,7 +63,45 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 		loadGenerateCSV(cmd);
 		loadGenerateJSON(cmd);
 		loadGridLines(cmd);
+		loadGridValues(cmd);
+		loadFontScale(cmd);
+		loadDigits(cmd);
 		loadGradient(cmd);
+	}
+	
+	private void loadDigits(CommandLine cmd) {
+		if(cmd.hasOption("legendDecimals")) {
+			digits = Integer.parseInt(cmd.getOptionValue("legendDecimals"));
+			if (digits < 0) {
+				throw new IllegalArgumentException("Invalid number of legend decimals, must be at least zero: " + digits);
+			}
+			if (digits > 20) {
+				throw new IllegalArgumentException("Invalid number of legend decimals, must be no more than 20: " + digits);
+			}
+			log.info("Using " + digits + " legend decimal(s).");
+		} else {
+			log.info("Using the default number legend decimals: " + digits);
+		}
+	}
+	
+	private void loadFontScale(CommandLine cmd) {
+		if(cmd.hasOption("fontScale")) {
+			fontScale = Double.parseDouble(cmd.getOptionValue("fontScale"));
+			if (fontScale <= 0.0) {
+				throw new IllegalArgumentException("Invalid font scale, must be greater than zero: " + fontScale);
+			}
+			if (fontScale > 10.0) {
+				throw new IllegalArgumentException("Invalid font scale, must be no more than 10: " + fontScale);
+			}
+			log.info("Using a font scale of " + fontScale);
+		} else {
+			log.info("Using the default font scale of " + fontScale);
+		}
+	}
+	
+	private void loadGridValues(CommandLine cmd) {
+		gridValues = cmd.hasOption("gridValues");
+		log.info("Include grid values flag is set to " + gridValues);
 	}
 	
 	private void loadGradient(CommandLine cmd) {
@@ -83,8 +127,8 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 	}
 	
 	private void loadGridLines(CommandLine cmd) {
-		gridlines = cmd.hasOption("gridlines");
-		log.info("Include grid lines flag is set to " + gridlines);
+		gridLines = cmd.hasOption("gridLines");
+		log.info("Include grid lines flag is set to " + gridLines);
 	}
 	
 	private void loadColourLowerBound(CommandLine cmd) {
@@ -135,6 +179,18 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 	}
 
 	public boolean isGridLines() {
-		return gridlines;
+		return gridLines;
+	}
+
+	public boolean isGridValues() {
+		return gridValues;
+	}
+
+	public int getDigits() {
+		return digits;
+	}
+
+	public double getFontScale() {
+		return fontScale;
 	}
 }

@@ -1,5 +1,6 @@
 package com.dbf.naps.data.analysis.heatmap;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,14 @@ public abstract class HeatMapRunner extends DataAnalysisRunner<HeatMapOptions> {
 			.withOptions(com.dbf.heatmaps.HeatMapOptions.builder()
 					.withColourScaleLowerBound(getConfig().getColourLowerBound())
 					.withColourScaleUpperBound(getConfig().getColourUpperBound())
-					.withLegendTextFormat("0.####")
+					.withShowGridlines(getConfig().isGridLines())
+					.withShowGridValues(getConfig().isGridValues())
+					.withLegendTextFormat(getConfig().getDigits() < 1 ? "0" : StringUtils.rightPad("0.", getConfig().getDigits()+2,'#'))
+					.withAxisLabelFont(new Font("Calibri", Font.PLAIN, (int) (20*getConfig().getFontScale())))
+					.withLegendLabelFont(new Font("Calibri", Font.PLAIN, (int) (20*getConfig().getFontScale())))
+					.withAxisTitleFont(new Font("Calibri", Font.BOLD, (int) (20*getConfig().getFontScale())))
+					.withHeatMapTitleFont(new Font("Calibri", Font.BOLD, (int) (36*getConfig().getFontScale())))
+					.withGridValuesFont(new Font("Calibri", Font.PLAIN, (int) (20*getConfig().getFontScale())))
 					.withGradient(HeatMapGradient.getCannedGradient(getConfig().getColourGradient()-1)) //Command options starts at one
 					.build())
 			.build()
