@@ -38,6 +38,7 @@
   * [NAPSIntegratedDataExporter](#napsintegrateddataexporter)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Pollutants](#pollutants)
+- [Methods and Report Types](#methods_and_report_types)
 - [Database Design](#database-design)
 - [Known Issues](#known-issues)
 - [Developer Notes](#developer-notes)
@@ -438,7 +439,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.continuo
 
 ## NAPSContinuousDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). It will output a CSV file containing a table of data based on the query rules that you provide. This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is grouped by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
+This powerful Java tool allows you to dynamically query the NAPS continuous data that was loaded into a PostgreSQL database using the [NAPSContinuousDataLoader](#napscontinuousdataloader). It will output a CSV and/or JSON file containing a table or map of data based on the query rules that you provide. This tool is intended to be used for aggregating data (i.e. average, sum, minimum, maximum, etc.) that is grouped by one or more fields (e.g. pollutant, site, year, month, day, etc.). If you need to generate large tables of data that do not involve grouping functions, have a look at the [NAPSContinuousDataExporter](#napscontinuousdataexporter).
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.continuous.NAPSContinuousDataQuery`.
 
@@ -528,8 +529,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - See the [section below](#pollutants) for a list of all supported pollutants.
-- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
-- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
 
 **Other Notes:**
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
@@ -731,8 +732,8 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - See the [section below](#pollutants) for a list of all supported pollutants.
-- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
-- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
 
 **Rendering Options:**
 - The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically.
@@ -815,7 +816,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.loader.integrat
 
 ## NAPSIntegratedDataQuery
 
-This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader).  It will output a CSV file containing a table of data based on the query rules that you provide. It functions the same as the [NAPSContinuousDataQuery](#napscontinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
+This powerful Java tool allows you to dynamically query the NAPS integrated data that was loaded into a PostgreSQL database using the [NAPSIntegratedDataLoader](#napsintegrateddataloader).  It will output a CSV and/or JSON file containing a table or map of data based on the query rules that you provide. It functions the same as the [NAPSContinuousDataQuery](#napscontinuousdataloader) and accepts all of the same command line arguments, with the exception that the data fields used for grouping cannot include `HOUR`, since hour attribute only applies to continuous data, not integrated data.
 
 You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.integrated.NAPSIntegratedDataQuery`.
 
@@ -875,8 +876,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 **Notes:**
 - Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - AQHI values are not supported for the integrated data set.
-- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis.
-- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
 - With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousDataQuery](#napscontinuousdataquery) apply.
 
 ## NAPSIntegratedHeatMap
@@ -943,8 +944,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 **Notes:**
 - Possible values for `group1` and `group2` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
 - AQHI values are not supported for the integrated data set.
-- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis.
-- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
 - With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousHeatMap](#napscontinuousheatmap) apply.
 
 ## NAPSIntegratedDataExporter
@@ -1384,6 +1385,77 @@ The following table lists all of the compounds (pollutants) and how many data po
 |Vanadium|128926|
 |Vinylchloride|72313|
 |Zinc|128947|
+</details>
+
+# Methods and Report Types
+
+I have tried my best to categorize all of the NAPS data based on both the broad analytical method that was used for analysis (eg. GC-MS, IC, ED-XRF, etc), and the report type from where the data originated. The report type roughly corresponds to the naming scheme of the raw data files posted on the [NAPS data portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/), which are not always consistent throughout the years. 
+
+<details>
+<summary>Table of Methods and Report Types</summary>
+
+### As of March 2025
+
+**Continuous**
+|Report Type|Method|Units|
+|:--- | :---| :---|
+|CO|N/A|ppm|
+|O3|N/A|ppb|
+|PM10|N/A|µg/m³|
+|SO2|N/A|ppb|
+|NO2|N/A|ppb|
+|NOX|N/A|ppb|
+|NO|N/A|ppb|
+|PM2.5|706|µg/m³|
+|PM2.5|731|µg/m³|
+|PM2.5|170|µg/m³|
+|PM2.5|184|µg/m³|
+|PM2.5|703|µg/m³|
+|PM2.5|760|µg/m³|
+|PM2.5|181|µg/m³|
+|PM2.5|195|µg/m³|
+|PM2.5|236|µg/m³|
+|PM2.5|636|µg/m³|
+
+**Integrated**
+|Report Type|Method|Units|
+|:--- | :---| :---|
+|PCB|GC-MS|pg/m³|
+|LEV|IC|µg/m³|
+|PAH|GC-MS TP+G|µg/m³|
+|PM2.5|ICPMS|µg/m³|
+|PM2.5|TOR|µg/m³|
+|PM2.5|IC-PAD|µg/m³|
+|PM2.5|IC|ppbv|
+|PM2.5-10|Microbalance|µg/m³|
+|PM2.5-10|ED-XRF|µg/m³|
+|PM2.5-10|IC|µg/m³|
+|PM2.5-10|ICPMS|µg/m³|
+|PAH|Microbalance|µg/m³|
+|CARBONYLS|HPLC|µg/m³|
+|VOC_4HR|GC-FID|µg/m³|
+|VOC_4HR|GC-MS|µg/m³|
+|PM10|Microbalance|µg/m³|
+|PM10|ED-XRF|µg/m³|
+|DICHOT|Microbalance|µg/m³|
+|DICHOT|IC|µg/m³|
+|DICHOT|ED-XRF|µg/m³|
+|PAH|GC-MS|µg/m³|
+|PCDD|GC-MS|pg/m³|
+|VOC|GC-FID|µg/m³|
+|VOC|GC-MS|µg/m³|
+|HCB|GC-MS|µg/m³|
+|PM2.5|Microbalance|µg/m³|
+|PM2.5|IC|µg/m³|
+|PM2.5|ED-XRF|µg/m³|
+|CARB|TOR|µg/m³|
+|WICPMS|WICPMS|µg/m³|
+|SPEC|IC|µg/m³|
+|SPEC|TOR|µg/m³|
+|NH4|IC|µg/m³|
+|IC|IC|µg/m³|
+|ICPMS|ICPMS|µg/m³|
+|NA|IC|µg/m³|
 </details>
 
 # Database Design
