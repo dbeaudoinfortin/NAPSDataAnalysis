@@ -468,6 +468,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -mtd, --methods <arg>            Comma-separated list of analytical method names.
                                      (170, 181, 184, 195, 236, 636, 703, 706, 731, 760, N/A)
  -o,   --overwriteFiles           Replace existing files.
+ -ot,  --outputTypes <arg>        Comma-separated list of file output types (CSV, JSON, JSON_SLIM). Defaults to CSV if unspecified.
  -p,   --dataPath <arg>           Local path to save the data.
  -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
@@ -532,6 +533,37 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Other Notes:**
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
+- The `outputTypes` option allows you to specify the file format for the ouput data. `CSV` will output a CSV file containing a table of data, with column headers. `JSON` will output the same data but in a JSON format, with metadata for grouping. `JSON_SLIM` will output just the data itself, in JSON format, with all metadata descriptors removed. All 3 output types, or any combination of output types, can be used at the same time. 
+`JSON` output example:
+```json
+{
+  "title": "Maximum AQHI for NAPS Site 60104, Spanning January of the Year 2023, Grouped by Year, Month, and Hour",
+  "data": {
+    "values": {
+      "2023": {
+        "values": {
+          "1": {
+            "values": {
+              "1": {
+                "value": 3.779493123673372745900,
+                "sampleCount": 31,
+                "name": "MAX(VALUES)"
+              }
+            },
+            "name": "HOUR"
+          }
+        },
+        "name": "MONTH"
+      }
+    },
+    "name": "YEAR"
+  }
+}
+```
+`JSON_SLIM` output example:
+```json
+{"2023":{"1":{"1":3.779}}}
+```
 
 **Example Query:**
 
@@ -690,7 +722,7 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - It is not possible for the results broken out into a single file per pollutant when calculating the AQHI values.
 - It is not possible to filter by pollutant when calculating the AQHI values because the AQHI is only based on the O3, NO2, and PM2.5 pollutants.
 - It is not possible to filter by method or filter by report type when calculating the AQHI values. The AQHI is based on the standard methods for the O3, NO2, and PM2.5 pollutants.
-- 
+
 **Filtering Rules:**
 - The possible values for `provTerr` (province/territory) are either the short codes (`NL, PE, NS, NB, QC, ON, MB, SK, AB, BC, YT, NT, NU`), or the long form (`NEWFOUNDLAND AND LABRADOR, PRINCE EDWARD ISLAND, NOVA SCOTIA, NEW BRUNSWICK, QUEBEC, ONTARIO, MANITOBA, SASKATCHEWAN, ALBERTA, BRITISH COLUMBIA, YUKON, NORTHWEST TERRITORIES, NUNAVUT`).
 - The possible values for `month` are either the full names (`JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER`) case-insensitive, or the month numbers (`1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12`), starting at 1 for January.
@@ -701,11 +733,17 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - See the [section below](#pollutants) for a list of all supported pollutants.
 - The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`.
 - The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced.
-  
+
+**Rendering Options:**
+- The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically.
+- The `fontScale` option is used to grow or shink the font size that is used to render text on the heat maps. This will scale all text (legend, labels, titles, etc.) the same amount. The value, must be greater than 0 and no more than 10. The default value is 1, which means no scaling is performed.
+- The `legendDecimals` option can be used to control the number of decimal digits diplayed used for the legend labels. This is useful when the value of each colour step is interpolated. The value can range between 0 to 20 (inclusive), and the default value is 4.
+- The `gridLines` option can be used to render a thin black line between all of the cells of the heat map. By default, the grid lines are not rendered.
+- The `gridValues` option can be used to display the value of each heat map cell within the cell itself. The size of the text is scaled automatically based on the `fontScale` option.  By default, the grid values are not rendered.
+ 
 **Notes:**
 - The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
 - Similarly, the `generateJSON` option will output a JSON file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.json` file extension instead of a `.png` file extension. Both the `generateCSV` option and the `generateJSON` option can be used at the same time.
-- The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically. 
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
 
 ## NAPSContinuousDataExporter
@@ -802,7 +840,10 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -g4,  --group4 <arg>             Data field for optional level 4 grouping
  -g5,  --group5 <arg>             Data field for optional level 5 grouping
  -m,   --months <arg>             Comma-separated list of months of the year, starting at 1 for January.
+ -mtd, --methods <arg>            Comma-separated list of analytical method names.
+                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
  -o,   --overwriteFiles           Replace existing files.
+ -ot,  --outputTypes <arg>        Comma-separated list of file output types (CSV, JSON, JSON_SLIM). Defaults to CSV if unspecified.
  -p,   --dataPath <arg>           Local path to save the data.
  -pn,  --pollutants <arg>         Comma-separated list of pollutant names.
  -pt,  --provTerr <arg>           Comma-separated list of 2-digit province & territory codes.
@@ -818,8 +859,6 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
  -sid, --sites <arg>              Comma-separated list of site IDs.
  -sn,  --siteName <arg>           NAPS site (station) name, partial match.
  -st,  --siteType <arg>           NAPS site type classification (PE, RB, T, PS).
- -mtd, --methods <arg>            Comma-separated list of analytical method names.
-                                     (ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS)
  -stdDevPop, --showStdDevPop      Include the population standard deviation in the result set.
  -stdDevSmp, --showStdDevSamp     Include the sample standard deviation in the result set.
  -t,   --threadCount <arg>        Maximum number of parallel threads.
