@@ -38,7 +38,7 @@
   * [NAPSIntegratedDataExporter](#napsintegrateddataexporter)
 - [How To Run Individual Tools](#how-to-run-individual-tools)
 - [Pollutants](#pollutants)
-- [Methods and Report Types](#methods_and_report_types)
+- [Methods and Report Types](#methods-and-report-types)
 - [Database Design](#database-design)
 - [Known Issues](#known-issues)
 - [Developer Notes](#developer-notes)
@@ -529,8 +529,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - See the [section below](#pollutants) for a list of all supported pollutants.
-- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods_and_report_types) for more information.
-- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods-and-report-types) for more information.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods-and-report-types) for more information.
 
 **Other Notes:**
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
@@ -732,8 +732,8 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The possible values for `urbanization` are `LU, MU, SU, NU`, representing `Large Urban, Medium Urban, Small Urban, Rural (Non Urban)` (respectively).
 - Both site (station) names and city names are treated as case-insensitive partial matches. This means a value of `labrador` will match the city name of `LABRADOR CITY`.
 - See the [section below](#pollutants) for a list of all supported pollutants.
-- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods_and_report_types) for more information.
-- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `methods` are `170, 181, 184, 195, 236, 636, 703, 706, 731, 760`. These represent the main analytical methods used for analysis and only apply to the PM2.5 pollutant. All other pollutants are have a value of `N/A`. See the [section below](#methods-and-report-types) for more information.
+- The possible values for `reportTypes` are `CO, NO, NO2, NOX, O3, PM10, PM2.5, SO2`, corresponding directly to the pollutant names. These represent the type of report from which the data was originally sourced. See the [section below](#methods-and-report-types) for more information.
 
 **Rendering Options:**
 - The `colourLowerBound` and `colourUpperBound` can be used to limit the scale that is mapped to the colour gradient. This is useful for helping to emphasize differences that appear in the centre of the overall range of values, or preventing outliers from shifting the entire scale. When specified, the legend will indicate that either the lower or upper bound by adding `>=` and `<=` to the bottom and top of the scale, respectively. If not specified, then the minimum and maximum values of the colour gradient scale will be calculated automatically.
@@ -876,8 +876,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 **Notes:**
 - Possible values for `group1` through `group5` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`.
 - AQHI values are not supported for the integrated data set.
-- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods_and_report_types) for more information.
-- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods-and-report-types) for more information.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods-and-report-types) for more information.
 - With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousDataQuery](#napscontinuousdataquery) apply.
 
 ## NAPSIntegratedHeatMap
@@ -944,8 +944,8 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
 **Notes:**
 - Possible values for `group1` and `group2` are `YEAR,MONTH, DAY, DAY_OF_WEEK, DAY_OF_YEAR, WEEK_OF_YEAR, NAPS_ID, POLLUTANT, PROVINCE_TERRITORY, SITE_TYPE, URBANIZATION`. 
 - AQHI values are not supported for the integrated data set.
-- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods_and_report_types) for more information.
-- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods_and_report_types) for more information.
+- The possible values for `methods` are `ED-XRF, GC-FID, GC-MS, GC-MS TP+G, HPLC, IC, IC-PAD, ICPMS, Microbalance, TOR, WICPMS`. These represent the main analytical methods used for analysis. See the [section below](#methods-and-report-types) for more information.
+- The possible values for `reportTypes` are `CARB, CARBONYLS, DICHOT, HCB, IC, ICPMS, LEV, NA, NH4, PAH, PCB, PCDD, PM10, PM2.5, PM2.5-10, SPEC, VOC, VOC_4HR, WICPMS`. These represent the type of report from which the data was originally sourced. See the [section below](#methods-and-report-types) for more information.
 - With the exception of the above, all of the other rules and restrictions of the [NAPSContinuousHeatMap](#napscontinuousheatmap) apply.
 
 ## NAPSIntegratedDataExporter
