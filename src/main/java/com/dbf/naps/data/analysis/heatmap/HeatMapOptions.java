@@ -38,10 +38,10 @@ public abstract class HeatMapOptions extends DataAnalysisOptions {
 		getOptions().addOption("cg","colourGradient", true, "Heat map colour gradient choice. Values are 1-" + (HeatMapGradient.getCannedGradientCount()) + " (inclusive).");
 		getOptions().addOption("csv","generateCSV", false, "Generate a corresponding CSV file containing the raw data for each heat map.");
 		getOptions().addOption("json","generateJSON", false, "Generate a corresponding JSON file containing the raw data for each heat map.");	
-		getOptions().addOption("gl","gridLines", false, "Include grid lines.");
-		getOptions().addOption("gv","gridValues", false, "Include grid values.");	
-		getOptions().addOption("ld","legendDecimals", true, "Number of decimal digit to use for the legend, 0 to 20 (inclusive).");
-		getOptions().addOption("fs","fontScale", true, "Relative font size. Must be greater than zero and no more than 10.");	
+		getOptions().addOption("gl","gridLines", false, "Include grid lines on the heat map.");
+		getOptions().addOption("gv","gridValues", false, "Include grid values on the heat map.");	
+		getOptions().addOption("ld","legendDecimals", true, "Number of decimal digits to use for the legend, 0 to 20 (inclusive). Default is 4.");
+		getOptions().addOption("fts","fontScale", true, "Relative font size. Must be greater than 0 and no more than 10. Default is 1.");	
 	}
 
 	public HeatMapOptions(String[] args) throws IllegalArgumentException {
