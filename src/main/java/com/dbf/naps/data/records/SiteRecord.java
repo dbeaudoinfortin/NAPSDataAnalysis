@@ -17,6 +17,7 @@ public class SiteRecord {
     private String landUse;
     private String scale;
     private Integer elevation;
+    private BigDecimal  timezone;
 
     public int getId() {
         return id;
@@ -117,4 +118,12 @@ public class SiteRecord {
     public void setElevation(Integer elevation) {
         this.elevation = elevation;
     }
+
+	public BigDecimal getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(BigDecimal timezone) {
+		this.timezone = timezone;
+	}
 }

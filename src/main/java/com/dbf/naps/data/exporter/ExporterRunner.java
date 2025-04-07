@@ -90,10 +90,14 @@ public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRun
 			writer.write('\ufeff'); //Manually print the UTF-8 BOM
 			try(CSVPrinter printer = new CSVPrinter(writer, format)){
 				for(ExportDataRecord record : records) {
-					record.printToCSV(printer, ISO_DATE_FORMAT);
+					record.printToCSV(printer, getDateFormat());
 				}
 			}
 		}
+	}
+	
+	protected SimpleDateFormat getDateFormat() {
+		return ISO_DATE_FORMAT;
 	}
 
 	protected abstract Class<? extends DataMapper> getDataMapper();

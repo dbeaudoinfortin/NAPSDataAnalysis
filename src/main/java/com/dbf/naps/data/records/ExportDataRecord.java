@@ -13,7 +13,7 @@ public class ExportDataRecord {
 	     NAPS_Site_ID,
 	     Station_Name,
 	     Pollutant,
-	     Date,
+	     Date_GMT,
 	     Value,
 	     Units
 	 }

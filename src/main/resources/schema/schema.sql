@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS naps.sites
    neighbourhood VARCHAR(2) NULL,
    land_use      VARCHAR(1) NULL,
    scale         VARCHAR(2) NULL,
-   elevation     int NULL
+   elevation     int NULL,
+   timezone      NUMERIC(2,1) NULL
 );
 CREATE INDEX IF NOT EXISTS idx_sites_prov_terr ON naps.sites (prov_terr ASC);
 CREATE INDEX IF NOT EXISTS idx_sites_latitude ON naps.sites (latitude ASC);

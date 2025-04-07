@@ -3,6 +3,8 @@ package com.dbf.naps.data.loader.sites;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +76,10 @@ public class SitesLoaderRunner extends FileLoaderRunner {
 				
 				String elevationRaw = line.get(10);
 				if(!"".equals(elevationRaw)) record.setElevation(Integer.parseInt(elevationRaw));
+				
+				String timezoneRaw = line.get(7);
+				if(!"".equals(timezoneRaw))
+					record.setTimezone(new BigDecimal(timezoneRaw).setScale(1, RoundingMode.UNNECESSARY));
 				
 				record.setSiteType(line.get(30));
 				record.setUrbanization(line.get(31));

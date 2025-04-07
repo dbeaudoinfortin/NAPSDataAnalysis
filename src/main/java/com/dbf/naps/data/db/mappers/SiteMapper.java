@@ -21,9 +21,9 @@ public interface SiteMapper {
 			+ " ON CONFLICT DO NOTHING;") //Don't overwrite because this is only partial data
 	public int insertSitePartial(Integer NAPSId, String cityName, String provTerr, BigDecimal latitude, BigDecimal longitude);
 	
-	@Insert("INSERT into naps.sites (NAPS_id, station_name, city_name, prov_terr, latitude, longitude, site_type, urbanization, neighbourhood, land_use, scale, elevation)"
+	@Insert("INSERT into naps.sites (NAPS_id, station_name, city_name, prov_terr, latitude, longitude, site_type, urbanization, neighbourhood, land_use, scale, elevation, timezone)"
 			+ " values (#{NAPSId}, #{stationName}, #{cityName}, #{provTerr}, #{latitude}, #{longitude},"
-			+ " #{siteType}, #{urbanization}, #{neighbourhood}, #{landUse}, #{scale}, #{elevation})"
+			+ " #{siteType}, #{urbanization}, #{neighbourhood}, #{landUse}, #{scale}, #{elevation}, #{timezone})"
 			+ " ON CONFLICT (NAPS_id) DO UPDATE"
 			+ " SET"
 			+ "  station_name = excluded.station_name,"
@@ -32,7 +32,13 @@ public interface SiteMapper {
 			+ "  neighbourhood = excluded.neighbourhood,"
 			+ "  land_use = excluded.land_use,"
 			+ "  scale = excluded.scale,"
-			+ "  elevation = excluded.elevation;") //Overwrite the site since we have full data, but only update the column missing from the partial data
+			+ "  elevation = excluded.elevation,"
+			+ "  timezone = excluded.timezone;") //Overwrite the site since we have full data, but only update the column missing from the partial data
 	public int insertSiteFull(SiteRecord site);
+	
+	@Select("SELECT id, naps_id as NAPSId, station_name as stationName, city_name as cityName, prov_terr as provTerr, latitude, longitude, " +
+            "site_type as siteType, urbanization, neighbourhood, land_use as landUse, scale, elevation, timezone " +
+            "FROM naps.sites where naps_id = #{napsID}")
+	public SiteRecord getSiteByNAPSID(Integer napsID);
 	
 }

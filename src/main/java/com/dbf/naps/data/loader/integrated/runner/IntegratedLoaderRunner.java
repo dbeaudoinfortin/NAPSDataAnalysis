@@ -24,6 +24,7 @@ import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.loader.integrated.Headers;
 import com.dbf.naps.data.records.IntegratedDataRecord;
 import com.dbf.naps.data.records.SampleRecord;
+import com.dbf.naps.data.records.SiteRecord;
 import com.dbf.naps.data.utilities.DataCleaner;
 
 /**
@@ -39,7 +40,7 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 	private final Set<String> validDataColumnHeaders = new HashSet<String>(50);
 	private final Set<Integer> duplicateDataColumnIndexes = new HashSet<Integer>(5);
 	private final String reportType;
-	private Integer siteID; //Track the site id to read it only once
+	private SiteRecord site; //Track the site to read it only once
 	private Integer headerRowNumber; //Track when we have reached the real header row
 	private Integer siteIDColumn; //Track when we have reached the NAPS ID which represents the last column
 	
@@ -177,14 +178,14 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 			//Some sheets are broken and are missing data at the end
 			//Only read the site id on the first row since it will not change
 			//Last column is the NAPS ID
-			if(siteID == null) {
+			if(site == null) {
 				String napsID = sheet.getCellContents(siteIDColumn, row);
 				
 				//Special snowflake
 				if (sheet.getName() != null && sheet.getName().toUpperCase().contains("SHOULD BE 90228")) {
 					napsID = "90228";
 				}
-				siteID = getSiteID(napsID, row);
+				site = getSite(napsID, row);
 			}
 			
 			records.addAll(processRow(date));
@@ -342,8 +343,8 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
     	}
 
     	IntegratedDataRecord record = new IntegratedDataRecord();
-		record.setDatetime(date);
-		record.setSiteId(siteID);
+		record.setDatetime(date, null, null);
+		record.setSiteId(site.getId());
     	record.setPollutantId(getPollutantID(columnHeader));
 
     	//Ignore empty cells, but not zeros
@@ -420,8 +421,8 @@ public class IntegratedLoaderRunner extends FileLoaderRunner {
 		return sheet;
 	}
 
-	protected Integer getSiteID() {
-		return siteID;
+	protected SiteRecord getSite() {
+		return site;
 	}
 
 	protected Integer getHeaderRowNumber() {

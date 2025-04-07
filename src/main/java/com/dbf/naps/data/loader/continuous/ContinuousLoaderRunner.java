@@ -22,14 +22,13 @@ import com.dbf.naps.data.globals.continuous.Compound;
 import com.dbf.naps.data.loader.FileLoaderRunner;
 import com.dbf.naps.data.loader.LoaderOptions;
 import com.dbf.naps.data.records.ContinuousDataRecord;
+import com.dbf.naps.data.records.SiteRecord;
 
 public class ContinuousLoaderRunner extends FileLoaderRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContinuousLoaderRunner.class);
 	
 	private static final CSVFormat csvFormat;
-	
-	private static final Long ONE_HOUR_MS = 60*60*1000L;
 	
 	static {
 		csvFormat = CSVFormat.Builder.create()
@@ -93,37 +92,42 @@ public class ContinuousLoaderRunner extends FileLoaderRunner {
 					units = "µg/m³";
 				}
 				
+				Integer pollutantID = getPollutantID(compoudString);
+				Integer methodID = getMethodID("Continuous", compoudString, method, units);
+				
+				SiteRecord site = getSite(
+						line.get(1 + columnOffset),
+						line.get(2 + columnOffset),
+						line.get(3 + columnOffset),
+						line.get(4 + columnOffset),
+						line.get(5 + columnOffset),
+						line.getRecordNumber());	
+				
 				//We create 24 records per CSV line, 1 per hour
 				for(int hour = 0; hour < 24; hour++) {
 					ContinuousDataRecord record = new ContinuousDataRecord();
-					record.setPollutantId(getPollutantID(compoudString));
-					record.setMethodId(getMethodID("Continuous", compoudString, method, units));
-					record.setSiteId(getSiteID(
-							line.get(1 + columnOffset),
-							line.get(2 + columnOffset),
-							line.get(3 + columnOffset),
-							line.get(4 + columnOffset),
-							line.get(5 + columnOffset),
-							line.getRecordNumber()));
+					record.setPollutantId(pollutantID);
+					record.setMethodId(methodID);
+					record.setSiteId(site.getId());
 					
 					String date = line.get(6 + columnOffset);
 					if (date.contains("-")) { //Date might be in more than 1 format
 			        	try {
-							record.setDatetime(LATE_DATE_FORMAT.parse(date));
+							record.setDatetime(LATE_DATE_FORMAT.parse(date), hour + 1, site.getTimezone());
 				        } catch (ParseException | NumberFormatException e) {
 				        	throw new IllegalArgumentException("Could not parse date (" + date + ") on row " + line.getRecordNumber() + ". Expecting format " + LATE_DATE_FORMAT, e);
 				        }
 					} else {
 						try {
-							record.setDatetime(EARLY_DATE_FORMAT.parse(date));
+							record.setDatetime(EARLY_DATE_FORMAT.parse(date), hour + 1, site.getTimezone());
 				        } catch (ParseException | NumberFormatException e) {
 					        throw new IllegalArgumentException("Could not parse date (" + date + ") on row " + line.getRecordNumber() + ". Expecting format " + EARLY_DATE_FORMAT, e);
 				        }
 					}
 
-					//Add the hour component
+					//Add the hour component. It is not set automatically because it does not apply to integrated.
+					//Hour represents the end of the sampling period in local standard time.
 					record.setHour(hour + 1);
-					record.getDatetime().setTime(record.getDatetime().getTime() + (hour * ONE_HOUR_MS));
 					
 					String data = line.get(7 + hour + columnOffset);
 					//There are a couple odd ball values in the data set, such -9999 and -99

@@ -41,13 +41,13 @@ public abstract class DataRecord {
 		return datetime;
 	}
 	
-	public void setDatetime(Date datetime) {
-		this.datetime = datetime;
-		
-		//All dates in excel are in the GMT timezone
+	public void setDatetime(Date datetime, Integer hourOffset, BigDecimal timezoneOffset) {
+		//The datetime attribute reflects the time of the sample in GMT.
+		//All other fields represent local time
+		//All dates in the raw data files are in their local timezone. They are never adjusted for daylight savings.
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		calendar.setTime(datetime);
-	    this.day = calendar.get(Calendar.DAY_OF_MONTH);
+		this.day = calendar.get(Calendar.DAY_OF_MONTH);
 	    this.dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 	    this.dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 	    this.month = calendar.get(Calendar.MONTH) + 1;
@@ -57,6 +57,16 @@ public abstract class DataRecord {
 	    //Make an adjustment for the last week of December
 	    if(this.weekOfYear == 1 && this.month == 12)
 	    	this.weekOfYear = 53;
+		
+		//Now we need to offset the datetime by the correct timezone offset.
+		//Note: Newfoundland's offset is 3 1/2 hours, so we use minutes
+	    if(null != timezoneOffset) {
+			final int timezoneMinutes = (int) (timezoneOffset.floatValue()*-60.0);
+			calendar.add(Calendar.MINUTE, timezoneMinutes);
+	    }
+		//Now we add the hour offset. This applies only to continuous data
+		if(null != hourOffset) calendar.add(Calendar.HOUR, hourOffset);
+		this.datetime = calendar.getTime(); 
 	}
 	
 	public Integer getYear() {
