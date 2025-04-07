@@ -71,7 +71,7 @@ public abstract class NAPSDBAction<O extends DBOptions> extends NAPSActionBase<O
 			scriptRunner.setLogWriter(null); //Don't print out the script contents
 			scriptRunner.runScript(reader);
 		}
-		log.info("Schema creration complete.");
+		log.info("Schema creation complete.");
 	}
 	
 	protected abstract List<Class<?>> getDBMappers();

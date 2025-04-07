@@ -92,7 +92,7 @@ public class ContinuousLoaderRunner extends FileLoaderRunner {
 					units = "µg/m³";
 				}
 				
-				Integer pollutantID = getPollutantID(compoudString);
+				Integer pollutantID = getPollutantID(compoudString, false);
 				Integer methodID = getMethodID("Continuous", compoudString, method, units);
 				
 				SiteRecord site = getSite(

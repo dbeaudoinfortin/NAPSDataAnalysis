@@ -2,6 +2,7 @@ package com.dbf.naps.data.analysis.query;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -9,13 +10,18 @@ import java.util.Set;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dbf.naps.data.analysis.DataAnalysisRecord;
 import com.dbf.naps.data.analysis.DataAnalysisRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.utilities.Utils;
+import com.dbf.naps.data.utilities.ZipUtil;
 
 public class ExtendedDataQueryRunner extends DataAnalysisRunner<ExtendedDataQueryOptions> {
+	
+	private static final Logger log = LoggerFactory.getLogger(ExtendedDataQueryRunner.class);
 	
 	private final String dataSet;
 	
@@ -62,29 +68,41 @@ public class ExtendedDataQueryRunner extends DataAnalysisRunner<ExtendedDataQuer
 		
 		final Set<QueryOutputTypes> outputTypes = getConfig().getOutputTypes();
 		
+		List<File> filesToZip = new ArrayList<File>(3);
 		if(outputTypes == null || outputTypes.isEmpty()) {
 			//The default it to write a CSV file
 			writeToCSVFile(records, queryUnits, title, dataFile);
+			filesToZip.add(dataFile);
 		} else {
 			for (QueryOutputTypes output : outputTypes) {
 				switch (output) {
 				case CSV:
 					writeToCSVFile(records, queryUnits, title, dataFile);
+					filesToZip.add(dataFile);
 					break;
 				case JSON:
 					File jsonFile = new File(dataFile.getParent(), dataFile.getName().replace(".csv", ".json"));
 					this.checkFile(jsonFile);
 					writeToJSONFile(records, queryUnits, title, jsonFile, false);
+					filesToZip.add(jsonFile);
 					break;
 				case JSON_SLIM:
 					File jsonSlimFile = new File(dataFile.getParent(), dataFile.getName().replace(".csv", outputTypes.contains(QueryOutputTypes.JSON) ? "_slim.json" : ".json"));
 					this.checkFile(jsonSlimFile);
 					writeToJSONFile(records, queryUnits, title, jsonSlimFile, true);
+					filesToZip.add(jsonSlimFile);
 					break;
 				default:
 					break;
 				}
 			}
+		}
+		
+		if(getConfig().isZip()) {
+			File zipFile = new File(dataFile.getParent(), dataFile.getName().replace(".csv", ".zip"));
+			log.info(getThreadId() + ":: Starting ZIP of " + filesToZip.size() + " file(s) to " + zipFile + ".");
+			ZipUtil.zipFiles(filesToZip, zipFile, getConfig().isOverwriteFiles());
+			log.info(getThreadId() + ":: Completed ZIP of " + filesToZip.size() + " file(s) to " + zipFile + ".");
 		}
 	}
 	

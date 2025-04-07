@@ -93,11 +93,15 @@ public abstract class FileLoaderRunner extends DBRunner<LoaderOptions> {
 	}
 	
 	protected Integer getPollutantID(String rawPollutantName) {
+		return getPollutantID(rawPollutantName, true);
+	}
+	
+	protected Integer getPollutantID(String rawPollutantName, boolean fixNames) {
 		
 		//If one thread stamps overrides the data of another it's no big deal
 		return pollutantIDLookup.computeIfAbsent(rawPollutantName, pollutantName -> {
 			Integer pollutantID = null;
-			pollutantName = PollutantMapping.lookupPollutantName(pollutantName);
+			if(fixNames) pollutantName = PollutantMapping.lookupPollutantName(pollutantName);
 			//May or may not insert, let the DB manage contention
 			try(SqlSession session = getSqlSessionFactory().openSession(true)) {
 				PollutantMapper mapper = session.getMapper(PollutantMapper.class);

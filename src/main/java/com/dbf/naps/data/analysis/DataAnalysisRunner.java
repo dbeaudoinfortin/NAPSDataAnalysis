@@ -369,9 +369,7 @@ public abstract class DataAnalysisRunner<O extends DataAnalysisOptions> extends 
 		return title.toString();
 	}
 	
-	protected void writeToFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
-		writeToCSVFile(records, queryUnits, title, dataFile);	
-	}
+	protected abstract void writeToFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException;
 	
 	protected void writeToCSVFile(List<DataAnalysisRecord> records, String queryUnits, String title, File dataFile) throws IOException {
 		log.info(getThreadId() + ":: Starting writing to CSV file " + dataFile + ".");

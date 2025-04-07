@@ -496,6 +496,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      this threshold will be filtered out before aggregation.
  -ye,  --yearEnd <arg>            End year (inclusive).
  -ys,  --yearStart <arg>          Start year (inclusive).
+ -z,   --zip                      Zip (compress) the output file(s) to save space.
 ```
 
 **Aggregation Rules:**
@@ -678,6 +679,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
                                      this threshold will be filtered out before aggregation.
  -ye,  --yearEnd <arg>            End year (inclusive).
  -ys,  --yearStart <arg>          Start year (inclusive).
+ -z,   --zip                      Zip (compress) the output file(s) to save space.
 ```
 
 **Colour Palettes:**
@@ -776,6 +778,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.contin
  -v,   --verbose           Make logging more verbose.
  -ye,  --yearEnd <arg>     End year (inclusive).
  -ys,  --yearStart <arg>   Start year (inclusive).
+ -z,   --zip               Zip (compress) the output file(s) to save space.
 ```
 
 # Integrated Data Tools
@@ -875,6 +878,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
                                      this threshold will be filtered out before aggregation.
  -ye,  --yearEnd <arg>            End year (inclusive).
  -ys,  --yearStart <arg>          Start year (inclusive).
+ -z,   --zip                      Zip (compress) the output file(s) to save space.
 ```
 
 **Notes:**
@@ -943,6 +947,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.heatma
                                      this threshold will be filtered out before aggregation.
  -ye,  --yearEnd <arg>            End year (inclusive).
  -ys,  --yearStart <arg>          Start year (inclusive).
+ -z,   --zip                      Zip (compress) the output file(s) to save space.
 ```
 
 **Notes:**
@@ -977,6 +982,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.exporter.integr
  -v,   --verbose           Make logging more verbose.
  -ye,  --yearEnd <arg>     End year (inclusive).
  -ys,  --yearStart <arg>   Start year (inclusive).
+ -z,   --zip                      Zip (compress) the output file(s) to save space.
 ```
 
 # How To Run Individual Tools

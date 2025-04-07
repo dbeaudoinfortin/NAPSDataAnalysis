@@ -65,7 +65,7 @@ public abstract class DataRecord {
 			calendar.add(Calendar.MINUTE, timezoneMinutes);
 	    }
 		//Now we add the hour offset. This applies only to continuous data
-		if(null != hourOffset) calendar.add(Calendar.HOUR, hourOffset);
+		if(null != hourOffset) calendar.add(Calendar.HOUR_OF_DAY, hourOffset);
 		this.datetime = calendar.getTime(); 
 	}
 	

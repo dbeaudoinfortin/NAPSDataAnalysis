@@ -26,12 +26,13 @@ public class ExtractorOptions extends DBOptions {
 	private final Set<String>  pollutants = new HashSet<String>();
 	private final Set<Integer> sites = new HashSet<Integer>();
 	
-	private String fileName;
+	private String  fileName;
 	private boolean filePerYear = false;
 	private boolean filePerPollutant = false;
 	private boolean filePerSite = false;
 	private boolean overwriteFiles = false;
 	private boolean generateJSDataMap = false;
+	private boolean zip = false;
 	
 	static {
 		getOptions().addRequiredOption("p","dataPath", true, "Local path to save the data.");
@@ -43,8 +44,9 @@ public class ExtractorOptions extends DBOptions {
 		getOptions().addOption("fy","filePerYear", false, "Create a separate file for each year.");
 		getOptions().addOption("fp","filePerPollutant", false, "Create a separate file for each pollutant.");
 		getOptions().addOption("fs","filePerSite", false, "Create a separate file for each site.");
-		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");	
-		getOptions().addOption("dm","generateJSDataMap", false, "Generates a JavaScript file containing a multi-dimensional lookup table of exported data. Only applies if filePerYear, filePerPollutant, and filePerSite are all set.");	
+		getOptions().addOption("o","overwriteFiles", false, "Replace existing files.");
+		getOptions().addOption("dm","generateJSDataMap", false, "Generates a JavaScript file containing a multi-dimensional lookup table of exported data. Only applies if filePerYear, filePerPollutant, and filePerSite are all set.");
+		getOptions().addOption("z","zip", false, "Zip (compress) the output file(s) to save space.");
 	}
 
 	public ExtractorOptions(String[] args) throws IllegalArgumentException {
@@ -81,6 +83,9 @@ public class ExtractorOptions extends DBOptions {
 		
 		generateJSDataMap = cmd.hasOption("generateJSDataMap") && filePerYear && filePerPollutant && filePerSite; //Secret option
 		log.info("Will" + (generateJSDataMap ? "" : " not") +  " generate the data map file.");
+		
+		zip = cmd.hasOption("zip");
+		log.info("Will" + (zip ? "" : " not") +  " zip the output file(s).");
 	}
 	
 	private void loadOverwriteFiles(CommandLine cmd) {
@@ -216,5 +221,9 @@ public class ExtractorOptions extends DBOptions {
 
 	public boolean isGenerateJSDataMap() {
 		return generateJSDataMap;
+	}
+
+	public boolean isZip() {
+		return zip;
 	}
 }

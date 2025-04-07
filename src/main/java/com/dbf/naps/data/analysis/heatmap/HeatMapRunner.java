@@ -28,6 +28,7 @@ import com.dbf.naps.data.globals.SiteType;
 import com.dbf.naps.data.globals.SiteTypeMapping;
 import com.dbf.naps.data.globals.Urbanization;
 import com.dbf.naps.data.globals.UrbanizationMapping;
+import com.dbf.naps.data.utilities.ZipUtil;
 
 public abstract class HeatMapRunner extends DataAnalysisRunner<HeatMapOptions> {
 	
@@ -69,16 +70,28 @@ public abstract class HeatMapRunner extends DataAnalysisRunner<HeatMapOptions> {
 			.render(dataFile, new ArrayList<DataRecord>(records));
 		log.info("Rendering complete for " + dataFile + ".");
 		
+		List<File> filesToZip = new ArrayList<File>(3);
+		filesToZip.add(dataFile); //Original .png image
+		
 		if (getConfig().isGenerateCSV()) {
 			File csvFile = new File(dataFile.getParent(), dataFile.getName().replace(".png", ".csv"));
 			this.checkFile(csvFile);
 			super.writeToCSVFile(records, queryUnits, title, csvFile);
+			filesToZip.add(csvFile);
 		}
 		
 		if (getConfig().isGenerateJSON()) {
 			File jsonFile = new File(dataFile.getParent(), dataFile.getName().replace(".png", ".json"));
 			this.checkFile(jsonFile);
 			super.writeToJSONFile(records, queryUnits, title, jsonFile, false);
+			filesToZip.add(jsonFile);
+		}
+		
+		if(getConfig().isZip()) {
+			File zipFile = new File(dataFile.getParent(), dataFile.getName().replace(".png", ".zip"));
+			log.info(getThreadId() + ":: Starting ZIP of " + filesToZip.size() + " file(s) to " + zipFile + ".");
+			ZipUtil.zipFiles(filesToZip, zipFile, getConfig().isOverwriteFiles());
+			log.info(getThreadId() + ":: Completed ZIP of " + filesToZip.size() + " file(s) to " + zipFile + ".");
 		}
 	}
 	

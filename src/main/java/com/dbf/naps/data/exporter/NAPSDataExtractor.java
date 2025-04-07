@@ -88,7 +88,8 @@ public abstract class NAPSDataExtractor<O extends ExtractorOptions> extends NAPS
 					log.debug(jsFormattedDataMap);
 				}
 				
-				Path dataMapPath = exportPath.resolve(getDataset().toLowerCase() + "_datamap.js");
+				Path dataMapPath = (exportPath.endsWith("data") && null != exportPath.getParent())? exportPath.getParent() : exportPath;
+				dataMapPath = dataMapPath.resolve(getDataset().toLowerCase() + "_datamap.js");
 				Files.write(dataMapPath, jsFormattedDataMap.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				log.info("JS data map has been written to " + exportPath);
 			}

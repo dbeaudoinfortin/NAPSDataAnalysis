@@ -18,6 +18,7 @@ import com.dbf.naps.data.FileRunner;
 import com.dbf.naps.data.db.mappers.DataMapper;
 import com.dbf.naps.data.records.ExportDataRecord;
 import com.dbf.naps.data.utilities.Utils;
+import com.dbf.naps.data.utilities.ZipUtil;
 
 public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRunner<O> {
 	
@@ -40,6 +41,13 @@ public abstract class ExporterRunner<O extends ExtractorOptions> extends FileRun
 			log.info(getThreadId() + ":: Starting export of CSV file " + getDataFile() + ".");
 			exportData();
 			log.info(getThreadId() + ":: Completed export of CSV file " + getDataFile() + ".");
+			
+			if(getConfig().isZip()) {
+				File zipFile = new File(getDataFile().getParent(), getDataFile().getName().replace(".csv", ".zip"));
+				log.info(getThreadId() + ":: Starting ZIP of CSV file " + getDataFile() + " to " + zipFile + ".");
+				ZipUtil.zipFile(getDataFile(), zipFile, getConfig().isOverwriteFiles());
+				log.info(getThreadId() + ":: Completed ZIP of CSV file " + getDataFile() + " to " + zipFile + ".");
+			}
 		 } catch (Throwable t) {
 			 log.error(getThreadId() + ":: ERROR exporting to CSV file " + getDataFile() + ".", t);
 			return;
