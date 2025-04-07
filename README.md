@@ -49,7 +49,7 @@ Welcome to the Canada National Air Pollution Surveillance Program (NAPS) data do
 
 This project will eventually contain a collection of tools to assist in the analysis of Canadian air quality data. The data is provided by the National Air Pollution Surveillance (NAPS) program, which is part of Environment and Climate Change Canada. You can view the original data [here](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/).
 
-I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization](#data-analysis) [tool](#napscontinuousheatmap) to generate pretty graphs, and a couple example [BI dashboards](#dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in either the [data download web page](https://dbeaudoinfortin.github.io/NAPSDataAnalysis/) or the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
+I started this project because, despite the wealth of data that NAPS provides, analysing it is challenging, time consuming and error prone. The data from the [NAPS portal](https://data-donnees.az.ec.gc.ca/data/air/monitor/national-air-pollution-surveillance-naps-program/) is spread out in hundreds of XLS/XLSX/CSV files, with dozens of formats, different units of measure, different naming conventions, different time zones, etc. With this toolbox, anyone can use the [downloader tools](#napscontinuousdatadownloader) to download all of the data they need in one command. I then provide the [tools](#napscontinuousdataloader) needed to parse all this data, clean it up and import it into a single simple, clean database schema. After that, you can analyse the data using whatever tool works best for you. I provide a powerful [dynamic query](#napscontinuousdataquery) tool, a CSV [exporter tool](#napscontinuousdataexporter), a [heat map visualization](#data-analysis) [tool](#napscontinuousheatmap) to generate pretty graphs, and a couple example [BI dashboards](#dashboards) to get you started with BI tools. And if all of that is too complicated, you might still be interested in either the [data download web page](https://dbeaudoinfortin.github.io/NAPSDataAnalysis/) or the [clean data exports](#clean-data-exports) that republish the NAPS data in a consistent format.
 
 All usage is for non-commercial research purposes. I am not affiliated with the Government of Canada.
 
@@ -62,7 +62,7 @@ If you are simply looking to download NAPS air quality data, I have created a [s
 
 **Last Updated March 2025**
 
-The NAPS data is complicated to handle; the data files contain many inconsistencies in structure, formatting, labelling, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
+The NAPS data is complicated to handle; the data files contain many inconsistencies in structure, formatting, labelling, time zones, etc. In order to load all this data into a clean database, I needed to implement many clean-up rules and handle many exceptional cases. I believe this work could be of benefit to others.   
 
 If you are curious about the data issues I have encountered, I have started keeping track of some of the non-trivial issues [here](https://github.com/dbeaudoinfortin/NAPSDataAnalysis/issues?q=is%3Aissue+label%3A%22Data+Issue%22).
 
@@ -534,6 +534,7 @@ You can invoke this tool by running the class `com.dbf.naps.data.analysis.query.
 
 **Other Notes:**
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
+- Time-based fields, such as `HOUR` and `DAY`, are interpreted using the local standard time of each site (NAPS station), ignoring daylight saving time. This ensures consistent aggregation by hour—for example, comparing pollutant levels at noon or midnight across multiple sites in different time zones.
 - The `outputTypes` option allows you to specify the file format for the ouput data. `CSV` will output a CSV file containing a table of data, with column headers. `JSON` will output the same data but in a JSON format, with metadata for grouping. `JSON_SLIM` will output just the data itself, in JSON format, with all metadata descriptors removed. All 3 output types, or any combination of output types, can be used at the same time. 
 `JSON` output example:
 ```json
@@ -743,6 +744,7 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 - The `gridValues` option can be used to display the value of each heat map cell within the cell itself. The size of the text is scaled automatically based on the `fontScale` option.  By default, the grid values are not rendered.
  
 **Notes:**
+- Time-based fields, such as `HOUR` and `DAY`, are interpreted using the local standard time of each site (NAPS station), ignoring daylight saving time. This ensures consistent aggregation by hour—for example, comparing pollutant levels at noon or midnight across multiple sites in different time zones.
 - The `generateCSV` option will output a CSV file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.csv` file extension instead of a `.png` file extension.
 - Similarly, the `generateJSON` option will output a JSON file containing a table of all of the data that was used to generate the heat map. The file will be written in the same directory as the heat map and will have the same file name, except it will have a `.json` file extension instead of a `.png` file extension. Both the `generateCSV` option and the `generateJSON` option can be used at the same time.
 - A title will be automatically generated for the report based on the aggregation and filtering rules that you provide. You can override this title by using the `--title` option. Setting it to empty `""` will omit it entirely.
@@ -750,6 +752,8 @@ The default colour palette, if not specified, is number 1. Here are examples of 
 ## NAPSContinuousDataExporter
 
 A Java tool that exports the continuous data, previously loaded by the NAPSContinuousDataLoader, from a PostgreSQL database to one or more CSV files at the directory location specified. The data is in a flat, denormalized, CSV format and is encoded in UTF-8 with a BOM. This format is compatible with all modern versions of Excel. The tool allows you to specify what years, pollutants, and sites you want to export. It also lets you specify if you want the data grouped into a single file by any combination of per year, per pollutant and per site.
+
+All dates have been converted to GMT from the local time zone of the site (NAPS station) for consistency. Each timestamp represents the end of the one-hour period during which sampling occurred.
 
 You can invoke this tool by running the class `com.dbf.naps.data.exporter.continuous.NAPSContinuousDataExporter`.
 
