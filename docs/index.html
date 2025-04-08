@@ -725,7 +725,7 @@
             const year = document.getElementById('year' + dataSet).value;
             const site = document.getElementById('site' + dataSet).value;
             const pollutant = document.getElementById('pollutant' + dataSet).value;
-            const zipFilePath = `data/${dataSet}_${pollutant}_${site}_${year}.csv.zip`;
+            const zipFilePath = `data/${dataSet}_${pollutant}_${site}_${year}.zip`;
 			
             checkFileExists(zipFilePath).then(exists => {
 				if (exists) {
